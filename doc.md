@@ -33,7 +33,7 @@ flowchart TD
   E --> E2["隐私模式"]
   E --> E3["记录提醒"]
   E --> E4["亲友资产"]
-  F["亲友资产"] --> F1["分享邀请"]
+  F["亲友资产"] --> F1["生成分享码 / 输入分享码"]
   F --> F2["切换浏览对象"]
   G["云函数 snapshots"] --> G1["资产快照"]
   G --> G2["用户资料"]
@@ -52,8 +52,8 @@ flowchart TD
 | 资产目标 | `pages/analytics/index` | 设置目标净资产，展示目标进度；进行 10 年 / 30 年复利测算 |
 | 我的 | `pages/profile/index` | 展示微信头像昵称、隐私设置、记录提醒入口、亲友资产入口、返回我的资产 |
 | 记录提醒 | `pages/reminder/index` | 设置每月几号提醒，默认当天 10:00 发送订阅通知 |
-| 亲友资产 | `pages/family/index` | 分享邀请、展示绑定用户、切换亲友资产浏览模式 |
-| 亲友邀请 | `pages/family-invite/index` | 接收分享 token，确认后建立双向亲友关系 |
+| 亲友资产 | `pages/family/index` | 生成分享码、输入分享码绑定亲友、展示绑定用户、切换亲友资产浏览模式 |
+| 亲友邀请 | `pages/family-invite/index` | 兼容旧邀请链接，确认后建立双向亲友关系 |
 
 ## 4. 页面跳转图
 
@@ -248,8 +248,8 @@ cloudfunctions/snapshots/index.js
 | `upsert` | 新增或更新指定日期快照 |
 | `delete` | 删除指定日期快照 |
 | `replaceAll` | 替换全部快照，主要用于迁移或调试 |
-| `familyInviteCreate` | 创建亲友邀请 token |
-| `familyInviteAccept` | 接受亲友邀请并建立双向关系 |
+| `familyInviteCreate` | 创建亲友分享码 |
+| `familyInviteAccept` | 输入分享码并建立双向关系 |
 | `setActiveOwner` | 切换当前浏览的资产所属人 |
 | `reminderSave` | 保存每月提醒日期 |
 | `sendDueReminders` | 定时发送订阅提醒 |
@@ -262,17 +262,17 @@ cloudfunctions/snapshots/index.js
 sequenceDiagram
   participant A as 邀请人
   participant F as family 页面
-  participant S as 分享链接
+  participant S as 分享码
   participant B as 被邀请人
   participant C as 云函数
   participant DB as asset_family_bindings
 
-  A->>F: 点击分享邀请
+  A->>F: 生成分享码
   F->>C: familyInviteCreate
   C-->>F: inviteCode
-  F->>S: 分享 pages/family-invite/index?token=inviteCode
-  B->>S: 打开邀请页
-  B->>C: familyInviteAccept
+  F->>S: 发送分享码给被邀请人
+  B->>F: 输入分享码
+  F->>C: familyInviteAccept
   C->>DB: 建立双向 accepted 关系
   B->>F: 可在亲友资产中切换浏览对象
 ```
@@ -280,6 +280,7 @@ sequenceDiagram
 运行规则：
 
 - 亲友关系是双向的：双方都可以在列表中看到对方。
+- 小程序前端暂不使用分享链接绑定，亲友资产页通过“生成分享码”和“输入分享码”完成绑定。
 - 切换浏览对象后，除“我的”页面外，其它页面底部显示浮层提醒：正在查看某某的资产数据。
 - 亲友浏览模式下也允许新增和编辑资产。
 - 保存资产时记录实际编辑人：`editorOpenid`, `editorName`, `editorAvatarUrl` 和快照上的 `lastEditor`。

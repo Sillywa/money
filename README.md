@@ -97,7 +97,7 @@ asset_reminders
 - `replaceAll`：替换当前用户的全部资产快照，主要用于迁移/调试
 - `upsert`：按记录日期新增或更新单次快照
 - `delete`：按记录日期删除单次快照
-- `familyInviteCreate` / `familyInviteAccept`：生成分享邀请 token，并在邀请页接受亲友绑定
+- `familyInviteCreate` / `familyInviteAccept`：生成分享码，并通过输入分享码接受亲友绑定
 - `setActiveOwner`：切换当前浏览的资产所属用户
 - `reminderSave` / `sendDueReminders`：保存提醒日期和发送到期订阅通知
 

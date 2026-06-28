@@ -2,8 +2,54 @@
   padding-bottom: 44rpx;
 }
 
-.share-btn {
+.invite-code-box {
   margin-top: 28rpx;
+  min-height: 96rpx;
+  border-radius: 16rpx;
+  background: #f7f9fc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1769ff;
+  font-size: 44rpx;
+  font-weight: 800;
+  letter-spacing: 6rpx;
+}
+
+.invite-actions {
+  margin-top: 22rpx;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18rpx;
+}
+
+.invite-action {
+  height: 78rpx;
+  font-size: 28rpx;
+}
+
+.invite-input-row {
+  margin-top: 26rpx;
+  min-height: 92rpx;
+  padding: 0 22rpx;
+  border-radius: 16rpx;
+  background: #f7f9fc;
+  display: flex;
+  align-items: center;
+}
+
+.invite-input {
+  flex: 1;
+  height: 76rpx;
+  color: #111827;
+  font-size: 30rpx;
+  font-weight: 650;
+  letter-spacing: 4rpx;
+  text-transform: uppercase;
+}
+
+.bind-btn {
+  margin-top: 22rpx;
 }
 
 .member-section {

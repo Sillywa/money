@@ -3,12 +3,36 @@
 
   <view class="section section-pad">
     <view class="section-title title-with-icon">
-      <icon-font name="share" color="#1769FF" size="{{44}}" radius="{{14}}"></icon-font>
-      <text>邀请亲友</text>
+      <icon-font name="users" color="#1769FF" size="{{44}}" radius="{{14}}"></icon-font>
+      <text>我的分享码</text>
     </view>
-    <view class="section-subtitle">分享给微信好友，对方打开后确认接受，即可互相浏览和维护资产记录。</view>
-    <button class="btn-primary share-btn" open-type="share" disabled="{{!inviteToken}}">
-      {{inviteToken ? '邀请亲友' : '准备邀请链接...'}}
+    <view class="section-subtitle">把分享码发给亲友，对方在下方输入后即可绑定。</view>
+    <view class="invite-code-box">
+      <text>{{inviteToken || '生成中'}}</text>
+    </view>
+    <view class="invite-actions">
+      <button class="btn-secondary invite-action" bindtap="refreshInviteCode">重新生成</button>
+      <button class="btn-primary invite-action" bindtap="copyInviteCode" disabled="{{!inviteToken}}">复制分享码</button>
+    </view>
+  </view>
+
+  <view class="section section-pad">
+    <view class="section-title title-with-icon">
+      <icon-font name="plus" color="#10B981" size="{{44}}" radius="{{14}}"></icon-font>
+      <text>绑定亲友</text>
+    </view>
+    <view class="section-subtitle">输入亲友提供的分享码，绑定后双方可以互相查看和维护资产记录。</view>
+    <view class="invite-input-row">
+      <input
+        class="invite-input"
+        value="{{inviteCodeInput}}"
+        placeholder="请输入分享码"
+        maxlength="12"
+        bindinput="onInviteCodeInput"
+      />
+    </view>
+    <button class="btn-primary bind-btn" loading="{{binding}}" disabled="{{binding}}" bindtap="bindByInviteCode">
+      {{binding ? '绑定中' : '绑定亲友'}}
     </button>
   </view>
 

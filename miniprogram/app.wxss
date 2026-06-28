@@ -213,6 +213,7 @@ button::after {
 .dark-mode .setting-row.static,
 .dark-mode .setting-left,
 .dark-mode .invite-title,
+.dark-mode .invite-input,
 .dark-mode .goal-value,
 .dark-mode .target-value,
 .dark-mode .calc-result-value,
@@ -268,6 +269,8 @@ button::after {
 .dark-mode .date-picker-section,
 .dark-mode .reminder-picker,
 .dark-mode .invite-icon,
+.dark-mode .invite-code-box,
+.dark-mode .invite-input-row,
 .dark-mode .avatar-empty,
 .dark-mode .member-avatar {
   background: #0b1220;
