@@ -121,5 +121,28 @@
     </view>
     <line-chart points="{{trendPoints}}" color="#174EA6" privacy-mode="{{privacyMode}}" dark-mode="{{themeClass === 'dark-mode'}}"></line-chart>
     </view>
+
+    <view wx:if="{{showAssetGuide}}" class="guide-mask" catchtap="closeAssetGuide">
+      <view class="guide-panel" catchtap="noop">
+        <view class="guide-title">开始记录你的第一笔资产</view>
+        <view class="guide-desc">按资产类别添加账户，之后首页会自动汇总净资产、负债和趋势。</view>
+        <view class="guide-steps">
+          <view class="guide-step">
+            <view class="guide-step-index">1</view>
+            <view class="guide-step-text">进入“资产明细”</view>
+          </view>
+          <view class="guide-step">
+            <view class="guide-step-index">2</view>
+            <view class="guide-step-text">选择银行卡、理财、微信等类别</view>
+          </view>
+          <view class="guide-step">
+            <view class="guide-step-index">3</view>
+            <view class="guide-step-text">点击新增资产记录并保存</view>
+          </view>
+        </view>
+        <button class="btn-primary guide-primary" loading="{{guideSaving}}" disabled="{{guideSaving}}" bindtap="goAddAssetFromGuide">去添加资产</button>
+        <button class="btn-secondary guide-secondary" disabled="{{guideSaving}}" bindtap="closeAssetGuide">我知道了</button>
+      </view>
+    </view>
   </block>
 </view>

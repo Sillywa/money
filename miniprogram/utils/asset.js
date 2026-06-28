@@ -83,11 +83,18 @@ function itemTitle(category, item) {
   return item.name || category.name;
 }
 
+function joinFilled(parts) {
+  return parts.filter(Boolean).join(" · ");
+}
+
 function itemSubtitle(category, item) {
-  if (category.key === "bank") return `尾号 ${item.tailNo || "--"}${item.remark ? ` · ${item.remark}` : ""}`;
-  if (category.key === "creditCard") return `尾号 ${item.tailNo || "--"}${item.remark ? ` · ${item.remark}` : ""}`;
-  if (category.key === "housingFund") return `${item.city || "未设置"} · ${item.accountType || "住房公积金"}`;
-  return item.remark || "未填写备注";
+  if (category.key === "bank") return joinFilled([item.tailNo ? `尾号 ${item.tailNo}` : "", item.remark]);
+  if (category.key === "creditCard") return joinFilled([item.tailNo ? `尾号 ${item.tailNo}` : "", item.remark]);
+  if (category.key === "housingFund") {
+    const accountType = item.accountType && item.accountType !== item.name ? item.accountType : "";
+    return joinFilled([item.city, accountType]);
+  }
+  return item.remark || "";
 }
 
 function getCategoryRows(current, previous, key, recordDate) {

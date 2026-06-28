@@ -17,16 +17,33 @@ Component({
   observers: {
     "items": function () {
       this.draw();
+    },
+    "centerValue": function (value) {
+      this.updateValueSize(value);
     }
   },
 
   lifetimes: {
     ready() {
+      this.updateValueSize(this.data.centerValue);
       this.draw();
     }
   },
 
   methods: {
+    updateValueSize(value) {
+      const length = String(value || "").length;
+      let valueSizeClass = "";
+      if (length > 11) {
+        valueSizeClass = "tiny";
+      } else if (length > 8) {
+        valueSizeClass = "small";
+      } else if (length > 5) {
+        valueSizeClass = "medium";
+      }
+      this.setData({ valueSizeClass });
+    },
+
     draw() {
       wx.createSelectorQuery()
         .in(this)

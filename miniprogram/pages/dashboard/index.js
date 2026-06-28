@@ -1,5 +1,5 @@
 const { buildBundle, getNetTrend, maskBundle } = require("../../utils/asset");
-const { fetchSnapshots, getProfile, getThemeClass, getViewingInfo } = require("../../utils/store");
+const { fetchSnapshots, getProfile, getThemeClass, getViewingInfo, updateProfile } = require("../../utils/store");
 const { showMetricHelp } = require("../../utils/metric-help");
 
 Page({
@@ -17,6 +17,8 @@ Page({
     privacyMode: false,
     viewing: null,
     themeClass: "",
+    showAssetGuide: false,
+    guideSaving: false,
     loading: true,
     hasLoaded: false
   },
@@ -51,6 +53,7 @@ Page({
         };
       });
       const viewing = getViewingInfo();
+      const showAssetGuide = !viewing.isViewingFamily && !profile.assetGuideSeen && accountCount === 0;
       this.setData({
         bundle,
         accountCount,
@@ -71,6 +74,7 @@ Page({
         privacyMode,
         viewing,
         themeClass: getThemeClass(),
+        showAssetGuide,
         loading: false,
         hasLoaded: true
       });
@@ -104,6 +108,40 @@ Page({
     const type = event.currentTarget.dataset.type;
     wx.navigateTo({
       url: `/pages/category-detail/index?type=${type}`
+    });
+  },
+
+  closeAssetGuide() {
+    this.markAssetGuideSeen().catch(() => {});
+  },
+
+  goAddAssetFromGuide() {
+    this.markAssetGuideSeen().then(() => {
+      wx.switchTab({
+        url: "/pages/assets/index"
+      });
+    }).catch(() => {});
+  },
+
+  noop() {
+    return false;
+  },
+
+  markAssetGuideSeen() {
+    if (this.data.guideSaving) return Promise.resolve();
+    this.setData({ guideSaving: true });
+    return updateProfile({ assetGuideSeen: true }).then(() => {
+      this.setData({
+        showAssetGuide: false,
+        guideSaving: false
+      });
+    }).catch(() => {
+      this.setData({ guideSaving: false });
+      wx.showToast({
+        title: "稍后再试",
+        icon: "none"
+      });
+      return Promise.reject(new Error("asset guide save failed"));
     });
   }
 });

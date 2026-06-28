@@ -6,7 +6,7 @@ const {
   maskBundle,
   maskHistoryGroups,
 } = require("../../utils/asset");
-const { fetchSnapshots, getProfile, getThemeClass, getViewingInfo } = require("../../utils/store");
+const { deleteRecordItem, fetchSnapshots, getProfile, getThemeClass, getViewingInfo } = require("../../utils/store");
 const { showMetricHelp } = require("../../utils/metric-help");
 
 const HISTORY_PAGE_SIZE = 12;
@@ -30,6 +30,8 @@ Page({
     privacyMode: false,
     viewing: null,
     themeClass: "",
+    activeSwipeKey: "",
+    deletingKey: "",
     loading: true,
     hasLoaded: false
   },
@@ -84,6 +86,8 @@ Page({
         privacyMode,
         viewing: getViewingInfo(),
         themeClass: getThemeClass(),
+        activeSwipeKey: "",
+        deletingKey: "",
         loading: false,
         hasLoaded: true
       });
@@ -118,10 +122,17 @@ Page({
       return map;
     }, {});
 
-    return getCategoryHistory(bundle.records, categoryKey).map((group, index) => ({
-      ...group,
-      expanded: openedMap[group.recordDate] !== undefined ? openedMap[group.recordDate] : index === 0
-    }));
+    return getCategoryHistory(bundle.records, categoryKey)
+      .filter((group) => group.rows.length > 0)
+      .map((group, index) => ({
+        ...group,
+        expanded: openedMap[group.recordDate] !== undefined ? openedMap[group.recordDate] : index === 0,
+        rows: group.rows.map((row) => ({
+          ...row,
+          swipeKey: `${group.recordDate}-${row.index}`,
+          swiped: false
+        }))
+      }));
   },
 
   buildTrendPoints(historyGroups) {
@@ -157,6 +168,93 @@ Page({
     });
   },
 
+  onItemTouchStart(event) {
+    const touch = event.touches && event.touches[0];
+    if (!touch) return;
+    this.touchStartX = touch.clientX;
+    this.touchStartY = touch.clientY;
+  },
+
+  onItemTouchEnd(event) {
+    const touch = event.changedTouches && event.changedTouches[0];
+    if (!touch) return;
+
+    const deltaX = touch.clientX - this.touchStartX;
+    const deltaY = touch.clientY - this.touchStartY;
+    if (Math.abs(deltaX) < Math.abs(deltaY)) return;
+
+    const swipeKey = event.currentTarget.dataset.key;
+    if (deltaX < -42) {
+      this.setActiveSwipe(swipeKey);
+    } else if (deltaX > 32 || Math.abs(deltaX) > 8) {
+      this.setActiveSwipe("");
+    }
+  },
+
+  setActiveSwipe(swipeKey) {
+    const updateGroup = (group) => ({
+      ...group,
+      rows: group.rows.map((row) => ({
+        ...row,
+        swiped: !!swipeKey && row.swipeKey === swipeKey
+      }))
+    });
+
+    this.setData({
+      activeSwipeKey: swipeKey || "",
+      allHistoryGroups: this.data.allHistoryGroups.map(updateGroup),
+      historyGroups: this.data.historyGroups.map(updateGroup)
+    });
+  },
+
+  confirmDeleteItem(event) {
+    if (this.data.deletingKey) return;
+    const { index, itemId, recordDate, title, key } = event.currentTarget.dataset;
+    wx.showModal({
+      title: "删除资产记录",
+      content: `确认删除 ${recordDate} 的「${title || this.data.category.name}」记录？`,
+      confirmText: "删除",
+      confirmColor: "#e84b52",
+      success: (res) => {
+        if (!res.confirm) return;
+        this.deleteHistoryItem({
+          index,
+          itemId,
+          recordDate,
+          swipeKey: key
+        });
+      }
+    });
+  },
+
+  deleteHistoryItem(payload) {
+    this.setData({ deletingKey: payload.swipeKey });
+    deleteRecordItem({
+      categoryKey: this.data.category.key,
+      recordDate: payload.recordDate,
+      index: payload.index,
+      itemId: payload.itemId
+    }).then(() => {
+      wx.showToast({
+        title: "已删除",
+        icon: "success"
+      });
+      this.setData({
+        activeSwipeKey: "",
+        deletingKey: ""
+      });
+      return this.load({ silent: true, force: true });
+    }, () => {
+      this.setData({ deletingKey: "" });
+      wx.showToast({
+        title: "删除失败",
+        icon: "none"
+      });
+    }).catch(() => {
+      this.setData({ deletingKey: "" });
+    });
+  },
+
   goBack() {
     wx.navigateBack();
   },
@@ -168,6 +266,10 @@ Page({
   },
 
   editItem(event) {
+    if (this.data.activeSwipeKey) {
+      this.setActiveSwipe("");
+      return;
+    }
     const { index, recordDate } = event.currentTarget.dataset;
     wx.navigateTo({
       url: `/pages/record/index?type=${this.data.type}&index=${index}&recordDate=${recordDate}`

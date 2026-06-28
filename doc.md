@@ -22,6 +22,7 @@ flowchart TD
   A["资产总览"] --> A1["净资产、总负债、资产账户"]
   A --> A2["净资产构成：列表 / 图表"]
   A --> A3["净资产趋势"]
+  A --> A4["首次添加资产引导"]
   B["资产明细"] --> B1["六类大资产入口"]
   B --> B2["资产 / 负债统计"]
   C["资产详情"] --> C1["记录趋势"]
@@ -45,7 +46,7 @@ flowchart TD
 
 | 页面 | 路径 | 职责 |
 |---|---|---|
-| 资产总览 | `pages/dashboard/index` | 展示最新净资产、总负债、资产账户数、净资产构成和净资产趋势 |
+| 资产总览 | `pages/dashboard/index` | 展示最新净资产、总负债、资产账户数、净资产构成、净资产趋势和首次添加资产引导 |
 | 资产明细 | `pages/assets/index` | 展示六类大资产，支持点击大类进入详情，子分类不单独编辑 |
 | 资产详情 | `pages/category-detail/index` | 六类资产共用详情页，展示记录趋势、按日期分组的历史记录、编辑人 |
 | 新增资产 | `pages/record/index` | 新增或编辑某类资产记录，保存到指定记录日期 |
@@ -158,9 +159,11 @@ sequenceDiagram
 新增资产记录逻辑：
 
 - 新增某类资产时，记录日期默认当天，用户可以在新增页手动修改保存日期。
+- 编辑历史资产记录时也可以修改记录日期；保存时通过云函数事务将该条记录从原日期原子移动到新日期。
 - 新增某类资产时，页面会从历史资产快照中提取同类账户作为下拉选项。
+- 历史账户下拉只展示已有账户，不展示“新增”选项；默认保持手动录入状态。
 - 选择历史账户后，自动填充该账户除金额和备注以外的基础信息。
-- 选择“新增”或没有历史账户选项时，继续使用空白 / 默认表单手动录入。
+- 未选择历史账户或没有历史账户选项时，继续使用空白 / 默认表单手动录入。
 
 ## 8. 资产详情历史逻辑
 
@@ -181,6 +184,7 @@ flowchart TD
 - 资产记录历史按日期分页展示，首屏加载 12 个日期分组，页面下滑触底后继续加载下一页。
 - 展开箭头使用 CSS 实现，展开时旋转 180 度。
 - 历史记录行支持点击编辑，但不展示单独编辑按钮。
+- 历史记录行支持右滑露出删除按钮；点击删除后弹窗确认，再通过云函数事务删除单条记录。
 - 历史中展示编辑人，亲友模式下也记录实际编辑人。
 
 ## 9. 云端数据流
@@ -217,7 +221,7 @@ flowchart LR
 | 集合 | 用途 | 关键字段 |
 |---|---|---|
 | `asset_snapshots` | 按日期保存资产快照 | `ownerOpenid`, `recordDate`, `assets`, `lastEditor` |
-| `asset_user_profiles` | 用户资料和偏好 | `openid`, `nickName`, `avatarUrl`, `privacyEnabled`, `darkMode`, `activeOwnerOpenid` |
+| `asset_user_profiles` | 用户资料和偏好 | `openid`, `nickName`, `avatarUrl`, `privacyEnabled`, `darkMode`, `assetGuideSeen`, `activeOwnerOpenid` |
 | `asset_family_bindings` | 亲友资产授权关系 | `viewerOpenid`, `ownerOpenid`, `status` |
 | `asset_family_invites` | 分享邀请 token | `ownerOpenid`, `code`, `status` |
 | `asset_reminders` | 每月记录提醒 | `openid`, `enabled`, `dayOfMonth`, `hour`, `minute` |
@@ -242,10 +246,12 @@ cloudfunctions/snapshots/index.js
 |---|---|
 | `login` | 初始化或获取当前用户资料 |
 | `workspace` | 获取完整工作区数据 |
-| `profileUpdate` | 更新头像、昵称、隐私、暗黑模式和目标参数 |
+| `profileUpdate` | 更新头像、昵称、隐私、暗黑模式、新功能引导状态和目标参数 |
 | `list` | 读取当前或指定授权用户的快照列表 |
 | `get` | 读取指定日期快照 |
 | `upsert` | 新增或更新指定日期快照 |
+| `moveRecordDate` | 编辑历史记录时用事务将单条资产移动到新记录日期 |
+| `deleteRecordItem` | 用事务删除某日期下某类资产的一条历史记录 |
 | `delete` | 删除指定日期快照 |
 | `replaceAll` | 替换全部快照，主要用于迁移或调试 |
 | `familyInviteCreate` | 创建亲友分享码 |
@@ -305,7 +311,13 @@ sequenceDiagram
 
 暗黑模式能力保留在 `asset_user_profiles.darkMode` 和前端主题适配中，但当前“我的”页面暂时隐藏入口。该偏好只影响界面主题，不影响资产计算和云端资产数据。
 
-## 14. 资产目标
+## 14. 新功能引导
+
+首页首次进入时，如果 `asset_user_profiles.assetGuideSeen` 未开启、不是亲友资产浏览模式，且当前资产账户数为 0，会展示添加资产引导。
+
+引导说明用户从“资产明细”进入，选择资产类别，再新增资产记录。用户点击“我知道了”或“去添加资产”后，通过 `profileUpdate` 将 `assetGuideSeen` 更新为 `true`，后续不再重复展示。
+
+## 15. 资产目标
 
 资产目标页包含两个模块。
 
@@ -337,7 +349,7 @@ flowchart TD
 第 n 年资产 = 本金 * (1 + 年预期收益率 / 100) ^ n
 ```
 
-## 15. 记录提醒
+## 16. 记录提醒
 
 用户可以设置每月几号提醒，固定在该日早上 10:00 发送订阅通知。
 
@@ -358,7 +370,7 @@ flowchart LR
   - `miniprogram/utils/config.js`
   - `cloudfunctions/snapshots/index.js` 的 `REMINDER_TEMPLATE_ID`
 
-## 16. 组件说明
+## 17. 组件说明
 
 | 组件 | 路径 | 用途 |
 |---|---|---|
@@ -370,7 +382,7 @@ flowchart LR
 
 图表均为原生 canvas 实现，不使用 `echarts-for-weixin`。
 
-## 17. 关键开发约束
+## 18. 关键开发约束
 
 后续开发请遵守：
 
@@ -383,7 +395,7 @@ flowchart LR
 - 如新增集合、字段或索引，必须同步更新 `README.md` 和本文档。
 - 如新增页面或改变流程，必须同步更新页面职责表和信息架构图。
 
-## 18. 常见改动入口
+## 19. 常见改动入口
 
 | 需求 | 优先查看 |
 |---|---|
@@ -397,7 +409,7 @@ flowchart LR
 | 改亲友资产 | `miniprogram/pages/family`、`miniprogram/pages/family-invite` |
 | 改提醒 | `miniprogram/pages/reminder`、`cloudfunctions/snapshots/index.js` |
 
-## 19. 发布前检查
+## 20. 发布前检查
 
 建议每次提交前执行：
 

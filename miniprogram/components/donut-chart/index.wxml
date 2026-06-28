@@ -2,6 +2,6 @@
   <canvas class="donut-canvas" type="2d" canvas-id="donutCanvas"></canvas>
   <view class="donut-center">
     <view class="donut-label">{{centerLabel}}</view>
-    <view class="donut-value">{{centerValue}}</view>
+    <view class="donut-value {{valueSizeClass}}">{{centerValue}}</view>
   </view>
 </view>

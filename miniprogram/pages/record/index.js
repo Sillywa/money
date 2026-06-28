@@ -1,8 +1,8 @@
 const { CATEGORY_MAP } = require("../../utils/categories");
 const { buildBundle, createTodaySnapshot, formatMoney } = require("../../utils/asset");
-const { fetchSnapshots, getEditorInfo, getThemeClass, getViewingInfo, saveSnapshot } = require("../../utils/store");
+const { fetchSnapshots, getEditorInfo, getThemeClass, getViewingInfo, moveRecordDate, saveSnapshot } = require("../../utils/store");
 
-const ACCOUNT_PICKER_NEW_INDEX = 0;
+const ACCOUNT_PICKER_PLACEHOLDER = "选择历史账户";
 const SKIP_TEMPLATE_KEYS = ["amount", "remark"];
 
 const FIELD_CONFIG = {
@@ -50,13 +50,14 @@ Page({
     type: "wealth",
     index: "",
     targetRecordDate: "",
+    originalRecordDate: "",
     isEdit: false,
     category: null,
     fields: [],
     form: {},
     accountOptions: [],
     accountPickerOptions: [],
-    accountPickerIndex: ACCOUNT_PICKER_NEW_INDEX,
+    accountPickerIndex: 0,
     selectedAccountLabel: "",
     showAccountPicker: false,
     recordDate: "",
@@ -78,6 +79,7 @@ Page({
       type,
       index,
       targetRecordDate,
+      originalRecordDate: targetRecordDate,
       isEdit: index !== ""
     });
     const category = CATEGORY_MAP[type] || CATEGORY_MAP.wealth;
@@ -104,7 +106,7 @@ Page({
       const existing = this.data.isEdit ? currentList[Number(this.data.index)] : {};
       const form = this.buildDefaultForm(category.key, existing || {});
       const accountOptions = this.buildAccountOptions(bundle.records, category.key);
-      const accountPickerOptions = [`新增${category.name}`].concat(accountOptions.map((item) => item.label));
+      const accountPickerOptions = accountOptions.map((item) => item.label);
       const recordHint = this.buildRecordHint(this.data.isEdit, recordDate);
 
       this.setData({
@@ -114,9 +116,9 @@ Page({
         form,
         accountOptions,
         accountPickerOptions,
-        accountPickerIndex: ACCOUNT_PICKER_NEW_INDEX,
-        selectedAccountLabel: accountPickerOptions[ACCOUNT_PICKER_NEW_INDEX],
-        showAccountPicker: !this.data.isEdit && accountPickerOptions.length > 1,
+        accountPickerIndex: 0,
+        selectedAccountLabel: ACCOUNT_PICKER_PLACEHOLDER,
+        showAccountPicker: !this.data.isEdit && accountPickerOptions.length > 0,
         recordDate,
         recordHint,
         amountPreview: formatMoney(form.amount || 0),
@@ -151,7 +153,10 @@ Page({
   },
 
   buildRecordHint(isEdit, recordDate) {
-    if (isEdit) return `编辑 ${recordDate} 的资产记录`;
+    if (isEdit && this.data.originalRecordDate && this.data.originalRecordDate !== recordDate) {
+      return `保存后从 ${this.data.originalRecordDate} 移动到 ${recordDate}`;
+    }
+    if (isEdit) return `编辑 ${recordDate} 的资产记录，可修改日期`;
     return `新增记录将保存到 ${recordDate}，可修改日期`;
   },
 
@@ -209,20 +214,9 @@ Page({
 
   onAccountChange(event) {
     const pickerIndex = Number(event.detail.value);
-    const selected = this.data.accountOptions[pickerIndex - 1];
-    if (!selected) {
-      const form = this.buildDefaultForm(this.data.category.key, {
-        amount: this.data.form.amount || "",
-        remark: this.data.form.remark || ""
-      });
-      this.setData({
-        accountPickerIndex: ACCOUNT_PICKER_NEW_INDEX,
-        selectedAccountLabel: this.data.accountPickerOptions[ACCOUNT_PICKER_NEW_INDEX],
-        form,
-        fields: this.hydrateFields(this.data.category.key, form)
-      });
-      return;
-    }
+    const selected = this.data.accountOptions[pickerIndex];
+    if (!selected) return;
+
     const form = {
       ...this.data.form,
       ...selected.template,
@@ -241,8 +235,7 @@ Page({
     const recordDate = event.detail.value || this.data.recordDate;
     this.setData({
       recordDate,
-      targetRecordDate: recordDate,
-      recordHint: this.buildRecordHint(false, recordDate)
+      recordHint: this.buildRecordHint(this.data.isEdit, recordDate)
     });
   },
 
@@ -272,18 +265,19 @@ Page({
 
     if (!this.validate(form)) return;
 
-    const records = createTodaySnapshot(
-      this.data.bundle,
-      category.key,
-      form,
-      this.data.index,
-      this.data.recordDate,
-      getEditorInfo()
-    );
-    const snapshot = records.find((record) => record.recordDate === this.data.recordDate) || records[records.length - 1];
-
     this.setData({ saving: true });
-    saveSnapshot(snapshot).then(() => {
+    const shouldMoveRecord = this.data.isEdit && this.data.originalRecordDate && this.data.originalRecordDate !== this.data.recordDate;
+    const saveTask = shouldMoveRecord
+      ? moveRecordDate({
+        categoryKey: category.key,
+        fromRecordDate: this.data.originalRecordDate,
+        toRecordDate: this.data.recordDate,
+        index: this.data.index,
+        item: form
+      })
+      : saveSnapshot(this.buildSavedSnapshot(category.key, form, getEditorInfo()));
+
+    saveTask.then(() => {
       wx.showToast({
         title: "已保存",
         icon: "success"
@@ -296,6 +290,18 @@ Page({
       });
       this.setData({ saving: false });
     });
+  },
+
+  buildSavedSnapshot(categoryKey, form, editor) {
+    const records = createTodaySnapshot(
+      this.data.bundle,
+      categoryKey,
+      form,
+      this.data.index,
+      this.data.recordDate,
+      editor
+    );
+    return records.find((record) => record.recordDate === this.data.recordDate) || records[records.length - 1];
   },
 
   validate(form) {

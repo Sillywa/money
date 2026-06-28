@@ -66,12 +66,9 @@
 }
 
 .account-picker-arrow {
-  width: 14rpx;
-  height: 14rpx;
-  flex: 0 0 14rpx;
-  border-right: 3rpx solid #1769ff;
-  border-bottom: 3rpx solid #1769ff;
-  transform: rotate(45deg);
+  color: #9aa3b2;
+  font-size: 34rpx;
+  line-height: 1;
 }
 
 .date-picker-arrow {

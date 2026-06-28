@@ -76,6 +76,37 @@ exports.main = async (event) => {
     return buildWorkspace(openid);
   }
 
+  if (action === "moveRecordDate") {
+    const payload = event.payload || {};
+    if (!payload.categoryKey) throw new Error("categoryKey is required");
+    if (!payload.fromRecordDate) throw new Error("fromRecordDate is required");
+    if (!payload.toRecordDate) throw new Error("toRecordDate is required");
+    const profile = await ensureProfile(openid);
+    const ownerOpenid = await resolveOwnerOpenid(openid, event.ownerOpenid);
+    const editor = {
+      openid,
+      nickName: profile.nickName || "资产记录者",
+      avatarUrl: profile.avatarUrl || ""
+    };
+    await moveRecordDate(ownerOpenid, payload, editor);
+    return buildWorkspace(openid);
+  }
+
+  if (action === "deleteRecordItem") {
+    const payload = event.payload || {};
+    if (!payload.categoryKey) throw new Error("categoryKey is required");
+    if (!payload.recordDate) throw new Error("recordDate is required");
+    const profile = await ensureProfile(openid);
+    const ownerOpenid = await resolveOwnerOpenid(openid, event.ownerOpenid);
+    const editor = {
+      openid,
+      nickName: profile.nickName || "资产记录者",
+      avatarUrl: profile.avatarUrl || ""
+    };
+    await deleteRecordItem(ownerOpenid, payload, editor);
+    return buildWorkspace(openid);
+  }
+
   if (action === "delete") {
     const ownerOpenid = await resolveOwnerOpenid(openid, event.ownerOpenid);
     const recordDate = event.recordDate;
@@ -208,6 +239,7 @@ async function ensureProfile(openid) {
       avatarUrl: "",
       privacyEnabled: false,
       darkMode: false,
+      assetGuideSeen: false,
       activeOwnerOpenid: "",
       goalNetWorth: 1000000,
       calcPrincipal: 100000,
@@ -225,7 +257,7 @@ async function ensureProfile(openid) {
 async function updateProfile(openid, profile) {
   const current = await ensureProfile(openid);
   const data = {};
-  ["nickName", "avatarUrl", "privacyEnabled", "darkMode", "goalNetWorth", "calcPrincipal", "calcAnnualRate", "calcYears"].forEach((key) => {
+  ["nickName", "avatarUrl", "privacyEnabled", "darkMode", "assetGuideSeen", "goalNetWorth", "calcPrincipal", "calcAnnualRate", "calcYears"].forEach((key) => {
     if (profile[key] !== undefined) data[key] = profile[key];
   });
   data.updatedAt = db.serverDate();
@@ -283,6 +315,138 @@ async function upsertSnapshot(ownerOpenid, snapshot, editor) {
       ...data,
       createdAt: db.serverDate()
     }
+  });
+}
+
+async function moveRecordDate(ownerOpenid, payload, editor) {
+  if (!db.runTransaction) throw new Error("transaction is required");
+  const itemIndex = Number(payload.index);
+  if (!Number.isInteger(itemIndex) || itemIndex < 0) throw new Error("index is invalid");
+
+  await db.runTransaction(async (transaction) => {
+    const snapshotCollection = transaction.collection("asset_snapshots");
+    const sourceResult = await snapshotCollection
+      .where({ ownerOpenid, recordDate: payload.fromRecordDate })
+      .limit(1)
+      .get();
+    if (!sourceResult.data.length) throw new Error("source snapshot not found");
+
+    const source = sourceResult.data[0];
+    const sourceAssets = normalizeAssets(cloneValue(source.assets));
+    const sourceList = ((sourceAssets && sourceAssets[payload.categoryKey]) || []).slice();
+    const originalItem = sourceList[itemIndex];
+    if (!originalItem) throw new Error("source item not found");
+
+    const movedItem = {
+      ...originalItem,
+      ...(payload.item || {}),
+      editorOpenid: editor && editor.openid,
+      editorName: editor && editor.nickName,
+      editorAvatarUrl: editor && editor.avatarUrl
+    };
+
+    sourceList.splice(itemIndex, 1);
+    sourceAssets[payload.categoryKey] = sourceList;
+
+    const targetResult = await snapshotCollection
+      .where({ ownerOpenid, recordDate: payload.toRecordDate })
+      .limit(1)
+      .get();
+    let target = targetResult.data[0] || null;
+
+    if (!target) {
+      const latestResult = await snapshotCollection
+        .where({ ownerOpenid })
+        .orderBy("recordDate", "desc")
+        .limit(1)
+        .get();
+      const latest = latestResult.data[0] || source;
+      target = {
+        ownerOpenid,
+        recordDate: payload.toRecordDate,
+        assets: normalizeAssets(cloneValue(latest.assets)),
+        schemaVersion: SCHEMA_VERSION
+      };
+    }
+
+    const targetAssets = normalizeAssets(cloneValue(target.assets));
+    const targetList = ((targetAssets && targetAssets[payload.categoryKey]) || []).slice();
+    targetAssets[payload.categoryKey] = movedItem.id
+      ? targetList.filter((item) => item.id !== movedItem.id)
+      : targetList;
+    targetAssets[payload.categoryKey].push(movedItem);
+
+    await snapshotCollection.doc(source._id).update({
+      data: {
+        assets: sourceAssets,
+        lastEditor: editor,
+        schemaVersion: SCHEMA_VERSION,
+        updatedAt: db.serverDate()
+      }
+    });
+
+    if (target._id) {
+      await snapshotCollection.doc(target._id).update({
+        data: {
+          assets: targetAssets,
+          lastEditor: editor,
+          schemaVersion: SCHEMA_VERSION,
+          updatedAt: db.serverDate()
+        }
+      });
+      return;
+    }
+
+    await snapshotCollection.add({
+      data: {
+        _openid: ownerOpenid,
+        ownerOpenid,
+        recordDate: payload.toRecordDate,
+        assets: targetAssets,
+        lastEditor: editor,
+        schemaVersion: SCHEMA_VERSION,
+        createdAt: db.serverDate(),
+        updatedAt: db.serverDate()
+      }
+    });
+  });
+}
+
+async function deleteRecordItem(ownerOpenid, payload, editor) {
+  if (!db.runTransaction) throw new Error("transaction is required");
+  const itemIndex = Number(payload.index);
+  if (!Number.isInteger(itemIndex) || itemIndex < 0) throw new Error("index is invalid");
+
+  await db.runTransaction(async (transaction) => {
+    const snapshotCollection = transaction.collection("asset_snapshots");
+    const result = await snapshotCollection
+      .where({ ownerOpenid, recordDate: payload.recordDate })
+      .limit(1)
+      .get();
+    if (!result.data.length) throw new Error("snapshot not found");
+
+    const snapshot = result.data[0];
+    const assets = normalizeAssets(cloneValue(snapshot.assets));
+    const list = ((assets && assets[payload.categoryKey]) || []).slice();
+    const targetIndex = findRecordItemIndex(list, itemIndex, payload.itemId);
+    if (targetIndex < 0) throw new Error("item not found");
+
+    list.splice(targetIndex, 1);
+    assets[payload.categoryKey] = list;
+
+    if (isAssetsEmpty(assets)) {
+      await snapshotCollection.doc(snapshot._id).remove();
+      return;
+    }
+
+    await snapshotCollection.doc(snapshot._id).update({
+      data: {
+        assets,
+        lastEditor: editor,
+        schemaVersion: SCHEMA_VERSION,
+        updatedAt: db.serverDate()
+      }
+    });
   });
 }
 
@@ -399,6 +563,22 @@ function normalizeAssets(assets) {
   return assets && typeof assets === "object" ? assets : {};
 }
 
+function findRecordItemIndex(list, fallbackIndex, itemId) {
+  if (itemId) {
+    const idIndex = list.findIndex((item) => item && item.id === itemId);
+    if (idIndex >= 0) return idIndex;
+  }
+  return list[fallbackIndex] ? fallbackIndex : -1;
+}
+
+function isAssetsEmpty(assets) {
+  return Object.keys(assets || {}).every((key) => !Array.isArray(assets[key]) || assets[key].length === 0);
+}
+
+function cloneValue(value) {
+  return JSON.parse(JSON.stringify(value || {}));
+}
+
 function stripSnapshot(item) {
   return {
     recordDate: item.recordDate,
@@ -414,6 +594,7 @@ function stripProfile(profile) {
     avatarUrl: profile.avatarUrl || "",
     privacyEnabled: !!profile.privacyEnabled,
     darkMode: !!profile.darkMode,
+    assetGuideSeen: !!profile.assetGuideSeen,
     activeOwnerOpenid: profile.activeOwnerOpenid || "",
     goalNetWorth: numberOrDefault(profile.goalNetWorth, 1000000),
     calcPrincipal: numberOrDefault(profile.calcPrincipal, 100000),

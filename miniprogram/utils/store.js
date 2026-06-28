@@ -65,6 +65,20 @@ function saveSnapshot(snapshot) {
   }).then(updateGlobal);
 }
 
+function moveRecordDate(payload) {
+  return callCloud({
+    action: "moveRecordDate",
+    payload
+  }).then(updateGlobal);
+}
+
+function deleteRecordItem(payload) {
+  return callCloud({
+    action: "deleteRecordItem",
+    payload
+  }).then(updateGlobal);
+}
+
 function updateProfile(profile) {
   return callCloud({
     action: "profileUpdate",
@@ -164,6 +178,7 @@ function normalizeProfile(profile) {
     avatarUrl: (profile && profile.avatarUrl) || "",
     privacyEnabled: !!(profile && profile.privacyEnabled),
     darkMode: !!(profile && profile.darkMode),
+    assetGuideSeen: !!(profile && profile.assetGuideSeen),
     activeOwnerOpenid: (profile && profile.activeOwnerOpenid) || "",
     goalNetWorth: numberOrDefault(profile && profile.goalNetWorth, 1000000),
     calcPrincipal: numberOrDefault(profile && profile.calcPrincipal, 100000),
@@ -200,12 +215,14 @@ module.exports = {
   acceptFamilyInvite,
   callCloud,
   createFamilyInvite,
+  deleteRecordItem,
   fetchSnapshots,
   fetchWorkspace,
   getEditorInfo,
   getProfile,
   getThemeClass,
   getViewingInfo,
+  moveRecordDate,
   returnToSelf,
   saveReminder,
   saveSnapshot,

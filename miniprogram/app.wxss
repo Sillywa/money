@@ -206,6 +206,7 @@ button::after {
 .dark-mode .detail-amount,
 .dark-mode .history-total,
 .dark-mode .history-name,
+.dark-mode .item-title,
 .dark-mode .form-input,
 .dark-mode .form-textarea,
 .dark-mode .profile-name-input,
@@ -215,6 +216,7 @@ button::after {
 .dark-mode .invite-title,
 .dark-mode .invite-input,
 .dark-mode .goal-value,
+.dark-mode .guide-title,
 .dark-mode .target-value,
 .dark-mode .calc-result-value,
 .dark-mode .reminder-value,
@@ -241,6 +243,8 @@ button::after {
 .dark-mode .calc-label,
 .dark-mode .metric-label,
 .dark-mode .hero-delta,
+.dark-mode .guide-desc,
+.dark-mode .guide-step-text,
 .dark-mode .label-line {
   color: #94a3b8;
 }
@@ -251,6 +255,7 @@ button::after {
 .dark-mode .asset-row,
 .dark-mode .history-head,
 .dark-mode .history-body,
+.dark-mode .item-swipe,
 .dark-mode .form-row,
 .dark-mode .category-head,
 .dark-mode .composition-legend-row {
@@ -271,10 +276,15 @@ button::after {
 .dark-mode .invite-icon,
 .dark-mode .invite-code-box,
 .dark-mode .invite-input-row,
+.dark-mode .guide-panel,
 .dark-mode .avatar-empty,
 .dark-mode .member-avatar {
   background: #0b1220;
   border-color: #1f2937;
+}
+
+.dark-mode .item-row {
+  background: #111827;
 }
 
 .dark-mode input,
@@ -329,13 +339,13 @@ button::after {
   background: #111827;
 }
 
-.dark-mode .donut-center-label,
+.dark-mode .donut-label,
 .dark-mode .legend-name,
 .dark-mode .composition-legend-name {
   color: #cbd5e1;
 }
 
-.dark-mode .donut-center-value,
+.dark-mode .donut-value,
 .dark-mode .composition-legend-value {
   color: #f8fafc;
 }
@@ -347,6 +357,11 @@ button::after {
 
 .dark-mode .btn-secondary {
   color: #93c5fd;
+}
+
+.dark-mode .guide-step-index {
+  color: #93c5fd;
+  background: #172554;
 }
 
 .dark-mode .skeleton-card {

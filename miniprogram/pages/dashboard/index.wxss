@@ -258,3 +258,81 @@
   color: #101827;
   font-weight: 700;
 }
+
+.guide-mask {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1200;
+  padding: 0 42rpx;
+  background: rgba(15, 23, 42, 0.46);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.guide-panel {
+  width: 100%;
+  padding: 36rpx 32rpx 28rpx;
+  border-radius: 22rpx;
+  background: #ffffff;
+  box-shadow: 0 24rpx 70rpx rgba(15, 23, 42, 0.22);
+}
+
+.guide-title {
+  color: #101827;
+  font-size: 36rpx;
+  font-weight: 800;
+}
+
+.guide-desc {
+  margin-top: 14rpx;
+  color: #667085;
+  font-size: 26rpx;
+  line-height: 1.55;
+}
+
+.guide-steps {
+  margin-top: 28rpx;
+}
+
+.guide-step {
+  min-height: 64rpx;
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+}
+
+.guide-step + .guide-step {
+  margin-top: 16rpx;
+}
+
+.guide-step-index {
+  width: 40rpx;
+  height: 40rpx;
+  flex: 0 0 40rpx;
+  border-radius: 50%;
+  background: #edf4ff;
+  color: #1769ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 23rpx;
+  font-weight: 800;
+}
+
+.guide-step-text {
+  color: #344054;
+  font-size: 27rpx;
+  font-weight: 600;
+}
+
+.guide-primary {
+  margin-top: 34rpx;
+}
+
+.guide-secondary {
+  margin-top: 8rpx;
+}

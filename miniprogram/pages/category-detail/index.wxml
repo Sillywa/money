@@ -81,29 +81,46 @@
       </view>
 
       <view wx:if="{{group.expanded}}">
-        <block wx:for="{{group.rows}}" wx:key="id">
-          <view class="item-row" bindtap="editItem" data-index="{{item.index}}" data-record-date="{{group.recordDate}}">
-            <icon-font name="{{category.icon}}" color="{{category.color}}"></icon-font>
-            <view class="item-main">
-              <view class="item-title">{{item.title}}</view>
-              <view class="item-sub">{{item.subtitle}}</view>
-              <view class="field-line" wx:if="{{item.editorName}}">
-                <text>编辑人 {{item.editorName}}</text>
+        <block wx:for="{{group.rows}}" wx:key="swipeKey">
+          <view
+            class="item-swipe"
+            data-key="{{item.swipeKey}}"
+            bindtouchstart="onItemTouchStart"
+            bindtouchend="onItemTouchEnd"
+          >
+            <view
+              class="item-delete"
+              catchtap="confirmDeleteItem"
+              data-key="{{item.swipeKey}}"
+              data-index="{{item.index}}"
+              data-item-id="{{item.id}}"
+              data-record-date="{{group.recordDate}}"
+              data-title="{{item.title}}"
+            >{{deletingKey === item.swipeKey ? '删除中' : '删除'}}</view>
+            <view
+              class="item-row {{item.swiped ? 'swiped' : ''}}"
+              bindtap="editItem"
+              data-index="{{item.index}}"
+              data-record-date="{{group.recordDate}}"
+            >
+              <icon-font name="{{category.icon}}" color="{{category.color}}"></icon-font>
+              <view class="item-main">
+                <view class="item-title">{{item.title}}</view>
+                <view class="item-sub" wx:if="{{item.subtitle}}">{{item.subtitle}}</view>
+                <view class="field-line" wx:if="{{item.editorName}}">
+                  <text>编辑人 {{item.editorName}}</text>
+                </view>
+                <view class="field-line" wx:if="{{isCreditCard && (item.billDay || item.repaymentDay)}}">
+                  <text wx:if="{{item.billDay}}">账单日 {{item.billDay}}</text>
+                  <text wx:if="{{item.repaymentDay}}">还款日 {{item.repaymentDay}}</text>
+                </view>
               </view>
-              <view class="field-line" wx:if="{{isCreditCard}}">
-                <text>账单日 {{item.billDay}}</text>
-                <text>还款日 {{item.repaymentDay}}</text>
+              <view class="item-amount">
+                <view>{{item.amountText}}</view>
+                <view class="{{item.deltaClass}}">{{item.deltaText}}</view>
               </view>
-              <view class="field-line" wx:if="{{isHousingFund}}">
-                <text>缴存城市 {{item.city}}</text>
-                <text>{{item.accountType}}</text>
-              </view>
+              <view class="chevron">›</view>
             </view>
-            <view class="item-amount">
-              <view>{{item.amountText}}</view>
-              <view class="{{item.deltaClass}}">{{item.deltaText}}</view>
-            </view>
-            <view class="chevron">›</view>
           </view>
         </block>
       </view>

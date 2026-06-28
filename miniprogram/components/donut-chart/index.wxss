@@ -15,8 +15,9 @@
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 112rpx;
-  height: 112rpx;
+  width: 132rpx;
+  height: 132rpx;
+  padding: 0 10rpx;
   transform: translate(-50%, -50%);
   border-radius: 50%;
   background: #ffffff;
@@ -28,13 +29,34 @@
 }
 
 .donut-label {
+  max-width: 100%;
   font-size: 22rpx;
   color: #667085;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .donut-value {
+  max-width: 100%;
   margin-top: 4rpx;
   font-size: 30rpx;
+  line-height: 1.15;
   font-weight: 700;
   color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.donut-value.medium {
+  font-size: 25rpx;
+}
+
+.donut-value.small {
+  font-size: 21rpx;
+}
+
+.donut-value.tiny {
+  font-size: 18rpx;
 }

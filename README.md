@@ -92,10 +92,12 @@ asset_reminders
 云函数支持：
 
 - `login` / `workspace`：获取登录用户资料、当前浏览对象、亲友列表、提醒配置和资产快照
-- `profileUpdate`：更新头像、昵称、隐私开关、暗黑模式、目标净资产和理财测算参数
+- `profileUpdate`：更新头像、昵称、隐私开关、暗黑模式、新功能引导状态、目标净资产和理财测算参数
 - `list` / `get`：读取当前浏览对象或指定授权用户的资产快照
 - `replaceAll`：替换当前用户的全部资产快照，主要用于迁移/调试
 - `upsert`：按记录日期新增或更新单次快照
+- `moveRecordDate`：编辑历史记录时原子移动单条资产到新记录日期
+- `deleteRecordItem`：删除某日期下某类资产的一条历史记录
 - `delete`：按记录日期删除单次快照
 - `familyInviteCreate` / `familyInviteAccept`：生成分享码，并通过输入分享码接受亲友绑定
 - `setActiveOwner`：切换当前浏览的资产所属用户

@@ -12,7 +12,7 @@
     </view>
     </view>
 
-    <view wx:if="{{!isEdit}}" class="section date-picker-section">
+    <view class="section date-picker-section">
       <picker mode="date" value="{{recordDate}}" bindchange="onRecordDateChange">
         <view class="date-picker-row">
           <view>
@@ -36,7 +36,7 @@
           </view>
           <view class="account-picker-value">
             <text>{{selectedAccountLabel}}</text>
-            <text class="account-picker-arrow"></text>
+            <text class="account-picker-arrow">›</text>
           </view>
         </view>
       </picker>
