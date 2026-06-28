@@ -3,8 +3,12 @@
 }
 
 .date-card {
+  position: sticky;
+  top: 0;
+  z-index: 20;
   margin-top: 24rpx;
   padding: 0 24rpx;
+  box-shadow: 0 10rpx 24rpx rgba(15, 23, 42, 0.06);
 }
 
 .date-row {
@@ -94,7 +98,8 @@
   padding: 0 24rpx;
   display: flex;
   align-items: center;
-  background: #fbfcff;
+  background: #eef5ff;
+  border-bottom: 1rpx solid #d8e7ff;
 }
 
 .head-left {
@@ -111,15 +116,11 @@
 }
 
 .head-right {
-  width: 184rpx;
+  width: 210rpx;
   text-align: right;
-  font-size: 28rpx;
-  font-weight: 650;
-}
-
-.head-right view:last-child {
-  margin-top: 6rpx;
-  font-size: 22rpx;
+  font-size: 31rpx;
+  font-weight: 700;
+  color: #111827;
 }
 
 .group-chevron {
@@ -161,15 +162,11 @@
 }
 
 .detail-right {
-  width: 180rpx;
+  width: 210rpx;
   text-align: right;
-  font-size: 28rpx;
+  font-size: 30rpx;
   font-weight: 650;
-}
-
-.detail-right view:last-child {
-  margin-top: 6rpx;
-  font-size: 22rpx;
+  color: #111827;
 }
 
 .complete-line {

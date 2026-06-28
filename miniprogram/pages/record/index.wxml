@@ -32,7 +32,7 @@
         <view class="account-picker-row">
           <view>
             <view class="account-picker-title">账户名称</view>
-            <view class="muted">选择历史账户后自动填充基础信息</view>
+            <view class="muted">选历史账户自动填</view>
           </view>
           <view class="account-picker-value">
             <text>{{selectedAccountLabel}}</text>

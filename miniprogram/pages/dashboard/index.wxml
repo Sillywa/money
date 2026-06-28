@@ -26,7 +26,10 @@
       </view>
       <view class="hero-metrics">
         <view class="hero-metric">
-          <view class="metric-label">资产账户</view>
+          <view class="metric-label label-with-help">
+            <text>资产账户</text>
+            <text class="help-icon" catchtap="showMetricHelp" data-type="accountCount">?</text>
+          </view>
           <view class="metric-value"><text>{{accountCount}}</text> 个</view>
         </view>
         <view class="hero-metric">

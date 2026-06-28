@@ -19,11 +19,15 @@ Component({
     darkMode: {
       type: Boolean,
       value: false
+    },
+    smooth: {
+      type: Boolean,
+      value: true
     }
   },
 
   observers: {
-    "points,color,privacyMode,darkMode": function () {
+    "points,color,privacyMode,darkMode,smooth": function () {
       this.draw();
     }
   },
@@ -77,7 +81,8 @@ Component({
         width,
         height,
         modern: true,
-        selectedIndex: this.data.selectedIndex
+        selectedIndex: this.data.selectedIndex,
+        smooth: this.data.smooth
       });
     },
 
@@ -93,7 +98,8 @@ Component({
         width,
         height,
         modern: false,
-        selectedIndex: this.data.selectedIndex
+        selectedIndex: this.data.selectedIndex,
+        smooth: this.data.smooth
       });
       ctx.draw();
     },
@@ -172,17 +178,16 @@ function drawLineChart(ctx, options) {
     const last = mapped[mapped.length - 1];
     canvasCall(ctx, options.modern, "beginPath");
     canvasCall(ctx, options.modern, "moveTo", mapped[0].x, graphH + top);
-    mapped.forEach((point) => canvasCall(ctx, options.modern, "lineTo", point.x, point.y));
+    canvasCall(ctx, options.modern, "lineTo", mapped[0].x, mapped[0].y);
+    drawLinePath(ctx, options.modern, mapped, options.smooth);
     canvasCall(ctx, options.modern, "lineTo", last.x, graphH + top);
     canvasCall(ctx, options.modern, "closePath");
     setCanvasFillStyle(ctx, options.modern, options.fillColor);
     canvasCall(ctx, options.modern, "fill");
 
     canvasCall(ctx, options.modern, "beginPath");
-    mapped.forEach((point, index) => {
-      if (index === 0) canvasCall(ctx, options.modern, "moveTo", point.x, point.y);
-      else canvasCall(ctx, options.modern, "lineTo", point.x, point.y);
-    });
+    canvasCall(ctx, options.modern, "moveTo", mapped[0].x, mapped[0].y);
+    drawLinePath(ctx, options.modern, mapped, options.smooth);
     setCanvasLineWidth(ctx, options.modern, 2);
     setCanvasStrokeStyle(ctx, options.modern, options.color);
     canvasCall(ctx, options.modern, "stroke");
@@ -212,6 +217,20 @@ function drawLineChart(ctx, options) {
       canvasCall(ctx, options.modern, "fillText", point.label, x - 15, height - 10);
     }
   });
+}
+
+function drawLinePath(ctx, modern, points, smooth) {
+  if (points.length < 2) return;
+  for (let index = 1; index < points.length; index += 1) {
+    const previous = points[index - 1];
+    const current = points[index];
+    if (!smooth) {
+      canvasCall(ctx, modern, "lineTo", current.x, current.y);
+      continue;
+    }
+    const midX = (previous.x + current.x) / 2;
+    canvasCall(ctx, modern, "bezierCurveTo", midX, previous.y, midX, current.y, current.x, current.y);
+  }
 }
 
 function normalizeSelectedIndex(selectedIndex, length) {

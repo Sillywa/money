@@ -103,7 +103,7 @@ Page({
   onCompareChange(event) {
     const recordDate = event.detail.recordDate || this.data.compareOptions[Number(event.detail.value)];
     this.setData({ compareDate: recordDate });
-    this.load({ compareDate });
+    this.load({ compareDate: recordDate });
   },
 
   onPullDownRefresh() {

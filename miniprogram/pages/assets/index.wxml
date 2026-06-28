@@ -22,7 +22,10 @@
     <view class="section summary-card">
     <view class="summary-grid">
       <view class="summary-item">
-        <view class="muted">总资产（元）</view>
+        <view class="muted label-with-help">
+          <text>总资产（元）</text>
+          <text class="help-icon" catchtap="showMetricHelp" data-type="totalAssets">?</text>
+        </view>
         <view class="kpi-value">{{bundle.totalAssetsText}}</view>
       </view>
       <view class="summary-item">
@@ -41,7 +44,10 @@
         <view class="kpi-value" wx:else>-{{bundle.totalLiabilitiesText}}</view>
       </view>
       <view class="summary-item">
-        <view class="muted">资产账户</view>
+        <view class="muted label-with-help">
+          <text>资产账户</text>
+          <text class="help-icon" catchtap="showMetricHelp" data-type="accountCount">?</text>
+        </view>
         <view class="kpi-value">{{accountCount}}</view>
       </view>
     </view>

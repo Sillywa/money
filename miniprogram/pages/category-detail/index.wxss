@@ -86,8 +86,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #fbfcff;
-  border-top: 1rpx solid #edf1f7;
+  background: #eef5ff;
+  border-top: 1rpx solid #d8e7ff;
+  border-bottom: 1rpx solid #d8e7ff;
 }
 
 .history-date {
