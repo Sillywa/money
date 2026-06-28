@@ -2,6 +2,8 @@
   <skeleton-screen wx:if="{{loading}}" type="assets"></skeleton-screen>
 
   <block wx:if="{{!loading}}">
+    <view wx:if="{{viewing.isViewingFamily}}" class="family-view-banner">正在查看 {{viewing.viewingOwner.nickName}} 的资产数据</view>
+
     <record-strip
       latest-date="{{bundle.current.recordDate}}"
       compare-date="{{bundle.previous.recordDate}}"
@@ -78,6 +80,5 @@
     </block>
 
     <view class="complete-line">最新记录 {{accountCount}} 个账户，对比记录 {{previousCount}} 个账户</view>
-    <view wx:if="{{viewing.isViewingFamily}}" class="family-view-banner">正在查看 {{viewing.viewingOwner.nickName}} 的资产数据</view>
   </block>
 </view>

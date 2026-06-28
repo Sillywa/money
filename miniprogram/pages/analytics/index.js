@@ -1,5 +1,5 @@
 const { buildBundle, formatMoney, maskBundle } = require("../../utils/asset");
-const { fetchSnapshots, getCompareDate, getProfile, getViewingInfo, updateProfile } = require("../../utils/store");
+const { fetchSnapshots, getProfile, getViewingInfo, updateProfile } = require("../../utils/store");
 const { showMetricHelp } = require("../../utils/metric-help");
 
 const DEFAULT_TARGET_NET_WORTH = 1000000;
@@ -42,7 +42,7 @@ Page({
     }
 
     return fetchSnapshots().then((records) => {
-      const rawBundle = buildBundle(records, getCompareDate());
+      const rawBundle = buildBundle(records);
       const profile = getProfile() || {};
       const privacyMode = !!profile.privacyEnabled;
       const bundle = privacyMode ? maskBundle(rawBundle) : rawBundle;

@@ -1,4 +1,6 @@
 <view class="page family-page">
+  <view wx:if="{{viewing.isViewingFamily}}" class="family-view-banner">正在查看 {{viewing.viewingOwner.nickName}} 的资产数据</view>
+
   <view class="section section-pad">
     <view class="section-title">邀请亲友</view>
     <view class="section-subtitle">分享给微信好友，对方打开后确认接受，即可互相浏览和维护资产记录。</view>
@@ -25,5 +27,4 @@
     </block>
     <view wx:if="{{!familyMembers.length}}" class="empty-line">还没有绑定亲友</view>
   </view>
-  <view wx:if="{{viewing.isViewingFamily}}" class="family-view-banner">正在查看 {{viewing.viewingOwner.nickName}} 的资产数据</view>
 </view>

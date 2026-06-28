@@ -56,6 +56,7 @@ Page({
     amountPreview: "0.00",
     bundle: null,
     viewing: null,
+    saving: false,
     loading: true,
     hasLoaded: false
   },
@@ -153,6 +154,8 @@ Page({
   },
 
   save() {
+    if (this.data.saving) return;
+
     const category = this.data.category;
     const form = {
       ...this.data.form,
@@ -171,12 +174,19 @@ Page({
     );
     const snapshot = records.find((record) => record.recordDate === this.data.recordDate) || records[records.length - 1];
 
+    this.setData({ saving: true });
     saveSnapshot(snapshot).then(() => {
       wx.showToast({
         title: "已保存",
         icon: "success"
       });
       setTimeout(() => wx.navigateBack(), 450);
+    }).catch(() => {
+      wx.showToast({
+        title: "保存失败，请重试",
+        icon: "none"
+      });
+      this.setData({ saving: false });
     });
   },
 

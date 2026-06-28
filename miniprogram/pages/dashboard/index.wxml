@@ -2,6 +2,8 @@
   <skeleton-screen wx:if="{{loading}}" type="dashboard"></skeleton-screen>
 
   <block wx:if="{{!loading}}">
+    <view wx:if="{{viewing.isViewingFamily}}" class="family-view-banner">正在查看 {{viewing.viewingOwner.nickName}} 的资产数据</view>
+
     <record-strip
       latest-date="{{bundle.current.recordDate}}"
       compare-date="{{bundle.previous.recordDate}}"
@@ -120,6 +122,5 @@
     </view>
     <line-chart points="{{trendPoints}}" color="#174EA6" privacy-mode="{{privacyMode}}"></line-chart>
     </view>
-    <view wx:if="{{viewing.isViewingFamily}}" class="family-view-banner">正在查看 {{viewing.viewingOwner.nickName}} 的资产数据</view>
   </block>
 </view>

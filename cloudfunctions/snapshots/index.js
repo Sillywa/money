@@ -206,7 +206,6 @@ async function ensureProfile(openid) {
       nickName: "资产记录者",
       avatarUrl: "",
       privacyEnabled: false,
-      compareDate: "",
       activeOwnerOpenid: "",
       goalNetWorth: 1000000,
       calcPrincipal: 100000,
@@ -224,7 +223,7 @@ async function ensureProfile(openid) {
 async function updateProfile(openid, profile) {
   const current = await ensureProfile(openid);
   const data = {};
-  ["nickName", "avatarUrl", "privacyEnabled", "compareDate", "goalNetWorth", "calcPrincipal", "calcAnnualRate", "calcYears"].forEach((key) => {
+  ["nickName", "avatarUrl", "privacyEnabled", "goalNetWorth", "calcPrincipal", "calcAnnualRate", "calcYears"].forEach((key) => {
     if (profile[key] !== undefined) data[key] = profile[key];
   });
   data.updatedAt = db.serverDate();
@@ -388,7 +387,6 @@ function stripProfile(profile) {
     nickName: profile.nickName || "资产记录者",
     avatarUrl: profile.avatarUrl || "",
     privacyEnabled: !!profile.privacyEnabled,
-    compareDate: profile.compareDate || "",
     activeOwnerOpenid: profile.activeOwnerOpenid || "",
     goalNetWorth: numberOrDefault(profile.goalNetWorth, 1000000),
     calcPrincipal: numberOrDefault(profile.calcPrincipal, 100000),

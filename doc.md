@@ -152,8 +152,8 @@ sequenceDiagram
 - 首页、资产明细、资产详情顶部使用 `record-strip` 组件。
 - `record-strip` 展示“最新记录”和“对比记录”。
 - 对比日期通过下拉选项选择。
-- 选择后调用 `setCompareDate`，将 `compareDate` 保存到云端用户资料。
-- `buildBundle(records, compareDate)` 使用选中的对比记录计算变化。
+- 对比日期只保存在当前页面运行时内存中，不跨页面同步，也不保存到云端用户资料。
+- `buildBundle(records, compareDate)` 使用当前页面选中的对比记录计算变化；未选择时使用默认对比记录。
 
 ## 8. 资产详情历史逻辑
 
@@ -171,6 +171,7 @@ flowchart TD
 交互要求：
 
 - 每个日期分组可以展开或收起。
+- 资产记录历史按日期分页展示，首屏加载 12 个日期分组，页面下滑触底后继续加载下一页。
 - 展开箭头使用 CSS 实现，展开时旋转 180 度。
 - 历史记录行支持点击编辑，但不展示单独编辑按钮。
 - 历史中展示编辑人，亲友模式下也记录实际编辑人。
@@ -208,7 +209,7 @@ flowchart LR
 | 集合 | 用途 | 关键字段 |
 |---|---|---|
 | `asset_snapshots` | 按日期保存资产快照 | `ownerOpenid`, `recordDate`, `assets`, `lastEditor` |
-| `asset_user_profiles` | 用户资料和偏好 | `openid`, `nickName`, `avatarUrl`, `privacyEnabled`, `compareDate`, `activeOwnerOpenid` |
+| `asset_user_profiles` | 用户资料和偏好 | `openid`, `nickName`, `avatarUrl`, `privacyEnabled`, `activeOwnerOpenid` |
 | `asset_family_bindings` | 亲友资产授权关系 | `viewerOpenid`, `ownerOpenid`, `status` |
 | `asset_family_invites` | 分享邀请 token | `ownerOpenid`, `code`, `status` |
 | `asset_reminders` | 每月记录提醒 | `openid`, `enabled`, `dayOfMonth`, `hour`, `minute` |
@@ -233,7 +234,7 @@ cloudfunctions/snapshots/index.js
 |---|---|
 | `login` | 初始化或获取当前用户资料 |
 | `workspace` | 获取完整工作区数据 |
-| `profileUpdate` | 更新头像、昵称、隐私、对比日期、目标参数 |
+| `profileUpdate` | 更新头像、昵称、隐私和目标参数 |
 | `list` | 读取当前或指定授权用户的快照列表 |
 | `get` | 读取指定日期快照 |
 | `upsert` | 新增或更新指定日期快照 |

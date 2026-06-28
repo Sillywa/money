@@ -46,21 +46,6 @@ function setPrivacyEnabled(enabled) {
   return updateProfile({ privacyEnabled: !!enabled });
 }
 
-function getCompareDate() {
-  const profile = getApp().globalData.profile || {};
-  return profile.compareDate || "";
-}
-
-function setCompareDate(recordDate) {
-  if (!recordDate) return Promise.resolve();
-  const app = getApp();
-  app.globalData.profile = {
-    ...(app.globalData.profile || {}),
-    compareDate: recordDate
-  };
-  return updateProfile({ compareDate: recordDate }).catch(() => {});
-}
-
 function createFamilyInvite() {
   return callCloud({ action: "familyInviteCreate" }).then(updateGlobal);
 }
@@ -118,7 +103,6 @@ function normalizeProfile(profile) {
     nickName: (profile && profile.nickName) || "资产记录者",
     avatarUrl: (profile && profile.avatarUrl) || "",
     privacyEnabled: !!(profile && profile.privacyEnabled),
-    compareDate: (profile && profile.compareDate) || "",
     activeOwnerOpenid: (profile && profile.activeOwnerOpenid) || "",
     goalNetWorth: numberOrDefault(profile && profile.goalNetWorth, 1000000),
     calcPrincipal: numberOrDefault(profile && profile.calcPrincipal, 100000),
@@ -138,7 +122,6 @@ module.exports = {
   createFamilyInvite,
   fetchSnapshots,
   fetchWorkspace,
-  getCompareDate,
   getEditorInfo,
   getProfile,
   getViewingInfo,
@@ -146,7 +129,6 @@ module.exports = {
   saveReminder,
   saveSnapshot,
   setActiveOwner,
-  setCompareDate,
   setPrivacyEnabled,
   updateProfile
 };

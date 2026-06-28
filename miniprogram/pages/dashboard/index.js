@@ -1,5 +1,5 @@
 const { buildBundle, getNetTrend, maskBundle } = require("../../utils/asset");
-const { fetchSnapshots, getCompareDate, getProfile, getViewingInfo, setCompareDate } = require("../../utils/store");
+const { fetchSnapshots, getProfile, getViewingInfo } = require("../../utils/store");
 const { showMetricHelp } = require("../../utils/metric-help");
 
 Page({
@@ -11,6 +11,7 @@ Page({
     compositionView: "list",
     trendPoints: [],
     accountCount: 0,
+    compareDate: "",
     compareOptions: [],
     compareIndex: 0,
     privacyMode: false,
@@ -30,8 +31,7 @@ Page({
     }
 
     return fetchSnapshots().then((records) => {
-      const rawBundle = buildBundle(records, getCompareDate());
-      setCompareDate(rawBundle.previous.recordDate);
+      const rawBundle = buildBundle(records, opts.compareDate !== undefined ? opts.compareDate : this.data.compareDate);
       getApp().globalData.latestBundle = rawBundle;
       const profile = getProfile() || {};
       const privacyMode = !!profile.privacyEnabled;
@@ -53,6 +53,7 @@ Page({
       this.setData({
         bundle,
         accountCount,
+        compareDate: rawBundle.previous.recordDate,
         compareOptions,
         compareIndex: Math.max(0, compareOptions.indexOf(bundle.previous.recordDate)),
         donutItems: compositionItems.map((item) => ({
@@ -82,8 +83,8 @@ Page({
 
   onCompareChange(event) {
     const recordDate = event.detail.recordDate || this.data.compareOptions[Number(event.detail.value)];
-    setCompareDate(recordDate);
-    this.load();
+    this.setData({ compareDate: recordDate });
+    this.load({ compareDate });
   },
 
   showMetricHelp,

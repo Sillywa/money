@@ -1,6 +1,6 @@
 const { buildBundle, getCategoryRows, maskBundle, maskRows } = require("../../utils/asset");
 const { CATEGORY_LIST } = require("../../utils/categories");
-const { fetchSnapshots, getCompareDate, getProfile, getViewingInfo, setCompareDate } = require("../../utils/store");
+const { fetchSnapshots, getProfile, getViewingInfo } = require("../../utils/store");
 const { showMetricHelp } = require("../../utils/metric-help");
 
 Page({
@@ -17,6 +17,7 @@ Page({
     activeFilter: "all",
     accountCount: 0,
     previousCount: 0,
+    compareDate: "",
     compareOptions: [],
     compareIndex: 0,
     rawBundle: null,
@@ -37,8 +38,7 @@ Page({
     }
 
     return fetchSnapshots().then((records) => {
-      const rawBundle = buildBundle(records, getCompareDate());
-      setCompareDate(rawBundle.previous.recordDate);
+      const rawBundle = buildBundle(records, opts.compareDate !== undefined ? opts.compareDate : this.data.compareDate);
       const privacyMode = !!((getProfile() || {}).privacyEnabled);
       const bundle = privacyMode ? maskBundle(rawBundle) : rawBundle;
       const groups = this.buildGroups(rawBundle, this.data.activeFilter, privacyMode);
@@ -52,6 +52,7 @@ Page({
         groups,
         accountCount: groups.reduce((sum, item) => sum + item.rows.length, 0),
         previousCount,
+        compareDate: rawBundle.previous.recordDate,
         compareOptions,
         compareIndex: Math.max(0, compareOptions.indexOf(bundle.previous.recordDate)),
         privacyMode,
@@ -93,8 +94,8 @@ Page({
 
   onCompareChange(event) {
     const recordDate = event.detail.recordDate || this.data.compareOptions[Number(event.detail.value)];
-    setCompareDate(recordDate);
-    this.load();
+    this.setData({ compareDate: recordDate });
+    this.load({ compareDate });
   },
 
   onPullDownRefresh() {

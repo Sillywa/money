@@ -2,6 +2,8 @@
   <skeleton-screen wx:if="{{loading}}" type="detail"></skeleton-screen>
 
   <block wx:if="{{!loading && category}}">
+    <view wx:if="{{viewing.isViewingFamily}}" class="family-view-banner">正在查看 {{viewing.viewingOwner.nickName}} 的资产数据</view>
+
     <record-strip
       latest-date="{{bundle.current.recordDate}}"
       compare-date="{{bundle.previous.recordDate}}"
@@ -106,7 +108,9 @@
         </block>
       </view>
     </block>
+
+    <view wx:if="{{hasMoreHistory}}" class="history-more">继续下滑加载更多记录</view>
+    <view wx:else class="history-more muted">已展示全部记录</view>
     </view>
-    <view wx:if="{{viewing.isViewingFamily}}" class="family-view-banner">正在查看 {{viewing.viewingOwner.nickName}} 的资产数据</view>
   </block>
 </view>

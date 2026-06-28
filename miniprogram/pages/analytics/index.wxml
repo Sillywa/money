@@ -2,6 +2,8 @@
   <skeleton-screen wx:if="{{loading}}" type="analytics"></skeleton-screen>
 
   <block wx:if="{{!loading}}">
+    <view wx:if="{{viewing.isViewingFamily}}" class="family-view-banner">正在查看 {{viewing.viewingOwner.nickName}} 的资产数据</view>
+
     <view class="section section-pad goal-section">
       <view class="section-head">
         <view>
@@ -89,6 +91,5 @@
       <line-chart points="{{projectionPoints}}" color="#13A37B" fill-color="rgba(19, 163, 123, 0.10)" privacy-mode="{{privacyMode}}"></line-chart>
     </view>
 
-    <view wx:if="{{viewing.isViewingFamily}}" class="family-view-banner">正在查看 {{viewing.viewingOwner.nickName}} 的资产数据</view>
   </block>
 </view>

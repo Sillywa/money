@@ -5,5 +5,6 @@
     "record-strip": "/components/record-strip/index",
     "skeleton-screen": "/components/skeleton-screen/index"
   },
-  "enablePullDownRefresh": true
+  "enablePullDownRefresh": true,
+  "onReachBottomDistance": 80
 }

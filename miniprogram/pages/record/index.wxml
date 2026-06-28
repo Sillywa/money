@@ -2,6 +2,8 @@
   <skeleton-screen wx:if="{{loading}}" type="record"></skeleton-screen>
 
   <block wx:if="{{!loading && category}}">
+    <view wx:if="{{viewing.isViewingFamily}}" class="family-view-banner">正在查看 {{viewing.viewingOwner.nickName}} 的资产数据</view>
+
     <view class="form-title">
     <view class="form-accent"></view>
     <view>
@@ -54,8 +56,7 @@
 
     <view class="bottom-actions">
     <button class="btn-secondary" bindtap="goBack">取消</button>
-    <button class="btn-primary" bindtap="save">保存</button>
+    <button class="btn-primary" loading="{{saving}}" disabled="{{saving}}" bindtap="save">{{saving ? '保存中' : '保存'}}</button>
     </view>
-    <view wx:if="{{viewing.isViewingFamily}}" class="family-view-banner">正在查看 {{viewing.viewingOwner.nickName}} 的资产数据</view>
   </block>
 </view>

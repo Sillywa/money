@@ -184,3 +184,11 @@
   margin-top: 8rpx;
   font-size: 22rpx;
 }
+
+.history-more {
+  padding: 26rpx 24rpx 30rpx;
+  text-align: center;
+  color: #667085;
+  font-size: 24rpx;
+  border-top: 1rpx solid #edf1f7;
+}

@@ -6,8 +6,10 @@ const {
   maskBundle,
   maskHistoryGroups,
 } = require("../../utils/asset");
-const { fetchSnapshots, getCompareDate, getProfile, getViewingInfo, setCompareDate } = require("../../utils/store");
+const { fetchSnapshots, getProfile, getViewingInfo } = require("../../utils/store");
 const { showMetricHelp } = require("../../utils/metric-help");
+
+const HISTORY_PAGE_SIZE = 12;
 
 Page({
   data: {
@@ -15,10 +17,14 @@ Page({
     category: null,
     bundle: null,
     summary: null,
+    allHistoryGroups: [],
     historyGroups: [],
+    historyPage: 1,
+    hasMoreHistory: false,
     trendPoints: [],
     isCreditCard: false,
     isHousingFund: false,
+    compareDate: "",
     compareOptions: [],
     compareIndex: 0,
     privacyMode: false,
@@ -47,18 +53,19 @@ Page({
     }
 
     return fetchSnapshots().then((records) => {
-      const rawBundle = buildBundle(records, getCompareDate());
-      setCompareDate(rawBundle.previous.recordDate);
+      const rawBundle = buildBundle(records, opts.compareDate !== undefined ? opts.compareDate : this.data.compareDate);
       const privacyMode = !!((getProfile() || {}).privacyEnabled);
       const bundle = privacyMode ? maskBundle(rawBundle) : rawBundle;
       const category = CATEGORY_MAP[this.data.type] || CATEGORY_MAP.wealth;
       const summary = bundle.categories.find((item) => item.key === category.key);
       const compareOptions = bundle.compareRecords.map((record) => record.recordDate);
       const rawHistoryGroups = this.buildHistoryGroups(rawBundle, category.key);
-      const historyGroups = privacyMode ? maskHistoryGroups(rawHistoryGroups) : rawHistoryGroups;
+      const allHistoryGroups = privacyMode ? maskHistoryGroups(rawHistoryGroups) : rawHistoryGroups;
+      const historyGroups = allHistoryGroups.slice(0, HISTORY_PAGE_SIZE);
       this.setData({
         bundle,
         category,
+        compareDate: rawBundle.previous.recordDate,
         compareOptions,
         compareIndex: Math.max(0, compareOptions.indexOf(bundle.previous.recordDate)),
         summary: {
@@ -66,7 +73,10 @@ Page({
           amountDisplay: privacyMode ? "****" : formatMoney(summary.amount),
           count: `${summary.count} ${category.key === "wealth" ? "笔" : category.key === "bank" || category.key === "creditCard" ? "张" : "个"}`
         },
+        allHistoryGroups,
         historyGroups,
+        historyPage: 1,
+        hasMoreHistory: allHistoryGroups.length > HISTORY_PAGE_SIZE,
         trendPoints: this.buildTrendPoints(rawHistoryGroups),
         isCreditCard: category.key === "creditCard",
         isHousingFund: category.key === "housingFund",
@@ -82,12 +92,16 @@ Page({
 
   onCompareChange(event) {
     const recordDate = event.detail.recordDate || this.data.compareOptions[Number(event.detail.value)];
-    setCompareDate(recordDate);
-    this.load();
+    this.setData({ compareDate: recordDate });
+    this.load({ compareDate });
   },
 
   onPullDownRefresh() {
     this.load({ silent: true }).then(() => wx.stopPullDownRefresh(), () => wx.stopPullDownRefresh());
+  },
+
+  onReachBottom() {
+    this.loadMoreHistory();
   },
 
   showMetricHelp,
@@ -116,11 +130,24 @@ Page({
 
   toggleHistoryGroup(event) {
     const recordDate = event.currentTarget.dataset.recordDate;
+    const toggleGroup = (group) => ({
+      ...group,
+      expanded: group.recordDate === recordDate ? !group.expanded : group.expanded
+    });
     this.setData({
-      historyGroups: this.data.historyGroups.map((group) => ({
-        ...group,
-        expanded: group.recordDate === recordDate ? !group.expanded : group.expanded
-      }))
+      allHistoryGroups: this.data.allHistoryGroups.map(toggleGroup),
+      historyGroups: this.data.historyGroups.map(toggleGroup)
+    });
+  },
+
+  loadMoreHistory() {
+    if (!this.data.hasMoreHistory) return;
+    const nextPage = this.data.historyPage + 1;
+    const nextEnd = nextPage * HISTORY_PAGE_SIZE;
+    this.setData({
+      historyGroups: this.data.allHistoryGroups.slice(0, nextEnd),
+      historyPage: nextPage,
+      hasMoreHistory: this.data.allHistoryGroups.length > nextEnd
     });
   },
 
