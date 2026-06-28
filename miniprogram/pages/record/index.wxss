@@ -21,6 +21,52 @@
   padding: 0 24rpx;
 }
 
+.account-picker-section {
+  padding: 0 24rpx;
+}
+
+.account-picker-row {
+  min-height: 112rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+}
+
+.account-picker-title {
+  margin-bottom: 8rpx;
+  color: #344054;
+  font-size: 29rpx;
+  font-weight: 650;
+}
+
+.account-picker-value {
+  max-width: 360rpx;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12rpx;
+  color: #1769ff;
+  font-size: 27rpx;
+  font-weight: 650;
+  text-align: right;
+}
+
+.account-picker-value text:first-child {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.account-picker-arrow {
+  width: 14rpx;
+  height: 14rpx;
+  flex: 0 0 14rpx;
+  border-right: 3rpx solid #1769ff;
+  border-bottom: 3rpx solid #1769ff;
+  transform: rotate(45deg);
+}
+
 .form-row {
   min-height: 112rpx;
   display: flex;

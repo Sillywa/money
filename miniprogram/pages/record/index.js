@@ -2,6 +2,9 @@ const { CATEGORY_MAP } = require("../../utils/categories");
 const { buildBundle, createTodaySnapshot, formatMoney } = require("../../utils/asset");
 const { fetchSnapshots, getEditorInfo, getViewingInfo, saveSnapshot } = require("../../utils/store");
 
+const ACCOUNT_PICKER_NEW_INDEX = 0;
+const SKIP_TEMPLATE_KEYS = ["amount", "remark"];
+
 const FIELD_CONFIG = {
   bank: [
     { key: "bankName", label: "银行名称", placeholder: "例如 工商银行", required: true },
@@ -51,6 +54,11 @@ Page({
     category: null,
     fields: [],
     form: {},
+    accountOptions: [],
+    accountPickerOptions: [],
+    accountPickerIndex: ACCOUNT_PICKER_NEW_INDEX,
+    selectedAccountLabel: "",
+    showAccountPicker: false,
     recordDate: "",
     recordHint: "默认今日记录，全部按人民币计算",
     amountPreview: "0.00",
@@ -94,12 +102,19 @@ Page({
       const currentList = (targetRecord.assets && targetRecord.assets[category.key]) || [];
       const existing = this.data.isEdit ? currentList[Number(this.data.index)] : {};
       const form = this.buildDefaultForm(category.key, existing || {});
+      const accountOptions = this.buildAccountOptions(bundle.records, category.key);
+      const accountPickerOptions = [`新增${category.name}`].concat(accountOptions.map((item) => item.label));
 
       this.setData({
         bundle,
         category,
         fields: this.hydrateFields(category.key, form),
         form,
+        accountOptions,
+        accountPickerOptions,
+        accountPickerIndex: ACCOUNT_PICKER_NEW_INDEX,
+        selectedAccountLabel: accountPickerOptions[ACCOUNT_PICKER_NEW_INDEX],
+        showAccountPicker: !this.data.isEdit && accountPickerOptions.length > 1,
         recordDate,
         recordHint: this.data.isEdit ? `编辑 ${recordDate} 的资产记录` : "默认今日记录，全部按人民币计算",
         amountPreview: formatMoney(form.amount || 0),
@@ -136,6 +151,78 @@ Page({
       rowClass: field.type === "textarea" ? "textarea-row" : "",
       value: form[field.key] || ""
     }));
+  },
+
+  buildAccountOptions(records, type) {
+    const seen = {};
+    const latestFirst = (records || []).slice().sort((a, b) => a.recordDate < b.recordDate ? 1 : -1);
+    return latestFirst.reduce((options, record) => {
+      const list = (record.assets && record.assets[type]) || [];
+      list.forEach((item) => {
+        const template = this.pickTemplateFields(type, item);
+        const label = this.accountLabel(type, template);
+        if (!label) return;
+        const identity = JSON.stringify(template);
+        if (seen[identity]) return;
+        seen[identity] = true;
+        options.push({
+          label,
+          template
+        });
+      });
+      return options;
+    }, []);
+  },
+
+  pickTemplateFields(type, item) {
+    return FIELD_CONFIG[type].reduce((template, field) => {
+      if (SKIP_TEMPLATE_KEYS.indexOf(field.key) >= 0) return template;
+      template[field.key] = item[field.key] !== undefined && item[field.key] !== null ? item[field.key] : "";
+      return template;
+    }, {});
+  },
+
+  accountLabel(type, template) {
+    if (type === "bank") {
+      return [template.bankName, template.cardType, template.tailNo ? `尾号${template.tailNo}` : ""].filter(Boolean).join(" ");
+    }
+    if (type === "creditCard") {
+      return [template.bankName, template.tailNo ? `尾号${template.tailNo}` : ""].filter(Boolean).join(" ");
+    }
+    if (type === "housingFund") {
+      return [template.name, template.city, template.accountType].filter(Boolean).join(" ");
+    }
+    return template.name || "";
+  },
+
+  onAccountChange(event) {
+    const pickerIndex = Number(event.detail.value);
+    const selected = this.data.accountOptions[pickerIndex - 1];
+    if (!selected) {
+      const form = this.buildDefaultForm(this.data.category.key, {
+        amount: this.data.form.amount || "",
+        remark: this.data.form.remark || ""
+      });
+      this.setData({
+        accountPickerIndex: ACCOUNT_PICKER_NEW_INDEX,
+        selectedAccountLabel: this.data.accountPickerOptions[ACCOUNT_PICKER_NEW_INDEX],
+        form,
+        fields: this.hydrateFields(this.data.category.key, form)
+      });
+      return;
+    }
+    const form = {
+      ...this.data.form,
+      ...selected.template,
+      amount: this.data.form.amount || "",
+      remark: this.data.form.remark || ""
+    };
+    this.setData({
+      accountPickerIndex: pickerIndex,
+      selectedAccountLabel: this.data.accountPickerOptions[pickerIndex],
+      form,
+      fields: this.hydrateFields(this.data.category.key, form)
+    });
   },
 
   onInput(event) {

@@ -5,6 +5,8 @@
 }
 
 .donut-canvas {
+  position: relative;
+  z-index: 0;
   width: 220rpx;
   height: 220rpx;
 }

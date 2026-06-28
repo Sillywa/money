@@ -1,3 +1,3 @@
 <view class="chart-wrap">
-  <canvas class="chart-canvas" canvas-id="lineCanvas"></canvas>
+  <canvas class="chart-canvas" type="2d" canvas-id="lineCanvas"></canvas>
 </view>

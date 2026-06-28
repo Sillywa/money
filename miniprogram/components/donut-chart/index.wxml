@@ -1,5 +1,5 @@
 <view class="donut-wrap">
-  <canvas class="donut-canvas" canvas-id="donutCanvas"></canvas>
+  <canvas class="donut-canvas" type="2d" canvas-id="donutCanvas"></canvas>
   <view class="donut-center">
     <view class="donut-label">{{centerLabel}}</view>
     <view class="donut-value">{{centerValue}}</view>

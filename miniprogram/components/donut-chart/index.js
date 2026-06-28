@@ -31,11 +31,53 @@ Component({
       wx.createSelectorQuery()
         .in(this)
         .select(".donut-canvas")
-        .boundingClientRect((rect) => {
-          const size = Math.round(Math.min(rect && rect.width ? rect.width : 110, rect && rect.height ? rect.height : 110));
+        .fields({ node: true, size: true })
+        .exec((res) => {
+          const rect = (res && res[0]) || {};
+          const size = Math.round(Math.min(rect.width || 110, rect.height || 110));
+          if (rect.node) {
+            this.drawCanvas2d(rect.node, size);
+            return;
+          }
           this.drawCanvas(size);
         })
-        .exec();
+    },
+
+    drawCanvas2d(canvas, size) {
+      const items = (this.data.items || []).filter((item) => Number(item.amount) > 0);
+      const ctx = canvas.getContext("2d");
+      const width = size || 110;
+      const dpr = getPixelRatio();
+      const center = width / 2;
+      const lineWidth = Math.max(14, width * 0.135);
+      const radius = center - lineWidth / 2;
+      const total = items.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+      let start = -Math.PI / 2;
+
+      canvas.width = width * dpr;
+      canvas.height = width * dpr;
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, width, width);
+      ctx.lineWidth = lineWidth;
+      ctx.lineCap = "butt";
+
+      if (!total) {
+        ctx.beginPath();
+        ctx.strokeStyle = "#E6EBF3";
+        ctx.arc(center, center, radius, 0, Math.PI * 2);
+        ctx.stroke();
+        return;
+      }
+
+      items.forEach((item) => {
+        const percent = Number(item.amount || 0) / total;
+        const end = start + percent * Math.PI * 2;
+        ctx.beginPath();
+        ctx.strokeStyle = item.color || "#1769FF";
+        ctx.arc(center, center, radius, start, end);
+        ctx.stroke();
+        start = end + 0.018;
+      });
     },
 
     drawCanvas(size) {
@@ -74,3 +116,10 @@ Component({
     }
   }
 });
+
+function getPixelRatio() {
+  if (wx.getWindowInfo) {
+    return wx.getWindowInfo().pixelRatio || 1;
+  }
+  return 1;
+}
