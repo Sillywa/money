@@ -2,6 +2,79 @@
   padding-bottom: 44rpx;
 }
 
+.family-summary {
+  margin-top: 24rpx;
+}
+
+.family-total {
+  margin-top: 10rpx;
+  color: #101827;
+  font-size: 54rpx;
+  line-height: 1.1;
+  font-weight: 850;
+}
+
+.family-summary-grid {
+  margin-top: 24rpx;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14rpx;
+}
+
+.family-summary-grid view {
+  min-height: 92rpx;
+  padding: 18rpx;
+  border-radius: 16rpx;
+  background: #f7f9fc;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10rpx;
+}
+
+.family-summary-grid text:first-child {
+  color: #667085;
+  font-size: 23rpx;
+}
+
+.family-summary-grid text:last-child {
+  color: #101827;
+  font-size: 30rpx;
+  font-weight: 800;
+}
+
+.family-summary-row {
+  min-height: 92rpx;
+  margin-top: 18rpx;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  border-top: 1rpx solid #edf1f7;
+}
+
+.summary-avatar {
+  width: 52rpx;
+  height: 52rpx;
+  border-radius: 50%;
+}
+
+.summary-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.summary-name {
+  color: #101827;
+  font-size: 28rpx;
+  font-weight: 750;
+}
+
+.summary-number {
+  color: #101827;
+  font-size: 28rpx;
+  font-weight: 800;
+}
+
 .invite-code-box {
   margin-top: 28rpx;
   min-height: 96rpx;

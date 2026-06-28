@@ -149,3 +149,120 @@
   color: #7a8494;
   font-size: 26rpx;
 }
+
+.insight-panel {
+  margin-top: 24rpx;
+}
+
+.insight-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18rpx;
+}
+
+.insight-badge {
+  height: 48rpx;
+  padding: 0 18rpx;
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  color: #1769ff;
+  background: #edf4ff;
+  font-size: 23rpx;
+  font-weight: 750;
+}
+
+.insight-amount {
+  margin-top: 24rpx;
+  font-size: 52rpx;
+  line-height: 1.1;
+  font-weight: 850;
+}
+
+.insight-detail-grid {
+  margin-top: 24rpx;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16rpx;
+}
+
+.insight-detail-grid view,
+.health-detail-grid view {
+  min-width: 0;
+  min-height: 112rpx;
+  padding: 18rpx;
+  border-radius: 16rpx;
+  background: #f7f9fc;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10rpx;
+}
+
+.insight-detail-grid text:first-child,
+.health-detail-grid text:first-child {
+  color: #667085;
+  font-size: 23rpx;
+}
+
+.insight-detail-grid text:nth-child(2) {
+  color: #101827;
+  font-size: 28rpx;
+  font-weight: 750;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.insight-detail-grid text:last-child,
+.health-detail-grid text:last-child {
+  font-size: 30rpx;
+  font-weight: 850;
+}
+
+.health-score-large {
+  width: 92rpx;
+  height: 92rpx;
+  flex: 0 0 92rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  background: linear-gradient(135deg, #1769ff, #10b981);
+  font-size: 40rpx;
+  font-weight: 850;
+}
+
+.health-status-row {
+  margin-top: 22rpx;
+  padding: 22rpx;
+  border-radius: 18rpx;
+  background: #f8fafc;
+}
+
+.health-level-large {
+  color: #101827;
+  font-size: 42rpx;
+  line-height: 1.15;
+  font-weight: 850;
+}
+
+.health-summary {
+  margin-top: 10rpx;
+  color: #475467;
+  font-size: 25rpx;
+  line-height: 1.45;
+}
+
+.health-detail-grid {
+  margin-top: 18rpx;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14rpx;
+}
+
+.health-detail-grid text:last-child {
+  color: #101827;
+}

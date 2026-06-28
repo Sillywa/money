@@ -223,7 +223,16 @@ button::after {
 .dark-mode .calc-result-value,
 .dark-mode .reminder-value,
 .dark-mode .metric-value,
-.dark-mode .hero-amount {
+.dark-mode .hero-amount,
+.dark-mode .health-level-large,
+.dark-mode .health-detail-grid text:last-child,
+.dark-mode .completion-title,
+.dark-mode .insight-detail-grid text:nth-child(2),
+.dark-mode .composition-legend-value,
+.dark-mode .family-total,
+.dark-mode .family-summary-grid text:last-child,
+.dark-mode .summary-name,
+.dark-mode .summary-number {
   color: #f8fafc;
 }
 
@@ -248,7 +257,13 @@ button::after {
 .dark-mode .hero-delta,
 .dark-mode .guide-desc,
 .dark-mode .guide-step-text,
-.dark-mode .label-line {
+.dark-mode .label-line,
+.dark-mode .insight-detail-grid text:first-child,
+.dark-mode .health-detail-grid text:first-child,
+.dark-mode .health-summary,
+.dark-mode .completion-row,
+.dark-mode .completion-category,
+.dark-mode .completion-close {
   color: #94a3b8;
 }
 
@@ -286,8 +301,32 @@ button::after {
 .dark-mode .invite-input-row,
 .dark-mode .guide-panel,
 .dark-mode .avatar-empty,
-.dark-mode .member-avatar {
+.dark-mode .member-avatar,
+.dark-mode .insight-detail-grid view,
+.dark-mode .health-detail-grid view,
+.dark-mode .health-status-row {
   background: #0b1220;
+  border-color: #1f2937;
+}
+
+.dark-mode .family-summary-grid view {
+  background: #0b1220;
+}
+
+.dark-mode .family-summary-row {
+  border-color: #1f2937;
+}
+
+.dark-mode .completion-card {
+  background: #1c1917;
+  border-color: #451a03;
+}
+
+.dark-mode .completion-close {
+  background: rgba(245, 158, 11, 0.16);
+}
+
+.dark-mode .completion-row {
   border-color: #1f2937;
 }
 

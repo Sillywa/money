@@ -1,6 +1,48 @@
 <view class="page family-page {{themeClass}}">
   <view wx:if="{{viewing.isViewingFamily}}" class="family-view-banner">正在查看 {{viewing.viewingOwner.nickName}} 的资产数据</view>
 
+  <view class="section section-pad family-summary">
+    <view class="section-head">
+      <view>
+        <view class="section-title title-with-icon">
+          <icon-font name="home" color="#F59E0B" size="{{44}}" radius="{{14}}"></icon-font>
+          <text>家庭合计资产</text>
+        </view>
+        <view class="section-subtitle">我的资产 + 已授权亲友的最新记录</view>
+      </view>
+    </view>
+    <view class="family-total">{{familyAggregate.totalNetText}}</view>
+    <view class="family-summary-grid">
+      <view>
+        <text>总资产</text>
+        <text>{{familyAggregate.totalAssetsText}}</text>
+      </view>
+      <view>
+        <text>总负债</text>
+        <text>{{familyAggregate.totalLiabilitiesText}}</text>
+      </view>
+      <view>
+        <text>账户数</text>
+        <text>{{familyAggregate.accountCount}} 个</text>
+      </view>
+      <view>
+        <text>成员数</text>
+        <text>{{familyAggregate.memberCount}} 位</text>
+      </view>
+    </view>
+    <block wx:for="{{familyAggregate.members}}" wx:key="ownerOpenid">
+      <view class="family-summary-row">
+        <image wx:if="{{item.owner.avatarUrl}}" class="summary-avatar" src="{{item.owner.avatarUrl}}" mode="aspectFill"></image>
+        <icon-font wx:else name="users" color="#1769FF" size="{{52}}" radius="{{26}}"></icon-font>
+        <view class="summary-main">
+          <view class="summary-name">{{item.owner.nickName}}</view>
+          <view class="muted">{{item.latestRecordDate || '暂无记录'}}</view>
+        </view>
+        <view class="summary-number">{{item.totalNetText}}</view>
+      </view>
+    </block>
+  </view>
+
   <view class="section section-pad">
     <view class="section-title title-with-icon">
       <icon-font name="users" color="#1769FF" size="{{44}}" radius="{{14}}"></icon-font>

@@ -121,6 +121,10 @@ function returnToSelf() {
   return setActiveOwner("");
 }
 
+function fetchFamilyAggregate() {
+  return callCloud({ action: "familyAggregate" });
+}
+
 function saveReminder(dayOfMonth) {
   return callCloud({
     action: "reminderSave",
@@ -180,11 +184,17 @@ function normalizeProfile(profile) {
     darkMode: !!(profile && profile.darkMode),
     assetGuideSeen: !!(profile && profile.assetGuideSeen),
     activeOwnerOpenid: (profile && profile.activeOwnerOpenid) || "",
+    dismissedCompletionReminderDates: normalizePlainObject(profile && profile.dismissedCompletionReminderDates),
     goalNetWorth: numberOrDefault(profile && profile.goalNetWorth, 1000000),
     calcPrincipal: numberOrDefault(profile && profile.calcPrincipal, 100000),
     calcAnnualRate: numberOrDefault(profile && profile.calcAnnualRate, 5),
     calcYears: numberOrDefault(profile && profile.calcYears, 10)
   };
+}
+
+function normalizePlainObject(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  return value;
 }
 
 function numberOrDefault(value, fallback) {
@@ -217,6 +227,7 @@ module.exports = {
   createFamilyInvite,
   deleteRecordItem,
   fetchSnapshots,
+  fetchFamilyAggregate,
   fetchWorkspace,
   getEditorInfo,
   getProfile,

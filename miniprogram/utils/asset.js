@@ -233,6 +233,147 @@ function getNetTrend(records) {
   }));
 }
 
+function getMonthLabel(recordDate) {
+  const text = String(recordDate || todayRecordDate());
+  const parts = text.split("-");
+  if (parts.length < 2) return "本月";
+  return `${Number(parts[1])}月`;
+}
+
+function getMonthKey(recordDate) {
+  return String(recordDate || "").slice(0, 7);
+}
+
+function getPreviousRecord(records, current) {
+  const sorted = (records || []).slice().sort((a, b) => a.recordDate > b.recordDate ? 1 : -1);
+  const index = sorted.findIndex((record) => record.recordDate === current.recordDate);
+  return index > 0 ? sorted[index - 1] : current;
+}
+
+function buildMonthlyReport(records) {
+  const bundle = buildBundle(records);
+  const current = bundle.current;
+  const previous = getPreviousRecord(bundle.records, current);
+  const monthKey = getMonthKey(current.recordDate);
+  const monthRecords = bundle.records.filter((record) => getMonthKey(record.recordDate) === monthKey);
+  const firstMonthRecord = monthRecords[0] || current;
+  const monthNetDelta = netWorth(current) - netWorth(firstMonthRecord);
+  const liabilityDelta = sumLiabilities(current) - sumLiabilities(previous);
+  const categoryDeltas = CATEGORY_LIST.map((category) => ({
+    ...category,
+    delta: sumCategory(current, category.key) - sumCategory(previous, category.key)
+  })).filter((category) => category.delta !== 0);
+  const bestCategory = categoryDeltas
+    .filter((category) => !category.liability)
+    .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta))[0] || null;
+
+  return {
+    monthLabel: getMonthLabel(current.recordDate),
+    recordCount: monthRecords.length,
+    recordCountText: `${monthRecords.length} 次记录`,
+    netDelta: monthNetDelta,
+    netDeltaText: formatMoney(monthNetDelta, { signed: true }),
+    netDeltaClass: getDeltaClass(monthNetDelta),
+    latestDate: current.recordDate,
+    firstDate: firstMonthRecord.recordDate,
+    bestCategoryName: bestCategory ? bestCategory.name : "暂无明显变化",
+    bestCategoryDeltaText: bestCategory ? formatMoney(bestCategory.delta, { signed: true }) : "0.00",
+    bestCategoryClass: bestCategory ? getDeltaClass(bestCategory.delta) : "muted",
+    liabilityDelta,
+    liabilityDeltaText: formatMoney(liabilityDelta, { signed: true }),
+    liabilityDeltaClass: getDeltaClass(liabilityDelta)
+  };
+}
+
+function buildAssetHealth(records, goalNetWorth) {
+  const bundle = buildBundle(records);
+  const totalAssets = Math.max(0, bundle.totalAssets);
+  const totalLiabilities = Math.max(0, bundle.totalLiabilities);
+  const net = bundle.totalNet;
+  const liabilityBase = totalAssets + totalLiabilities;
+  const liabilityRate = liabilityBase ? totalLiabilities / liabilityBase * 100 : 0;
+  const cashAmount = ["bank", "wechat", "alipay"].reduce((sum, key) => sum + sumCategory(bundle.current, key), 0);
+  const cashRatio = totalAssets ? cashAmount / totalAssets * 100 : 0;
+  const recordCount = bundle.records.length;
+  const recentRecords = bundle.records.slice(-3);
+  const recentDelta = recentRecords.length > 1 ? netWorth(recentRecords[recentRecords.length - 1]) - netWorth(recentRecords[0]) : 0;
+  const goal = Math.max(0, toNumber(goalNetWorth));
+  const goalProgress = goal ? Math.max(0, Math.min(100, net / goal * 100)) : 0;
+
+  let score = 50;
+  if (liabilityRate <= 20) score += 22;
+  else if (liabilityRate <= 40) score += 12;
+  else score -= 8;
+  if (cashRatio >= 10 && cashRatio <= 60) score += 14;
+  else if (cashRatio > 0) score += 6;
+  if (recordCount >= 6) score += 10;
+  else if (recordCount >= 3) score += 6;
+  if (recentDelta > 0) score += 8;
+  if (goalProgress >= 80) score += 8;
+  else if (goalProgress >= 40) score += 4;
+  score = Math.max(0, Math.min(100, Math.round(score)));
+
+  const level = score >= 85 ? "稳健" : score >= 70 ? "良好" : score >= 55 ? "关注" : "待改善";
+  const tips = [
+    liabilityRate <= 30 ? "负债压力较低" : "负债率偏高，建议关注还款节奏",
+    cashRatio >= 10 ? "现金类资产有一定缓冲" : "现金类资产偏少，可留意流动性",
+    recordCount >= 3 ? "记录频率有助于观察趋势" : "多记录几次后健康分会更准确"
+  ];
+
+  return {
+    score,
+    level,
+    liabilityRate,
+    liabilityRateText: formatPercent(liabilityRate),
+    cashRatio,
+    cashRatioText: formatPercent(cashRatio),
+    goalProgress,
+    goalProgressText: formatPercent(goalProgress),
+    recordCount,
+    primaryTip: tips[0],
+    tips
+  };
+}
+
+function buildCompletionReminder(records) {
+  const bundle = buildBundle(records);
+  const current = bundle.current;
+  const previous = getPreviousRecord(bundle.records, current);
+  if (!previous || previous.recordDate === current.recordDate) {
+    return {
+      total: 0,
+      previousDate: "",
+      currentDate: current.recordDate,
+      items: []
+    };
+  }
+  const items = [];
+  CATEGORY_LIST.forEach((category) => {
+    const currentList = (current.assets && current.assets[category.key]) || [];
+    const previousList = (previous.assets && previous.assets[category.key]) || [];
+    previousList.forEach((item) => {
+      const identity = getItemIdentity(category.key, item);
+      const existed = identity && currentList.some((currentItem) => getItemIdentity(category.key, currentItem) === identity);
+      if (!existed) {
+        items.push({
+          id: `${category.key}-${items.length}`,
+          key: category.key,
+          categoryName: category.name,
+          color: category.color,
+          title: itemTitle(category, item)
+        });
+      }
+    });
+  });
+  return {
+    total: items.length,
+    previousDate: previous.recordDate,
+    currentDate: current.recordDate,
+    items: items.slice(0, 4),
+    hasMore: items.length > 4
+  };
+}
+
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
@@ -319,6 +460,9 @@ module.exports = {
   maskHistoryGroups,
   maskRows,
   getNetTrend,
+  buildMonthlyReport,
+  buildAssetHealth,
+  buildCompletionReminder,
   createTodaySnapshot,
   createEmptySnapshot,
   sumCategory,

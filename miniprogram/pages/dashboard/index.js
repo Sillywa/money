@@ -1,4 +1,9 @@
-const { buildBundle, getNetTrend, maskBundle } = require("../../utils/asset");
+const {
+  buildBundle,
+  buildCompletionReminder,
+  getNetTrend,
+  maskBundle
+} = require("../../utils/asset");
 const { fetchSnapshots, getProfile, getThemeClass, getViewingInfo, updateProfile } = require("../../utils/store");
 const { showMetricHelp } = require("../../utils/metric-help");
 
@@ -10,6 +15,7 @@ Page({
     compositionItems: [],
     compositionView: "list",
     trendPoints: [],
+    completionReminder: null,
     accountCount: 0,
     compareDate: "",
     compareOptions: [],
@@ -54,6 +60,15 @@ Page({
       });
       const viewing = getViewingInfo();
       const showAssetGuide = !viewing.isViewingFamily && !profile.assetGuideSeen && accountCount === 0;
+      const rawCompletionReminder = buildCompletionReminder(rawBundle.records);
+      const ownerOpenid = (viewing.viewingOwner && viewing.viewingOwner.openid) || profile.openid || "";
+      const dismissedCompletionReminderDate = (profile.dismissedCompletionReminderDates || {})[ownerOpenid] || "";
+      const shouldHideCompletionReminder = rawCompletionReminder.currentDate &&
+        rawCompletionReminder.currentDate === dismissedCompletionReminderDate;
+      const visibleCompletionReminder = shouldHideCompletionReminder
+        ? { ...rawCompletionReminder, total: 0, items: [], hasMore: false }
+        : rawCompletionReminder;
+      const completionReminder = privacyMode ? this.maskCompletionReminder(visibleCompletionReminder) : visibleCompletionReminder;
       this.setData({
         bundle,
         accountCount,
@@ -71,6 +86,7 @@ Page({
         })),
         compositionItems,
         trendPoints: getNetTrend(rawBundle.records),
+        completionReminder,
         privacyMode,
         viewing,
         themeClass: getThemeClass(),
@@ -99,6 +115,16 @@ Page({
 
   showMetricHelp,
 
+  maskCompletionReminder(reminder) {
+    return {
+      ...reminder,
+      items: (reminder.items || []).map((item) => ({
+        ...item,
+        title: "****"
+      }))
+    };
+  },
+
   setCompositionView(event) {
     const view = event.currentTarget.dataset.view || "list";
     this.setData({ compositionView: view });
@@ -108,6 +134,41 @@ Page({
     const type = event.currentTarget.dataset.type;
     wx.navigateTo({
       url: `/pages/category-detail/index?type=${type}`
+    });
+  },
+
+  onCompletionReminderTap(event) {
+    const type = event.currentTarget.dataset.type;
+    wx.navigateTo({
+      url: `/pages/category-detail/index?type=${type}`
+    });
+  },
+
+  closeCompletionReminder() {
+    const currentDate = this.data.completionReminder && this.data.completionReminder.currentDate;
+    if (!currentDate) return;
+    const profile = getProfile() || {};
+    const viewing = this.data.viewing || getViewingInfo();
+    const ownerOpenid = (viewing.viewingOwner && viewing.viewingOwner.openid) || profile.openid || "";
+    if (!ownerOpenid) return;
+    const dismissedCompletionReminderDates = {
+      ...(profile.dismissedCompletionReminderDates || {}),
+      [ownerOpenid]: currentDate
+    };
+    this.setData({
+      completionReminder: {
+        ...this.data.completionReminder,
+        total: 0,
+        items: [],
+        hasMore: false
+      }
+    });
+    updateProfile({ dismissedCompletionReminderDates }).catch(() => {
+      wx.showToast({
+        title: "关闭失败",
+        icon: "none"
+      });
+      this.load({ silent: true, force: true });
     });
   },
 

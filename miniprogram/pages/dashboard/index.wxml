@@ -125,6 +125,27 @@
     <line-chart points="{{trendPoints}}" color="#174EA6" privacy-mode="{{privacyMode}}" dark-mode="{{themeClass === 'dark-mode'}}"></line-chart>
     </view>
 
+    <view wx:if="{{completionReminder.total > 0}}" class="section section-pad completion-card">
+      <view class="section-head">
+        <view>
+          <view class="section-title">账户补录提醒</view>
+          <view class="section-subtitle">{{completionReminder.currentDate}} 相比 {{completionReminder.previousDate}} 可能漏录 {{completionReminder.total}} 个账户</view>
+        </view>
+        <button class="completion-close" catchtap="closeCompletionReminder" aria-label="关闭账户补录提醒">×</button>
+      </view>
+      <block wx:for="{{completionReminder.items}}" wx:key="id">
+        <view class="completion-row" bindtap="onCompletionReminderTap" data-type="{{item.key}}">
+          <view class="completion-dot" style="background: {{item.color}}"></view>
+          <view class="completion-main">
+            <view class="completion-category">{{item.categoryName}}</view>
+            <view class="completion-title">{{item.title}}</view>
+          </view>
+          <view class="chevron">›</view>
+        </view>
+      </block>
+      <view wx:if="{{completionReminder.hasMore}}" class="completion-more">还有更多账户可在资产明细中核对</view>
+    </view>
+
     <view wx:if="{{showAssetGuide}}" class="guide-mask" catchtap="closeAssetGuide">
       <view class="guide-panel" catchtap="noop">
         <view class="guide-title">开始记录你的第一笔资产</view>

@@ -188,6 +188,10 @@ exports.main = async (event) => {
     return buildWorkspace(openid);
   }
 
+  if (action === "familyAggregate") {
+    return buildFamilyAggregate(openid);
+  }
+
   if (action === "reminderSave") {
     const dayOfMonth = clampDay(event.dayOfMonth);
     await upsertReminder(openid, dayOfMonth);
@@ -228,6 +232,37 @@ async function buildWorkspace(openid) {
   };
 }
 
+async function buildFamilyAggregate(openid) {
+  const profile = await ensureProfile(openid);
+  const familyMembers = await listFamilyMembers(openid);
+  const owners = [stripProfile(profile), ...familyMembers];
+  const members = await Promise.all(owners.map(async (owner) => {
+    const data = await listSnapshots(owner.openid);
+    const latest = data[data.length - 1] || null;
+    const summary = latest ? summarizeSnapshot(latest) : {
+      totalAssets: 0,
+      totalLiabilities: 0,
+      totalNet: 0,
+      accountCount: 0
+    };
+    return {
+      owner,
+      latestRecordDate: latest ? latest.recordDate : "",
+      ...summary
+    };
+  }));
+  const totalAssets = members.reduce((sum, item) => sum + item.totalAssets, 0);
+  const totalLiabilities = members.reduce((sum, item) => sum + item.totalLiabilities, 0);
+  return {
+    openid,
+    members,
+    totalAssets,
+    totalLiabilities,
+    totalNet: totalAssets - totalLiabilities,
+    accountCount: members.reduce((sum, item) => sum + item.accountCount, 0)
+  };
+}
+
 async function ensureProfile(openid) {
   const result = await profiles.where({ openid }).limit(1).get();
   if (result.data.length) return result.data[0];
@@ -241,6 +276,7 @@ async function ensureProfile(openid) {
       darkMode: false,
       assetGuideSeen: false,
       activeOwnerOpenid: "",
+      dismissedCompletionReminderDates: {},
       goalNetWorth: 1000000,
       calcPrincipal: 100000,
       calcAnnualRate: 5,
@@ -257,7 +293,7 @@ async function ensureProfile(openid) {
 async function updateProfile(openid, profile) {
   const current = await ensureProfile(openid);
   const data = {};
-  ["nickName", "avatarUrl", "privacyEnabled", "darkMode", "assetGuideSeen", "goalNetWorth", "calcPrincipal", "calcAnnualRate", "calcYears"].forEach((key) => {
+  ["nickName", "avatarUrl", "privacyEnabled", "darkMode", "assetGuideSeen", "dismissedCompletionReminderDates", "goalNetWorth", "calcPrincipal", "calcAnnualRate", "calcYears"].forEach((key) => {
     if (profile[key] !== undefined) data[key] = profile[key];
   });
   data.updatedAt = db.serverDate();
@@ -581,6 +617,38 @@ function stripSnapshot(item) {
   };
 }
 
+function summarizeSnapshot(snapshot) {
+  const totalAssets = sumAssets(snapshot);
+  const totalLiabilities = sumLiabilities(snapshot);
+  return {
+    totalAssets,
+    totalLiabilities,
+    totalNet: totalAssets - totalLiabilities,
+    accountCount: countAccounts(snapshot)
+  };
+}
+
+function countAccounts(snapshot) {
+  const assets = snapshot.assets || {};
+  return Object.keys(assets).reduce((sum, key) => {
+    const list = assets[key];
+    return sum + (Array.isArray(list) ? list.length : 0);
+  }, 0);
+}
+
+function sumAssets(snapshot) {
+  return ["bank", "wealth", "wechat", "alipay", "housingFund"].reduce((sum, key) => sum + sumCategory(snapshot, key), 0);
+}
+
+function sumLiabilities(snapshot) {
+  return sumCategory(snapshot, "creditCard");
+}
+
+function sumCategory(snapshot, key) {
+  const list = (snapshot.assets && snapshot.assets[key]) || [];
+  return list.reduce((sum, item) => sum + numberOrDefault(item && item.amount, 0), 0);
+}
+
 function stripProfile(profile) {
   return {
     openid: profile.openid,
@@ -590,11 +658,17 @@ function stripProfile(profile) {
     darkMode: !!profile.darkMode,
     assetGuideSeen: !!profile.assetGuideSeen,
     activeOwnerOpenid: profile.activeOwnerOpenid || "",
+    dismissedCompletionReminderDates: normalizePlainObject(profile.dismissedCompletionReminderDates),
     goalNetWorth: numberOrDefault(profile.goalNetWorth, 1000000),
     calcPrincipal: numberOrDefault(profile.calcPrincipal, 100000),
     calcAnnualRate: numberOrDefault(profile.calcAnnualRate, 5),
     calcYears: numberOrDefault(profile.calcYears, 10)
   };
+}
+
+function normalizePlainObject(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  return value;
 }
 
 function numberOrDefault(value, fallback) {

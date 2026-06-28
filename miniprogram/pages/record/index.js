@@ -1,4 +1,4 @@
-const { CATEGORY_LIST, CATEGORY_MAP } = require("../../utils/categories");
+const { CATEGORY_MAP } = require("../../utils/categories");
 const { buildBundle, createTodaySnapshot, formatMoney } = require("../../utils/asset");
 const { fetchSnapshots, getEditorInfo, getThemeClass, getViewingInfo, moveRecordDate, saveSnapshot } = require("../../utils/store");
 
@@ -285,12 +285,7 @@ Page({
       })
       : saveSnapshot(this.buildSavedSnapshot(category.key, form, getEditorInfo()));
 
-    saveTask.then((result) => {
-      const reminders = this.buildMissingAssetReminders(result && result.snapshots);
-      if (reminders.length) {
-        this.showMissingAssetReminder(reminders);
-        return;
-      }
+    saveTask.then(() => {
       wx.showToast({
         title: "已保存",
         icon: "success"
@@ -302,50 +297,6 @@ Page({
         icon: "none"
       });
       this.setData({ saving: false });
-    });
-  },
-
-  buildMissingAssetReminders(records) {
-    if (this.data.isEdit) return [];
-    const snapshots = (records || this.data.bundle.records || []).slice().sort((a, b) => a.recordDate > b.recordDate ? 1 : -1);
-    const target = snapshots.find((record) => record.recordDate === this.data.recordDate);
-    const baseline = snapshots
-      .filter((record) => record.recordDate < this.data.recordDate)
-      .sort((a, b) => a.recordDate < b.recordDate ? 1 : -1)[0];
-    if (!target || !baseline) return [];
-
-    const reminders = [];
-    CATEGORY_LIST.forEach((category) => {
-      const targetIdentities = this.buildIdentityMap((target.assets && target.assets[category.key]) || [], category.key);
-      const baselineList = (baseline.assets && baseline.assets[category.key]) || [];
-      baselineList.forEach((item) => {
-        const template = this.pickTemplateFields(category.key, item);
-        const identity = JSON.stringify(this.pickIdentityFields(category.key, item));
-        const label = this.accountLabel(category.key, template);
-        if (!label || targetIdentities[identity]) return;
-        reminders.push(`${category.name}：${label}`);
-      });
-    });
-
-    return reminders;
-  },
-
-  buildIdentityMap(list, type) {
-    return (list || []).reduce((map, item) => {
-      map[JSON.stringify(this.pickIdentityFields(type, item))] = true;
-      return map;
-    }, {});
-  },
-
-  showMissingAssetReminder(reminders) {
-    const visibleReminders = reminders.slice(0, 8);
-    const suffix = reminders.length > visibleReminders.length ? "\n等账户" : "";
-    wx.showModal({
-      title: "可能还需补充",
-      content: `已保存。参考上一条记录，${this.data.recordDate} 可能还没记录：\n${visibleReminders.join("\n")}${suffix}`,
-      showCancel: false,
-      confirmText: "知道了",
-      success: () => wx.navigateBack()
     });
   },
 

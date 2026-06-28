@@ -86,5 +86,58 @@
         </view>
       </view>
     </view>
+
+    <view class="section section-pad insight-panel">
+      <view class="insight-head">
+        <view>
+          <view class="section-title">{{monthlyReport.monthLabel}}资产月报</view>
+          <view class="section-subtitle">{{monthlyReport.firstDate}} 至 {{monthlyReport.latestDate}} · {{monthlyReport.recordCountText}}</view>
+        </view>
+        <view class="insight-badge">月报</view>
+      </view>
+      <view class="insight-amount {{monthlyReport.netDeltaClass}}">{{monthlyReport.netDeltaText}}</view>
+      <view class="insight-detail-grid">
+        <view>
+          <text>变化最大</text>
+          <text>{{monthlyReport.bestCategoryName}}</text>
+          <text class="{{monthlyReport.bestCategoryClass}}">{{monthlyReport.bestCategoryDeltaText}}</text>
+        </view>
+        <view>
+          <text>负债变化</text>
+          <text>信用卡欠款合计</text>
+          <text class="{{monthlyReport.liabilityDeltaClass}}">{{monthlyReport.liabilityDeltaText}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="section section-pad insight-panel health-panel">
+      <view class="insight-head">
+        <view>
+          <view class="section-title">资产健康分</view>
+          <view class="section-subtitle">基于负债、现金类资产、记录频率和目标进度</view>
+        </view>
+        <view class="health-score-large">{{health.score}}</view>
+      </view>
+      <view class="health-status-row">
+        <view>
+          <view class="health-level-large">{{health.level}}</view>
+          <view class="health-summary">{{health.primaryTip}}</view>
+        </view>
+      </view>
+      <view class="health-detail-grid">
+        <view>
+          <text>负债率</text>
+          <text>{{health.liabilityRateText}}</text>
+        </view>
+        <view>
+          <text>现金占比</text>
+          <text>{{health.cashRatioText}}</text>
+        </view>
+        <view>
+          <text>目标进度</text>
+          <text>{{health.goalProgressText}}</text>
+        </view>
+      </view>
+    </view>
   </block>
 </view>

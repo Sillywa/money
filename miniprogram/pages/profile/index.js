@@ -8,10 +8,16 @@ const {
   setPrivacyEnabled,
   updateProfile
 } = require("../../utils/store");
+const {
+  buildAssetHealth,
+  buildMonthlyReport
+} = require("../../utils/asset");
 
 Page({
   data: {
     profile: null,
+    monthlyReport: buildMonthlyReport([]),
+    health: buildAssetHealth([], 1000000),
     savedNickName: "资产记录者",
     recordCount: 0,
     reminderText: "每月 1 日 10:00",
@@ -34,10 +40,16 @@ Page({
     return fetchWorkspace({ force: !!opts.force }).then((result) => {
       const reminder = result.reminder || {};
       const profile = getProfile();
+      const snapshots = result.snapshots || [];
+      const privacyMode = !!profile.privacyEnabled;
+      const rawMonthlyReport = buildMonthlyReport(snapshots);
+      const rawHealth = buildAssetHealth(snapshots, profile.goalNetWorth);
       this.setData({
         profile,
+        monthlyReport: privacyMode ? this.maskMonthlyReport(rawMonthlyReport) : rawMonthlyReport,
+        health: privacyMode ? this.maskHealth(rawHealth) : rawHealth,
         savedNickName: profile.nickName || "资产记录者",
-        recordCount: (result.snapshots || []).length,
+        recordCount: snapshots.length,
         reminderText: reminder.enabled ? `每月 ${reminder.dayOfMonth} 日 10:00` : "未设置",
         viewing: getViewingInfo(),
         themeClass: getThemeClass(),
@@ -46,8 +58,13 @@ Page({
       });
     }).catch(() => {
       const profile = getProfile();
+      const privacyMode = !!profile.privacyEnabled;
+      const rawMonthlyReport = buildMonthlyReport([]);
+      const rawHealth = buildAssetHealth([], profile.goalNetWorth);
       this.setData({
         profile,
+        monthlyReport: privacyMode ? this.maskMonthlyReport(rawMonthlyReport) : rawMonthlyReport,
+        health: privacyMode ? this.maskHealth(rawHealth) : rawHealth,
         savedNickName: profile.nickName || "资产记录者",
         viewing: getViewingInfo(),
         themeClass: getThemeClass(),
@@ -113,10 +130,35 @@ Page({
 
   onPrivacyChange(event) {
     setPrivacyEnabled(event.detail.value).then(() => {
+      const profile = {
+        ...(this.data.profile || {}),
+        privacyEnabled: event.detail.value
+      };
       this.setData({
-        "profile.privacyEnabled": event.detail.value
+        profile,
+        monthlyReport: event.detail.value ? this.maskMonthlyReport(this.data.monthlyReport) : this.data.monthlyReport,
+        health: event.detail.value ? this.maskHealth(this.data.health) : this.data.health
       });
+      this.load({ silent: true, force: true });
     });
+  },
+
+  maskMonthlyReport(report) {
+    return {
+      ...(report || {}),
+      netDeltaText: "****",
+      bestCategoryDeltaText: "****",
+      liabilityDeltaText: "****"
+    };
+  },
+
+  maskHealth(health) {
+    return {
+      ...(health || {}),
+      liabilityRateText: "****",
+      cashRatioText: "****",
+      goalProgressText: "****"
+    };
   },
 
   onDarkModeChange(event) {
