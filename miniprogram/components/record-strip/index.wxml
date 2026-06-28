@@ -6,7 +6,7 @@
   </view>
   <picker mode="selector" range="{{compareOptions}}" value="{{compareIndex}}" bindchange="onPickerChange">
     <view class="record-compare">
-      <text>{{compareLabel}} {{compareDate}}</text>
+      <text>{{compareLabel}} {{displayCompareDate}}</text>
       <text class="record-compare-arrow"></text>
     </view>
   </picker>

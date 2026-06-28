@@ -26,6 +26,19 @@ Component({
     }
   },
 
+  data: {
+    displayCompareDate: ""
+  },
+
+  observers: {
+    "compareDate,compareOptions,compareIndex": function (compareDate, compareOptions, compareIndex) {
+      const options = Array.isArray(compareOptions) ? compareOptions : [];
+      this.setData({
+        displayCompareDate: compareDate || options[Number(compareIndex || 0)] || ""
+      });
+    }
+  },
+
   methods: {
     onPickerChange(event) {
       const index = Number(event.detail.value);

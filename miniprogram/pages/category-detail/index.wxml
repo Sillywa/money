@@ -6,7 +6,7 @@
 
     <record-strip
       latest-date="{{bundle.current.recordDate}}"
-      compare-date="{{bundle.previous.recordDate}}"
+      compare-date="{{compareDate}}"
       compare-options="{{compareOptions}}"
       compare-index="{{compareIndex}}"
       bind:change="onCompareChange"
