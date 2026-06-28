@@ -1,0 +1,151 @@
+.profile-page {
+  padding-bottom: 44rpx;
+}
+
+.profile-head {
+  margin-top: 20rpx;
+  padding: 24rpx 4rpx 34rpx;
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.avatar {
+  width: 126rpx;
+  height: 126rpx;
+  flex: 0 0 126rpx;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.avatar-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #edf4ff;
+  color: #1769ff;
+}
+
+.avatar-plus {
+  font-size: 44rpx;
+  font-weight: 800;
+}
+
+.avatar-tip {
+  margin-top: 4rpx;
+  font-size: 18rpx;
+  line-height: 1.2;
+}
+
+.avatar-image-btn {
+  background: transparent;
+}
+
+.avatar-image {
+  width: 126rpx;
+  height: 126rpx;
+  border-radius: 50%;
+}
+
+.profile-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-name-input {
+  height: 56rpx;
+  margin-bottom: 10rpx;
+  font-size: 38rpx;
+  font-weight: 800;
+  color: #111827;
+}
+
+.return-mine {
+  height: 76rpx;
+  margin-bottom: 22rpx;
+  border-radius: 16rpx;
+  background: #174ea6;
+  color: #ffffff;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.privacy-card {
+  height: 118rpx;
+  padding: 0 24rpx;
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.privacy-icon {
+  background: #1769ff;
+}
+
+.privacy-main {
+  flex: 1;
+}
+
+.privacy-title {
+  margin-bottom: 8rpx;
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.setting-section {
+  margin-top: 28rpx;
+  padding: 8rpx 24rpx;
+}
+
+.setting-row {
+  min-height: 112rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1rpx solid #edf1f7;
+}
+
+.setting-row:last-child {
+  border-bottom: 0;
+}
+
+.setting-row.static {
+  color: #111827;
+}
+
+.setting-left {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.setting-icon {
+  width: 50rpx;
+  height: 50rpx;
+  flex: 0 0 50rpx;
+  border-radius: 15rpx;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22rpx;
+  font-weight: 700;
+}
+
+.setting-desc {
+  margin-top: 8rpx;
+  color: #7a8494;
+  font-size: 23rpx;
+  font-weight: 400;
+}
+
+.setting-value {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  color: #7a8494;
+  font-size: 26rpx;
+}

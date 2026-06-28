@@ -1,0 +1,104 @@
+.record-page {
+  padding-bottom: 150rpx;
+}
+
+.form-title {
+  margin-top: 18rpx;
+  padding: 20rpx 0 8rpx;
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+}
+
+.form-accent {
+  width: 8rpx;
+  height: 44rpx;
+  border-radius: 6rpx;
+  background: #1769ff;
+}
+
+.form-section {
+  padding: 0 24rpx;
+}
+
+.form-row {
+  min-height: 112rpx;
+  display: flex;
+  align-items: center;
+  border-bottom: 1rpx solid #edf1f7;
+}
+
+.form-row:last-child {
+  border-bottom: 0;
+}
+
+.textarea-row {
+  align-items: flex-start;
+  padding: 28rpx 0;
+}
+
+.form-label {
+  width: 216rpx;
+  color: #344054;
+  font-size: 29rpx;
+}
+
+.required {
+  margin-left: 6rpx;
+  color: #e84b52;
+}
+
+.form-input {
+  flex: 1;
+  height: 80rpx;
+  text-align: right;
+  font-size: 30rpx;
+  color: #111827;
+}
+
+.form-textarea {
+  flex: 1;
+  min-height: 150rpx;
+  padding: 20rpx;
+  border-radius: 16rpx;
+  background: #f7f9fc;
+  font-size: 27rpx;
+  color: #111827;
+}
+
+.preview-card {
+  margin-top: 28rpx;
+  padding: 24rpx;
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+}
+
+.preview-main {
+  flex: 1;
+}
+
+.preview-title {
+  font-size: 28rpx;
+  font-weight: 650;
+  color: #344054;
+}
+
+.preview-amount {
+  font-size: 34rpx;
+  font-weight: 800;
+}
+
+.bottom-actions {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 132rpx;
+  padding: 18rpx 28rpx 28rpx;
+  display: grid;
+  grid-template-columns: 0.82fr 1.45fr;
+  gap: 22rpx;
+  background: rgba(255, 255, 255, 0.96);
+  border-top: 1rpx solid #e7ecf4;
+}

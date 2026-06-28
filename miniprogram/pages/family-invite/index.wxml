@@ -1,0 +1,13 @@
+<view class="page invite-page">
+  <view class="section section-pad invite-panel">
+    <view class="invite-mark">{{accepted ? '✓' : '亲'}}</view>
+    <view class="invite-title">{{accepted ? '已绑定亲友资产' : '亲友资产邀请'}}</view>
+    <view class="invite-text">
+      {{accepted ? '你们现在可以在亲友资产中切换查看和维护彼此的资产记录。' : '对方邀请你绑定亲友资产。接受后，你们可以互相浏览资产数据，也可以新增或编辑绑定用户的资产记录；每条记录会保留编辑人信息。'}}
+    </view>
+
+    <button wx:if="{{!accepted}}" class="btn-primary action-btn" bindtap="acceptInvite">接受邀请</button>
+    <button wx:else class="btn-primary action-btn" bindtap="goFamily">查看亲友资产</button>
+    <button class="btn-secondary action-btn" bindtap="goHome">回到资产总览</button>
+  </view>
+</view>

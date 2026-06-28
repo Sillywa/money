@@ -1,0 +1,265 @@
+.dashboard-page {
+  padding-bottom: 42rpx;
+}
+
+.hero {
+  margin-top: 26rpx;
+  padding: 28rpx 0 30rpx;
+  display: flex;
+  align-items: center;
+  border-bottom: 1rpx solid #e7ecf4;
+}
+
+.hero-left {
+  flex: 1;
+  min-width: 0;
+  padding-right: 18rpx;
+}
+
+.label-line {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  color: #344054;
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+.eye {
+  color: #475467;
+  font-size: 22rpx;
+}
+
+.hero-amount {
+  margin-top: 20rpx;
+  font-size: 60rpx;
+  line-height: 1;
+  font-weight: 800;
+  color: #020617;
+}
+
+.hero-amount text {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #344054;
+}
+
+.hero-delta {
+  margin-top: 18rpx;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14rpx;
+  color: #667085;
+  font-size: 26rpx;
+}
+
+.hero-metrics {
+  margin-top: 34rpx;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14rpx;
+}
+
+.hero-metric {
+  min-width: 0;
+  min-height: 94rpx;
+  padding: 20rpx 14rpx;
+  border-radius: 16rpx;
+  background: #f7f9fc;
+  border: 1rpx solid #e8edf5;
+}
+
+.metric-label {
+  margin-bottom: 12rpx;
+  color: #475467;
+  font-size: 23rpx;
+  font-weight: 600;
+}
+
+.metric-value {
+  color: #0f172a;
+  font-size: 28rpx;
+  font-weight: 800;
+}
+
+.metric-value text {
+  color: #0f172a;
+  font-size: 36rpx;
+}
+
+.metric-value.debt {
+  color: #0f172a;
+  font-size: 28rpx;
+  font-weight: 800;
+}
+
+.donut-area {
+  width: 260rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.donut-legend {
+  width: 100%;
+  margin-top: 10rpx;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8rpx 12rpx;
+}
+
+.donut-legend-row {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  font-size: 20rpx;
+  color: #667085;
+}
+
+.legend-dot {
+  width: 10rpx;
+  height: 10rpx;
+  border-radius: 50%;
+  flex: 0 0 10rpx;
+}
+
+.legend-name {
+  max-width: 90rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.composition {
+  margin-top: 24rpx;
+}
+
+.composition-tabs {
+  height: 58rpx;
+  padding: 6rpx;
+  border-radius: 16rpx;
+  background: #f2f5fa;
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+}
+
+.composition-tab {
+  min-width: 82rpx;
+  height: 46rpx;
+  padding: 0 18rpx;
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #667085;
+  font-size: 24rpx;
+  font-weight: 650;
+}
+
+.composition-tab.active {
+  color: #174ea6;
+  background: #ffffff;
+  box-shadow: 0 6rpx 18rpx rgba(23, 78, 166, 0.10);
+}
+
+.asset-row {
+  min-height: 112rpx;
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  border-bottom: 1rpx solid #edf1f7;
+}
+
+.asset-row:last-child {
+  border-bottom: 0;
+}
+
+.asset-main {
+  flex: 1;
+}
+
+.asset-name {
+  font-size: 30rpx;
+  font-weight: 650;
+  color: #111827;
+}
+
+.bar-track {
+  margin-top: 18rpx;
+  width: 100%;
+  height: 10rpx;
+  border-radius: 8rpx;
+  background: #edf1f7;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 10rpx;
+  min-width: 8rpx;
+  border-radius: 8rpx;
+}
+
+.asset-number {
+  width: 178rpx;
+  text-align: right;
+}
+
+.asset-amount {
+  font-size: 29rpx;
+  color: #111827;
+  font-weight: 650;
+}
+
+.asset-meta {
+  margin-top: 10rpx;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10rpx;
+  font-size: 22rpx;
+}
+
+.composition-chart {
+  padding: 6rpx 0 2rpx;
+}
+
+.composition-chart-body {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.composition-legend {
+  flex: 1;
+  min-width: 0;
+}
+
+.composition-legend-row {
+  min-height: 50rpx;
+  display: grid;
+  grid-template-columns: 18rpx 1fr auto 62rpx;
+  align-items: center;
+  gap: 12rpx;
+  font-size: 23rpx;
+  border-bottom: 1rpx solid #f0f3f8;
+}
+
+.composition-legend-row:last-child {
+  border-bottom: 0;
+}
+
+.composition-legend-name {
+  color: #344054;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.composition-legend-value {
+  color: #101827;
+  font-weight: 700;
+}

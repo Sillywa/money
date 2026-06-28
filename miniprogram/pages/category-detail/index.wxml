@@ -1,0 +1,112 @@
+<view class="page detail-page">
+  <skeleton-screen wx:if="{{loading}}" type="detail"></skeleton-screen>
+
+  <block wx:if="{{!loading && category}}">
+    <record-strip
+      latest-date="{{bundle.current.recordDate}}"
+      compare-date="{{bundle.previous.recordDate}}"
+      compare-options="{{compareOptions}}"
+      compare-index="{{compareIndex}}"
+      bind:change="onCompareChange"
+    ></record-strip>
+
+    <view class="detail-hero">
+    <view class="hero-main">
+      <view class="hero-label">{{category.amountLabel}}（元）</view>
+      <view class="hero-value {{category.liability ? 'red' : ''}}">
+        <block wx:if="{{privacyMode}}">{{summary.amountDisplay}}</block>
+        <block wx:else>{{category.liability ? '-' : ''}}{{summary.amountDisplay}}</block>
+      </view>
+      <view class="hero-change">
+        <text>较对比</text>
+        <text class="{{summary.deltaClass}}">{{summary.deltaText}}</text>
+      </view>
+    </view>
+    <view class="hero-side">
+      <view class="side-cell">
+        <view class="side-value">{{summary.count}}</view>
+        <view class="muted">{{category.countLabel}}</view>
+      </view>
+      <view class="side-cell">
+        <view class="side-value">{{summary.percentText}}</view>
+        <view class="muted label-with-help">
+          <text>{{category.liability ? '负债率' : '占净资产'}}</text>
+          <text wx:if="{{category.liability}}" class="help-icon" catchtap="showMetricHelp" data-type="liabilityRate">?</text>
+        </view>
+      </view>
+    </view>
+    </view>
+
+    <view class="section section-pad">
+    <view class="section-head">
+      <view>
+        <view class="section-title">{{category.trendTitle}}</view>
+        <view class="section-subtitle">按录入日期统计</view>
+      </view>
+    </view>
+    <line-chart points="{{trendPoints}}" color="{{category.accent}}" privacy-mode="{{privacyMode}}"></line-chart>
+    </view>
+
+    <view class="action-row section">
+    <view class="action-cell" bindtap="addItem">
+      <text class="action-icon">＋</text>
+      <text>{{category.addText}}</text>
+    </view>
+    </view>
+
+    <view class="section list-section">
+    <view class="list-head">
+      <view>
+        <view class="section-title">{{category.listTitle}}</view>
+      </view>
+      <view class="muted">按日期分组</view>
+    </view>
+
+    <block wx:for="{{historyGroups}}" wx:key="recordDate" wx:for-item="group">
+      <view class="history-date-head" bindtap="toggleHistoryGroup" data-record-date="{{group.recordDate}}">
+        <view>
+          <view class="history-date">{{group.recordDate}}</view>
+          <view class="muted">{{group.rows.length}} 条资产记录</view>
+        </view>
+        <view class="history-total">
+          <view>{{group.totalText}}</view>
+          <view class="history-subline">
+            <text class="{{group.deltaClass}}">{{group.deltaText}}</text>
+            <text class="history-toggle">{{group.expanded ? '收起' : '展开'}}</text>
+            <text class="history-arrow {{group.expanded ? 'expanded' : ''}}"></text>
+          </view>
+        </view>
+      </view>
+
+      <view wx:if="{{group.expanded}}">
+        <block wx:for="{{group.rows}}" wx:key="id">
+          <view class="item-row" bindtap="editItem" data-index="{{item.index}}" data-record-date="{{group.recordDate}}">
+            <view class="icon-token" style="background: {{category.color}}">{{category.shortName}}</view>
+            <view class="item-main">
+              <view class="item-title">{{item.title}}</view>
+              <view class="item-sub">{{item.subtitle}}</view>
+              <view class="field-line" wx:if="{{item.editorName}}">
+                <text>编辑人 {{item.editorName}}</text>
+              </view>
+              <view class="field-line" wx:if="{{isCreditCard}}">
+                <text>账单日 {{item.billDay}}</text>
+                <text>还款日 {{item.repaymentDay}}</text>
+              </view>
+              <view class="field-line" wx:if="{{isHousingFund}}">
+                <text>缴存城市 {{item.city}}</text>
+                <text>{{item.accountType}}</text>
+              </view>
+            </view>
+            <view class="item-amount">
+              <view>{{item.amountText}}</view>
+              <view class="{{item.deltaClass}}">{{item.deltaText}}</view>
+            </view>
+            <view class="chevron">›</view>
+          </view>
+        </block>
+      </view>
+    </block>
+    </view>
+    <view wx:if="{{viewing.isViewingFamily}}" class="family-view-banner">正在查看 {{viewing.viewingOwner.nickName}} 的资产数据</view>
+  </block>
+</view>

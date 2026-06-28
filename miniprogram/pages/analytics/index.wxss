@@ -1,0 +1,199 @@
+.analytics-page {
+  padding-bottom: 44rpx;
+}
+
+.goal-section {
+  margin-top: 28rpx;
+}
+
+.target-editor {
+  min-height: 92rpx;
+  padding: 14rpx;
+  border-radius: 18rpx;
+  background: #f7f9fc;
+  border: 1rpx solid #e8edf5;
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+}
+
+.target-input-wrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.input-prefix {
+  color: #174ea6;
+  font-size: 34rpx;
+  font-weight: 800;
+}
+
+.target-input {
+  width: 100%;
+  height: 64rpx;
+  color: #0f172a;
+  font-size: 36rpx;
+  font-weight: 800;
+}
+
+.small-action {
+  width: 132rpx;
+  height: 64rpx;
+  border-radius: 14rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  background: #1769ff;
+  font-size: 25rpx;
+  font-weight: 700;
+}
+
+.goal-progress-card {
+  margin-top: 22rpx;
+  padding: 24rpx;
+  border-radius: 18rpx;
+  background: #ffffff;
+  border: 1rpx solid #e8edf5;
+}
+
+.goal-progress-top,
+.goal-progress-bottom,
+.projection-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+}
+
+.goal-right {
+  text-align: right;
+}
+
+.goal-value {
+  margin-top: 8rpx;
+  color: #101827;
+  font-size: 32rpx;
+  font-weight: 800;
+}
+
+.progress-track {
+  margin-top: 24rpx;
+  height: 18rpx;
+  border-radius: 999rpx;
+  background: #edf1f7;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 18rpx;
+  border-radius: 999rpx;
+  background: linear-gradient(90deg, #1769ff, #13a37b);
+}
+
+.goal-progress-bottom {
+  margin-top: 18rpx;
+  color: #667085;
+  font-size: 24rpx;
+}
+
+.calculator-section {
+  margin-top: 24rpx;
+}
+
+.year-tabs {
+  height: 58rpx;
+  padding: 6rpx;
+  border-radius: 16rpx;
+  background: #f2f5fa;
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+}
+
+.year-tab {
+  min-width: 82rpx;
+  height: 46rpx;
+  padding: 0 18rpx;
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #667085;
+  font-size: 24rpx;
+  font-weight: 650;
+}
+
+.year-tab.active {
+  color: #0b7f60;
+  background: #ffffff;
+  box-shadow: 0 6rpx 18rpx rgba(19, 163, 123, 0.12);
+}
+
+.calc-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18rpx;
+}
+
+.calc-field {
+  min-width: 0;
+  padding: 18rpx;
+  border-radius: 16rpx;
+  background: #f7f9fc;
+  border: 1rpx solid #e8edf5;
+}
+
+.calc-label {
+  color: #667085;
+  font-size: 23rpx;
+  font-weight: 650;
+}
+
+.calc-input {
+  width: 100%;
+  height: 58rpx;
+  margin-top: 8rpx;
+  color: #101827;
+  font-size: 32rpx;
+  font-weight: 800;
+}
+
+.rate-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  color: #0b7f60;
+  font-size: 28rpx;
+  font-weight: 800;
+}
+
+.rate-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.calc-save {
+  width: 100%;
+  grid-column: 1 / 3;
+  margin-top: 2rpx;
+  background: #13a37b;
+}
+
+.projection-summary {
+  margin: 24rpx 0 10rpx;
+  padding: 20rpx 22rpx;
+  border-radius: 18rpx;
+  background: #f7fdfb;
+  border: 1rpx solid #d7f1e9;
+}
+
+.projection-value {
+  margin-top: 8rpx;
+  color: #0f172a;
+  font-size: 32rpx;
+  font-weight: 800;
+}

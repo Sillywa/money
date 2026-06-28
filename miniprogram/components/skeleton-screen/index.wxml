@@ -1,0 +1,23 @@
+<view class="skeleton skeleton-{{type}}">
+  <view class="sk-strip"></view>
+  <view class="sk-card sk-hero">
+    <view class="sk-line short"></view>
+    <view class="sk-line amount"></view>
+    <view class="sk-line medium"></view>
+    <view class="sk-grid">
+      <view class="sk-block"></view>
+      <view class="sk-block"></view>
+    </view>
+  </view>
+  <view class="sk-card">
+    <view class="sk-head"></view>
+    <view class="sk-row"></view>
+    <view class="sk-row"></view>
+    <view class="sk-row"></view>
+  </view>
+  <view class="sk-card compact">
+    <view class="sk-head"></view>
+    <view class="sk-line full"></view>
+    <view class="sk-line medium"></view>
+  </view>
+</view>

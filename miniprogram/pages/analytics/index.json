@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "资产目标",
+  "usingComponents": {
+    "line-chart": "/components/line-chart/index",
+    "skeleton-screen": "/components/skeleton-screen/index"
+  },
+  "enablePullDownRefresh": true
+}

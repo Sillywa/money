@@ -1,0 +1,125 @@
+<view class="page dashboard-page">
+  <skeleton-screen wx:if="{{loading}}" type="dashboard"></skeleton-screen>
+
+  <block wx:if="{{!loading}}">
+    <record-strip
+      latest-date="{{bundle.current.recordDate}}"
+      compare-date="{{bundle.previous.recordDate}}"
+      compare-options="{{compareOptions}}"
+      compare-index="{{compareIndex}}"
+      bind:change="onCompareChange"
+    ></record-strip>
+
+    <view class="hero">
+    <view class="hero-left">
+      <view class="label-line">
+        <text>净资产</text>
+        <text class="help-icon" catchtap="showMetricHelp" data-type="netWorth">?</text>
+        <text class="eye">◉</text>
+      </view>
+      <view class="hero-amount">{{bundle.totalNetText}}<text> 元</text></view>
+      <view class="hero-delta">
+        <text>较对比</text>
+        <text class="{{bundle.netDeltaClass}}">{{bundle.netDeltaText}}</text>
+        <text class="{{bundle.netDeltaClass}}">{{bundle.netRateText}}</text>
+      </view>
+      <view class="hero-metrics">
+        <view class="hero-metric">
+          <view class="metric-label">资产账户</view>
+          <view class="metric-value"><text>{{accountCount}}</text> 个</view>
+        </view>
+        <view class="hero-metric">
+          <view class="metric-label label-with-help">
+            <text>总负债</text>
+            <text class="help-icon" catchtap="showMetricHelp" data-type="totalLiabilities">?</text>
+          </view>
+          <view class="metric-value debt" wx:if="{{privacyMode}}">{{bundle.totalLiabilitiesText}}</view>
+          <view class="metric-value debt" wx:else>-{{bundle.totalLiabilitiesText}}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="donut-area">
+      <donut-chart items="{{donutItems}}" center-label="净资产构成" center-value="6类"></donut-chart>
+      <view class="donut-legend">
+        <block wx:for="{{legendItems}}" wx:key="key">
+          <view class="donut-legend-row">
+            <view class="legend-dot" style="background: {{item.color}}"></view>
+            <text class="legend-name">{{item.name}}</text>
+          </view>
+        </block>
+      </view>
+    </view>
+    </view>
+
+    <view class="section section-pad composition">
+    <view class="section-head">
+      <view>
+        <view class="section-title">净资产构成</view>
+        <view class="section-subtitle">最新记录的分类占比 · 金额（元）</view>
+      </view>
+      <view class="composition-tabs">
+        <view
+          class="composition-tab {{compositionView === 'list' ? 'active' : ''}}"
+          data-view="list"
+          bindtap="setCompositionView"
+        >列表</view>
+        <view
+          class="composition-tab {{compositionView === 'chart' ? 'active' : ''}}"
+          data-view="chart"
+          bindtap="setCompositionView"
+        >图表</view>
+      </view>
+    </view>
+
+    <block wx:if="{{compositionView === 'list'}}">
+      <block wx:for="{{compositionItems}}" wx:key="key">
+        <view class="asset-row" bindtap="goDetail" data-type="{{item.key}}">
+          <view class="icon-token" style="background: {{item.color}}">{{item.shortName}}</view>
+          <view class="asset-main">
+            <view class="asset-name">{{item.name}}</view>
+            <view class="bar-track">
+              <view class="bar-fill" style="width: {{item.donutPercent}}%; background: {{item.color}}"></view>
+            </view>
+          </view>
+          <view class="asset-number">
+            <view class="asset-amount">{{item.amountText}}</view>
+            <view class="asset-meta">
+              <text class="{{item.deltaClass}}">{{item.deltaText}}</text>
+              <text class="muted">{{item.donutPercentText}}</text>
+            </view>
+          </view>
+          <view class="chevron">›</view>
+        </view>
+      </block>
+    </block>
+
+    <view wx:if="{{compositionView === 'chart'}}" class="composition-chart">
+      <view class="composition-chart-body">
+        <donut-chart items="{{donutItems}}" center-label="净资产" center-value="{{bundle.totalNetText}}"></donut-chart>
+        <view class="composition-legend">
+          <block wx:for="{{compositionItems}}" wx:key="key">
+            <view class="composition-legend-row" bindtap="goDetail" data-type="{{item.key}}">
+              <view class="legend-dot" style="background: {{item.color}}"></view>
+              <view class="composition-legend-name">{{item.name}}</view>
+              <view class="composition-legend-value">{{item.amountText}}</view>
+              <view class="muted">{{item.donutPercentText}}</view>
+            </view>
+          </block>
+        </view>
+      </view>
+    </view>
+    </view>
+
+    <view class="section section-pad">
+    <view class="section-head">
+      <view>
+        <view class="section-title">净资产趋势</view>
+        <view class="section-subtitle">按录入日期统计</view>
+      </view>
+    </view>
+    <line-chart points="{{trendPoints}}" color="#174EA6" privacy-mode="{{privacyMode}}"></line-chart>
+    </view>
+    <view wx:if="{{viewing.isViewingFamily}}" class="family-view-banner">正在查看 {{viewing.viewingOwner.nickName}} 的资产数据</view>
+  </block>
+</view>

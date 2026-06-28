@@ -1,0 +1,59 @@
+.family-page {
+  padding-bottom: 44rpx;
+}
+
+.share-btn {
+  margin-top: 28rpx;
+}
+
+.member-section {
+  margin-top: 24rpx;
+}
+
+.member-head {
+  padding: 26rpx 24rpx 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.member-row {
+  min-height: 112rpx;
+  padding: 20rpx 24rpx;
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  border-top: 1rpx solid #edf1f7;
+}
+
+.member-avatar {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+}
+
+.member-avatar.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #edf4ff;
+  color: #1769ff;
+  font-weight: 700;
+}
+
+.member-main {
+  flex: 1;
+}
+
+.member-name {
+  margin-bottom: 8rpx;
+  color: #111827;
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.empty-line {
+  padding: 42rpx 24rpx;
+  text-align: center;
+  color: #8b94a5;
+}

@@ -1,0 +1,61 @@
+<view class="page record-page">
+  <skeleton-screen wx:if="{{loading}}" type="record"></skeleton-screen>
+
+  <block wx:if="{{!loading && category}}">
+    <view class="form-title">
+    <view class="form-accent"></view>
+    <view>
+      <view class="section-title">{{category.name}}信息</view>
+      <view class="section-subtitle">{{recordHint}}</view>
+    </view>
+    </view>
+
+    <view class="section form-section">
+    <block wx:for="{{fields}}" wx:key="key">
+      <view class="form-row {{item.rowClass}}">
+        <view class="form-label">
+          <text>{{item.label}}</text>
+          <text class="required" wx:if="{{item.required}}">*</text>
+        </view>
+        <input
+          wx:if="{{!item.isTextarea}}"
+          class="form-input"
+          value="{{item.value}}"
+          placeholder="{{item.placeholder}}"
+          type="{{item.inputType}}"
+          data-field="{{item.key}}"
+          data-index="{{index}}"
+          bindinput="onInput"
+        />
+        <textarea
+          wx:else
+          class="form-textarea"
+          value="{{item.value}}"
+          placeholder="{{item.placeholder}}"
+          maxlength="80"
+          data-field="{{item.key}}"
+          data-index="{{index}}"
+          bindinput="onInput"
+        />
+      </view>
+    </block>
+    </view>
+
+    <view class="section preview-card">
+    <view class="icon-token" style="background: {{category.color}}">{{category.shortName}}</view>
+    <view class="preview-main">
+      <view class="preview-title">保存后计入{{category.name}}{{category.liability ? '负债' : '资产'}}</view>
+      <view class="muted">记录日期 {{recordDate}} · 人民币</view>
+    </view>
+    <view class="preview-amount {{category.liability ? 'red' : 'blue'}}">
+      {{category.liability ? '-' : ''}}{{amountPreview}}
+    </view>
+    </view>
+
+    <view class="bottom-actions">
+    <button class="btn-secondary" bindtap="goBack">取消</button>
+    <button class="btn-primary" bindtap="save">保存</button>
+    </view>
+    <view wx:if="{{viewing.isViewingFamily}}" class="family-view-banner">正在查看 {{viewing.viewingOwner.nickName}} 的资产数据</view>
+  </block>
+</view>

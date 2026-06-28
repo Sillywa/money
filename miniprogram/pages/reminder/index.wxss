@@ -1,0 +1,31 @@
+.reminder-page {
+  padding-bottom: 44rpx;
+}
+
+.picker-row {
+  margin-top: 28rpx;
+  min-height: 112rpx;
+  padding: 24rpx;
+  border-radius: 16rpx;
+  background: #f7f9fc;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.picker-title {
+  margin-bottom: 8rpx;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #111827;
+}
+
+.picker-value {
+  color: #1769ff;
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.save-btn {
+  margin-top: 30rpx;
+}

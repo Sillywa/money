@@ -1,0 +1,83 @@
+<view class="page assets-page">
+  <skeleton-screen wx:if="{{loading}}" type="assets"></skeleton-screen>
+
+  <block wx:if="{{!loading}}">
+    <record-strip
+      latest-date="{{bundle.current.recordDate}}"
+      compare-date="{{bundle.previous.recordDate}}"
+      compare-options="{{compareOptions}}"
+      compare-index="{{compareIndex}}"
+      bind:change="onCompareChange"
+    ></record-strip>
+
+    <view class="section summary-card">
+    <view class="summary-grid">
+      <view class="summary-item">
+        <view class="muted label-with-help">
+          <text>净资产</text>
+          <text class="help-icon" catchtap="showMetricHelp" data-type="netWorth">?</text>
+        </view>
+        <view class="kpi-value">{{bundle.totalNetText}}</view>
+      </view>
+      <view class="summary-item">
+        <view class="muted">较对比</view>
+        <view class="kpi-value small {{bundle.netDeltaClass}}">{{bundle.netDeltaText}}</view>
+      </view>
+      <view class="summary-item">
+        <view class="muted label-with-help">
+          <text>总负债</text>
+          <text class="help-icon" catchtap="showMetricHelp" data-type="totalLiabilities">?</text>
+        </view>
+        <view class="kpi-value" wx:if="{{privacyMode}}">{{bundle.totalLiabilitiesText}}</view>
+        <view class="kpi-value" wx:else>-{{bundle.totalLiabilitiesText}}</view>
+      </view>
+      <view class="summary-item">
+        <view class="muted">较对比</view>
+        <view class="kpi-value small {{bundle.totalLiabilitiesDeltaClass}}">{{bundle.totalLiabilitiesDeltaText}}</view>
+      </view>
+    </view>
+    </view>
+
+    <scroll-view class="filter-scroll" scroll-x enhanced>
+    <view class="filters">
+      <block wx:for="{{filters}}" wx:key="key">
+        <view class="pill {{item.active ? 'active' : ''}}" bindtap="setFilter" data-key="{{item.key}}">{{item.name}}</view>
+      </block>
+    </view>
+    </scroll-view>
+
+    <block wx:for="{{groups}}" wx:key="key">
+    <view class="section group" wx:if="{{item.visible}}">
+      <view class="group-head" bindtap="goDetail" data-type="{{item.key}}">
+        <view class="head-left">
+          <view class="icon-token" style="background: {{item.color}}">{{item.shortName}}</view>
+          <view>
+            <view class="group-title">{{item.name}}</view>
+            <view class="muted">{{item.count}} 个条目</view>
+          </view>
+        </view>
+        <view class="head-right">
+          <view>{{item.amountText}}</view>
+          <view class="{{item.deltaClass}}">{{item.deltaText}}</view>
+        </view>
+        <view class="group-chevron">›</view>
+      </view>
+      <block wx:for="{{item.rows}}" wx:key="id" wx:for-item="row">
+        <view class="detail-row">
+          <view class="detail-main">
+            <view class="detail-title">{{row.title}}</view>
+            <view class="detail-sub">{{row.subtitle}}</view>
+          </view>
+          <view class="detail-right">
+            <view>{{row.amountText}}</view>
+            <view class="{{row.deltaClass}}">{{row.deltaText}}</view>
+          </view>
+        </view>
+      </block>
+    </view>
+    </block>
+
+    <view class="complete-line">最新记录 {{accountCount}} 个账户，对比记录 {{previousCount}} 个账户</view>
+    <view wx:if="{{viewing.isViewingFamily}}" class="family-view-banner">正在查看 {{viewing.viewingOwner.nickName}} 的资产数据</view>
+  </block>
+</view>

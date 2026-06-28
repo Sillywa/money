@@ -1,0 +1,52 @@
+.record-strip-space {
+  height: 72rpx;
+}
+
+.record-strip {
+  position: fixed;
+  top: 0;
+  left: 28rpx;
+  right: 28rpx;
+  z-index: 50;
+  height: 72rpx;
+  padding: 0 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #667085;
+  background: #edf4ff;
+  border-radius: 18rpx;
+}
+
+.record-label {
+  margin-right: 12rpx;
+  font-size: 24rpx;
+}
+
+.record-date {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #1769ff;
+}
+
+.record-compare {
+  min-height: 48rpx;
+  padding: 0 4rpx 0 12rpx;
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  font-size: 24rpx;
+  color: #344054;
+  font-weight: 600;
+}
+
+.record-compare-arrow {
+  width: 16rpx;
+  height: 16rpx;
+  display: inline-block;
+  border-right: 3rpx solid #344054;
+  border-bottom: 3rpx solid #344054;
+  transform: rotate(45deg);
+  transform-origin: center;
+  margin-top: -6rpx;
+}

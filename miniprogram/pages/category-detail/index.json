@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "资产详情",
+  "usingComponents": {
+    "line-chart": "/components/line-chart/index",
+    "record-strip": "/components/record-strip/index",
+    "skeleton-screen": "/components/skeleton-screen/index"
+  },
+  "enablePullDownRefresh": true
+}

@@ -1,0 +1,94 @@
+<view class="page analytics-page">
+  <skeleton-screen wx:if="{{loading}}" type="analytics"></skeleton-screen>
+
+  <block wx:if="{{!loading}}">
+    <view class="section section-pad goal-section">
+      <view class="section-head">
+        <view>
+          <view class="section-title label-with-help">
+            <text>目标净资产</text>
+            <text class="help-icon" catchtap="showMetricHelp" data-type="netWorth">?</text>
+          </view>
+          <view class="section-subtitle">按最新记录计算当前进度</view>
+        </view>
+      </view>
+
+      <view class="target-editor">
+        <view class="target-input-wrap">
+          <text class="input-prefix">¥</text>
+          <input
+            class="target-input"
+            type="digit"
+            value="{{targetNetWorthInput}}"
+            placeholder="设置目标净资产"
+            bindinput="onTargetInput"
+          />
+        </view>
+        <button class="small-action" bindtap="saveTargetNetWorth">保存</button>
+      </view>
+
+      <view class="goal-progress-card">
+        <view class="goal-progress-top">
+          <view>
+            <view class="muted">最新净资产</view>
+            <view class="goal-value">{{latestNetText}}</view>
+          </view>
+          <view class="goal-right">
+            <view class="muted">目标</view>
+            <view class="goal-value">{{targetNetWorthText}}</view>
+          </view>
+        </view>
+        <view class="progress-track">
+          <view class="progress-fill" style="width: {{goalProgress}}%;"></view>
+        </view>
+        <view class="goal-progress-bottom">
+          <text>完成 {{goalProgressText}}</text>
+          <text>距目标 {{goalRemainText}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="section section-pad calculator-section">
+      <view class="section-head">
+        <view>
+          <view class="section-title">理财收益测算</view>
+          <view class="section-subtitle">复利模式，以本金为起点</view>
+        </view>
+        <view class="year-tabs">
+          <view class="year-tab {{projectionYears === 10 ? 'active' : ''}}" data-years="10" bindtap="setProjectionYears">10年</view>
+          <view class="year-tab {{projectionYears === 30 ? 'active' : ''}}" data-years="30" bindtap="setProjectionYears">30年</view>
+        </view>
+      </view>
+
+      <view class="calc-form">
+        <view class="calc-field">
+          <view class="calc-label">本金（元）</view>
+          <input class="calc-input" type="digit" value="{{principalInput}}" bindinput="onPrincipalInput" />
+        </view>
+        <view class="calc-field">
+          <view class="calc-label">年预期收益率</view>
+          <view class="rate-input-wrap">
+            <input class="calc-input rate-input" type="digit" value="{{annualRateInput}}" bindinput="onAnnualRateInput" />
+            <text>%</text>
+          </view>
+        </view>
+        <button class="small-action calc-save" bindtap="saveProjectionSettings">更新测算</button>
+      </view>
+
+      <view class="projection-summary">
+        <view>
+          <view class="muted">{{projectionYears}}年后资产</view>
+          <view class="projection-value">{{projectionFinalText}}</view>
+        </view>
+        <view>
+          <view class="muted">累计收益</view>
+          <view class="projection-value red">{{projectionGrowthText}}</view>
+        </view>
+      </view>
+
+      <line-chart points="{{projectionPoints}}" color="#13A37B" fill-color="rgba(19, 163, 123, 0.10)" privacy-mode="{{privacyMode}}"></line-chart>
+    </view>
+
+    <view wx:if="{{viewing.isViewingFamily}}" class="family-view-banner">正在查看 {{viewing.viewingOwner.nickName}} 的资产数据</view>
+  </block>
+</view>

@@ -1,0 +1,19 @@
+<view class="page reminder-page">
+  <view class="section section-pad">
+    <view class="section-title">每月提醒</view>
+    <view class="section-subtitle">提醒时间固定为所选日期早上 10:00</view>
+
+    <picker mode="selector" range="{{days}}" value="{{dayIndex}}" bindchange="onDayChange">
+      <view class="picker-row">
+        <view>
+          <view class="picker-title">提醒日期</view>
+          <view class="muted">每月 {{dayIndex + 1}} 日 10:00</view>
+        </view>
+        <view class="picker-value">{{days[dayIndex]}} ›</view>
+      </view>
+    </picker>
+  </view>
+
+  <button class="btn-primary save-btn" loading="{{saving}}" bindtap="save">保存提醒</button>
+  <view wx:if="{{viewing.isViewingFamily}}" class="family-view-banner">正在查看 {{viewing.viewingOwner.nickName}} 的资产数据</view>
+</view>

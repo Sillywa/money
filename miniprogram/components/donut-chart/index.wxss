@@ -1,0 +1,38 @@
+.donut-wrap {
+  width: 220rpx;
+  height: 220rpx;
+  position: relative;
+}
+
+.donut-canvas {
+  width: 220rpx;
+  height: 220rpx;
+}
+
+.donut-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 112rpx;
+  height: 112rpx;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.donut-label {
+  font-size: 22rpx;
+  color: #667085;
+}
+
+.donut-value {
+  margin-top: 4rpx;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #111827;
+}

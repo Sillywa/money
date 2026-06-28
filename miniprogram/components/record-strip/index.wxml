@@ -1,0 +1,13 @@
+<view class="record-strip-space"></view>
+<view class="record-strip">
+  <view>
+    <text class="record-label">{{latestLabel}}</text>
+    <text class="record-date">{{latestDate}}</text>
+  </view>
+  <picker mode="selector" range="{{compareOptions}}" value="{{compareIndex}}" bindchange="onPickerChange">
+    <view class="record-compare">
+      <text>{{compareLabel}} {{compareDate}}</text>
+      <text class="record-compare-arrow"></text>
+    </view>
+  </picker>
+</view>

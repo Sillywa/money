@@ -1,0 +1,47 @@
+{
+  "pages": [
+    "pages/dashboard/index",
+    "pages/assets/index",
+    "pages/category-detail/index",
+    "pages/record/index",
+    "pages/reminder/index",
+    "pages/family/index",
+    "pages/family-invite/index",
+    "pages/analytics/index",
+    "pages/profile/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "资产看板",
+    "navigationBarBackgroundColor": "#F7F9FC",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#F7F9FC",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "custom": false,
+    "color": "#7A8494",
+    "selectedColor": "#1769FF",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/dashboard/index",
+        "text": "资产总览"
+      },
+      {
+        "pagePath": "pages/assets/index",
+        "text": "资产明细"
+      },
+      {
+        "pagePath": "pages/analytics/index",
+        "text": "资产目标"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

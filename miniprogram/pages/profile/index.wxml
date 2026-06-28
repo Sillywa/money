@@ -1,0 +1,87 @@
+<view class="page profile-page">
+  <skeleton-screen wx:if="{{loading}}" type="profile"></skeleton-screen>
+
+  <block wx:if="{{!loading}}">
+    <view class="profile-head">
+      <button wx:if="{{!profile.avatarUrl}}" class="avatar avatar-empty" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+        <text class="avatar-plus">+</text>
+        <text class="avatar-tip">获取头像信息</text>
+      </button>
+      <button wx:else class="avatar avatar-image-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+        <image class="avatar-image" src="{{profile.avatarUrl}}" mode="aspectFill"></image>
+      </button>
+
+      <view class="profile-main">
+        <input
+          class="profile-name-input"
+          type="nickname"
+          value="{{profile.nickName}}"
+          placeholder="资产记录者"
+          bindinput="onNicknameInput"
+          bindblur="saveNickname"
+        />
+        <view class="muted">已完成 {{recordCount}} 次资产记录</view>
+      </view>
+    </view>
+
+    <button wx:if="{{viewing.isViewingFamily}}" class="return-mine" bindtap="returnMine">返回我的资产</button>
+
+    <view class="privacy-card section">
+      <view class="icon-token privacy-icon">隐</view>
+      <view class="privacy-main">
+        <view class="privacy-title">资产隐私</view>
+        <view class="muted">开启后金额默认以 **** 展示</view>
+      </view>
+      <switch checked="{{profile.privacyEnabled}}" color="#1769FF" bindchange="onPrivacyChange" />
+    </view>
+
+    <view class="section setting-section">
+      <view class="setting-row static">
+        <view class="setting-left">
+          <view class="setting-icon" style="background: #1769FF">元</view>
+          <view>
+            <view>资产单位</view>
+            <view class="setting-desc">全部金额按人民币 CNY 统计</view>
+          </view>
+        </view>
+        <view class="setting-value">元</view>
+      </view>
+
+      <view class="setting-row static">
+        <view class="setting-left">
+          <view class="setting-icon" style="background: #10B981">比</view>
+          <view>
+            <view>对比口径</view>
+            <view class="setting-desc">最新记录与选择的历史记录对比</view>
+          </view>
+        </view>
+      </view>
+
+      <view class="setting-row" bindtap="goReminder">
+        <view class="setting-left">
+          <view class="setting-icon" style="background: #0EA5E9">醒</view>
+          <view>
+            <view>记录提醒</view>
+            <view class="setting-desc">{{reminderText}}</view>
+          </view>
+        </view>
+        <view class="setting-value">
+          <text class="chevron">›</text>
+        </view>
+      </view>
+
+      <view class="setting-row" bindtap="goFamily">
+        <view class="setting-left">
+          <view class="setting-icon" style="background: #7C3AED">亲</view>
+          <view>
+            <view>亲友资产</view>
+            <view class="setting-desc">邀请亲友绑定，切换浏览资产数据</view>
+          </view>
+        </view>
+        <view class="setting-value">
+          <text class="chevron">›</text>
+        </view>
+      </view>
+    </view>
+  </block>
+</view>

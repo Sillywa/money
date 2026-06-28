@@ -1,0 +1,40 @@
+.invite-page {
+  padding-bottom: 44rpx;
+}
+
+.invite-panel {
+  margin-top: 80rpx;
+  text-align: center;
+}
+
+.invite-mark {
+  width: 96rpx;
+  height: 96rpx;
+  margin: 0 auto 28rpx;
+  border-radius: 28rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #edf4ff;
+  color: #1769ff;
+  font-size: 42rpx;
+  font-weight: 800;
+}
+
+.invite-title {
+  font-size: 38rpx;
+  font-weight: 800;
+  color: #111827;
+}
+
+.invite-text {
+  margin-top: 18rpx;
+  color: #667085;
+  font-size: 27rpx;
+  line-height: 1.7;
+  text-align: left;
+}
+
+.action-btn {
+  margin-top: 28rpx;
+}
