@@ -16,7 +16,7 @@
     <view class="summary-grid">
       <view class="summary-item">
         <view class="muted label-with-help">
-          <text>净资产</text>
+          <text>净资产（元）</text>
           <text class="help-icon" catchtap="showMetricHelp" data-type="netWorth">?</text>
         </view>
         <view class="kpi-value">{{bundle.totalNetText}}</view>

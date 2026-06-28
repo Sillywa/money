@@ -9,7 +9,7 @@
         <view>
           <view class="section-title label-with-help">
             <icon-font name="target" color="#1769FF" size="{{44}}" radius="{{14}}"></icon-font>
-            <text>目标净资产</text>
+            <text>目标净资产（元）</text>
             <text class="help-icon" catchtap="showMetricHelp" data-type="netWorth">?</text>
           </view>
           <view class="section-subtitle">按最新记录计算当前进度</view>
@@ -33,7 +33,7 @@
       <view class="goal-progress-card">
         <view class="goal-progress-top">
           <view>
-            <view class="muted">最新净资产</view>
+            <view class="muted">最新净资产（元）</view>
             <view class="goal-value">{{latestNetText}}</view>
           </view>
           <view class="goal-right">
