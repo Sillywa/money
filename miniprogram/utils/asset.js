@@ -67,13 +67,33 @@ function getDeltaClass(delta) {
   return "muted";
 }
 
-function findPreviousItem(previous, key, item, index) {
+function normalizeIdentityValue(value) {
+  return String(value || "").trim();
+}
+
+function getItemIdentity(key, item) {
+  if (!item) return "";
+  if (key === "bank") {
+    return [item.bankName, item.cardType, item.tailNo].map(normalizeIdentityValue).join("|");
+  }
+  if (key === "creditCard") {
+    return [item.bankName, item.tailNo].map(normalizeIdentityValue).join("|");
+  }
+  if (key === "housingFund") {
+    return [item.name, item.city, item.accountType].map(normalizeIdentityValue).join("|");
+  }
+  return normalizeIdentityValue(item.name);
+}
+
+function findPreviousItem(previous, key, item) {
   const list = (previous.assets && previous.assets[key]) || [];
   if (item.id) {
     const matched = list.find((prev) => prev.id === item.id);
     if (matched) return matched;
   }
-  return list[index] || {};
+  const identity = getItemIdentity(key, item);
+  if (!identity || identity.split("|").every((part) => !part)) return {};
+  return list.find((prev) => getItemIdentity(key, prev) === identity) || {};
 }
 
 function itemTitle(category, item) {
@@ -102,7 +122,7 @@ function getCategoryRows(current, previous, key, recordDate) {
   const list = (current.assets && current.assets[key]) || [];
 
   return list.map((item, index) => {
-    const previousItem = findPreviousItem(previous, key, item, index);
+    const previousItem = findPreviousItem(previous, key, item);
     const delta = toNumber(item.amount) - toNumber(previousItem.amount);
     return {
       ...item,
@@ -224,8 +244,7 @@ function createTodaySnapshot(bundle, categoryKey, item, editIndex, targetRecordD
   let current = records.find((record) => record.recordDate === recordDate);
 
   if (!current) {
-    current = clone(bundle.current);
-    current.recordDate = recordDate;
+    current = createEmptySnapshot(recordDate);
     records.push(current);
   }
 

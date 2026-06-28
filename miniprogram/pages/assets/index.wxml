@@ -4,16 +4,27 @@
   <block wx:if="{{!loading}}">
     <view wx:if="{{viewing.isViewingFamily}}" class="family-view-banner">正在查看 {{viewing.viewingOwner.nickName}} 的资产数据</view>
 
-    <record-strip
-      latest-date="{{bundle.current.recordDate}}"
-      compare-date="{{compareDate}}"
-      compare-options="{{compareOptions}}"
-      compare-index="{{compareIndex}}"
-      bind:change="onCompareChange"
-    ></record-strip>
+    <view class="section date-card">
+      <picker mode="selector" range="{{dateOptions}}" value="{{dateIndex}}" bindchange="onDateChange">
+        <view class="date-row">
+          <view>
+            <view class="date-title">记录日期</view>
+            <view class="muted">查看该日期下的资产与负债</view>
+          </view>
+          <view class="date-value">
+            <text>{{selectedDate}}</text>
+            <text class="date-arrow">›</text>
+          </view>
+        </view>
+      </picker>
+    </view>
 
     <view class="section summary-card">
     <view class="summary-grid">
+      <view class="summary-item">
+        <view class="muted">总资产（元）</view>
+        <view class="kpi-value">{{bundle.totalAssetsText}}</view>
+      </view>
       <view class="summary-item">
         <view class="muted label-with-help">
           <text>净资产（元）</text>
@@ -22,20 +33,16 @@
         <view class="kpi-value">{{bundle.totalNetText}}</view>
       </view>
       <view class="summary-item">
-        <view class="muted">较对比</view>
-        <view class="kpi-value small {{bundle.netDeltaClass}}">{{bundle.netDeltaText}}</view>
-      </view>
-      <view class="summary-item">
         <view class="muted label-with-help">
-          <text>总负债</text>
+          <text>总负债（元）</text>
           <text class="help-icon" catchtap="showMetricHelp" data-type="totalLiabilities">?</text>
         </view>
         <view class="kpi-value" wx:if="{{privacyMode}}">{{bundle.totalLiabilitiesText}}</view>
         <view class="kpi-value" wx:else>-{{bundle.totalLiabilitiesText}}</view>
       </view>
       <view class="summary-item">
-        <view class="muted">较对比</view>
-        <view class="kpi-value small {{bundle.totalLiabilitiesDeltaClass}}">{{bundle.totalLiabilitiesDeltaText}}</view>
+        <view class="muted">资产账户</view>
+        <view class="kpi-value">{{accountCount}}</view>
       </view>
     </view>
     </view>
@@ -60,7 +67,6 @@
         </view>
         <view class="head-right">
           <view>{{item.amountText}}</view>
-          <view class="{{item.deltaClass}}">{{item.deltaText}}</view>
         </view>
         <view class="group-chevron">›</view>
       </view>
@@ -72,13 +78,12 @@
           </view>
           <view class="detail-right">
             <view>{{row.amountText}}</view>
-            <view class="{{row.deltaClass}}">{{row.deltaText}}</view>
           </view>
         </view>
       </block>
     </view>
     </block>
 
-    <view class="complete-line">最新记录 {{accountCount}} 个账户，对比记录 {{previousCount}} 个账户</view>
+    <view class="complete-line">{{selectedDate}} 共 {{accountCount}} 个账户</view>
   </block>
 </view>

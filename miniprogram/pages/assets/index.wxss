@@ -2,6 +2,44 @@
   padding-bottom: 44rpx;
 }
 
+.date-card {
+  margin-top: 24rpx;
+  padding: 0 24rpx;
+}
+
+.date-row {
+  min-height: 112rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20rpx;
+}
+
+.date-title {
+  margin-bottom: 8rpx;
+  color: #344054;
+  font-size: 29rpx;
+  font-weight: 650;
+}
+
+.date-value {
+  max-width: 360rpx;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12rpx;
+  color: #1769ff;
+  font-size: 27rpx;
+  font-weight: 650;
+  text-align: right;
+}
+
+.date-arrow {
+  color: #9aa3b2;
+  font-size: 34rpx;
+  line-height: 1;
+}
+
 .summary-card {
   margin-top: 24rpx;
   padding: 28rpx;

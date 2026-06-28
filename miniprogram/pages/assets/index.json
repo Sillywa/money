@@ -2,7 +2,6 @@
   "navigationBarTitleText": "资产明细",
   "usingComponents": {
     "icon-font": "/components/icon-font/index",
-    "record-strip": "/components/record-strip/index",
     "skeleton-screen": "/components/skeleton-screen/index"
   },
   "enablePullDownRefresh": true

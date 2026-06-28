@@ -16,10 +16,9 @@ Page({
     ],
     activeFilter: "all",
     accountCount: 0,
-    previousCount: 0,
-    compareDate: "",
-    compareOptions: [],
-    compareIndex: 0,
+    selectedDate: "",
+    dateOptions: [],
+    dateIndex: 0,
     rawBundle: null,
     privacyMode: false,
     viewing: null,
@@ -39,23 +38,22 @@ Page({
     }
 
     return fetchSnapshots({ force: !!opts.force }).then((records) => {
-      const rawBundle = buildBundle(records, opts.compareDate !== undefined ? opts.compareDate : this.data.compareDate);
+      const baseBundle = buildBundle(records);
+      const dateOptions = baseBundle.records.slice().sort((a, b) => a.recordDate < b.recordDate ? 1 : -1).map((record) => record.recordDate);
+      const selectedDate = opts.selectedDate || this.data.selectedDate || dateOptions[0] || baseBundle.current.recordDate;
+      const selectedRecord = baseBundle.records.find((record) => record.recordDate === selectedDate) || baseBundle.current;
+      const rawBundle = buildBundle([selectedRecord]);
       const privacyMode = !!((getProfile() || {}).privacyEnabled);
       const bundle = privacyMode ? maskBundle(rawBundle) : rawBundle;
       const groups = this.buildGroups(rawBundle, this.data.activeFilter, privacyMode);
-      const compareOptions = bundle.compareRecords.map((record) => record.recordDate);
-      const previousCount = Object.keys(rawBundle.previous.assets || {}).reduce((sum, key) => {
-        return sum + ((rawBundle.previous.assets && rawBundle.previous.assets[key]) || []).length;
-      }, 0);
       this.setData({
         bundle,
         rawBundle,
         groups,
         accountCount: groups.reduce((sum, item) => sum + item.rows.length, 0),
-        previousCount,
-        compareDate: rawBundle.previous.recordDate,
-        compareOptions,
-        compareIndex: Math.max(0, compareOptions.indexOf(bundle.previous.recordDate)),
+        selectedDate: selectedRecord.recordDate,
+        dateOptions,
+        dateIndex: Math.max(0, dateOptions.indexOf(selectedRecord.recordDate)),
         privacyMode,
         viewing: getViewingInfo(),
         themeClass: getThemeClass(),
@@ -77,7 +75,7 @@ Page({
       const summary = displayBundle.categories.find((item) => item.key === category.key);
       let visible = filter === "all" || filter === category.key;
       if (filter === "pay") visible = category.key === "wechat" || category.key === "alipay";
-      const rows = getCategoryRows(bundle.current, bundle.previous, category.key);
+      const rows = getCategoryRows(bundle.current, bundle.current, category.key);
       return {
         ...summary,
         visible,
@@ -98,10 +96,10 @@ Page({
     });
   },
 
-  onCompareChange(event) {
-    const recordDate = event.detail.recordDate || this.data.compareOptions[Number(event.detail.value)];
-    this.setData({ compareDate: recordDate });
-    this.load({ compareDate });
+  onDateChange(event) {
+    const selectedDate = this.data.dateOptions[Number(event.detail.value)] || this.data.selectedDate;
+    this.setData({ selectedDate });
+    this.load({ selectedDate });
   },
 
   onPullDownRefresh() {

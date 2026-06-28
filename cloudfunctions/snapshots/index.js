@@ -355,16 +355,10 @@ async function moveRecordDate(ownerOpenid, payload, editor) {
     let target = targetResult.data[0] || null;
 
     if (!target) {
-      const latestResult = await snapshotCollection
-        .where({ ownerOpenid })
-        .orderBy("recordDate", "desc")
-        .limit(1)
-        .get();
-      const latest = latestResult.data[0] || source;
       target = {
         ownerOpenid,
         recordDate: payload.toRecordDate,
-        assets: normalizeAssets(cloneValue(latest.assets)),
+        assets: {},
         schemaVersion: SCHEMA_VERSION
       };
     }
