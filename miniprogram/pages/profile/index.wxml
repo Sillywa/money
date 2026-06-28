@@ -27,7 +27,7 @@
     <button wx:if="{{viewing.isViewingFamily}}" class="return-mine" bindtap="returnMine">返回我的资产</button>
 
     <view class="privacy-card section">
-      <view class="icon-token privacy-icon">隐</view>
+      <icon-font name="eye-off" color="#1769FF"></icon-font>
       <view class="privacy-main">
         <view class="privacy-title">资产隐私</view>
         <view class="muted">开启后金额默认以 **** 展示</view>
@@ -38,7 +38,7 @@
     <view class="section setting-section">
       <view class="setting-row static">
         <view class="setting-left">
-          <view class="setting-icon" style="background: #1769FF">元</view>
+          <icon-font name="currency-cny" color="#1769FF" size="{{50}}" radius="{{15}}"></icon-font>
           <view>
             <view>资产单位</view>
             <view class="setting-desc">全部金额按人民币 CNY 统计</view>
@@ -49,7 +49,7 @@
 
       <view class="setting-row static">
         <view class="setting-left">
-          <view class="setting-icon" style="background: #10B981">比</view>
+          <icon-font name="swap" color="#10B981" size="{{50}}" radius="{{15}}"></icon-font>
           <view>
             <view>对比口径</view>
             <view class="setting-desc">最新记录与选择的历史记录对比</view>
@@ -59,7 +59,7 @@
 
       <view class="setting-row" bindtap="goReminder">
         <view class="setting-left">
-          <view class="setting-icon" style="background: #0EA5E9">醒</view>
+          <icon-font name="bell" color="#0EA5E9" size="{{50}}" radius="{{15}}"></icon-font>
           <view>
             <view>记录提醒</view>
             <view class="setting-desc">{{reminderText}}</view>
@@ -72,7 +72,7 @@
 
       <view class="setting-row" bindtap="goFamily">
         <view class="setting-left">
-          <view class="setting-icon" style="background: #7C3AED">亲</view>
+          <icon-font name="users" color="#7C3AED" size="{{50}}" radius="{{15}}"></icon-font>
           <view>
             <view>亲友资产</view>
             <view class="setting-desc">邀请亲友绑定，切换浏览资产数据</view>

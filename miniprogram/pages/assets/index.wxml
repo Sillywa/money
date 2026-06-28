@@ -52,7 +52,7 @@
     <view class="section group" wx:if="{{item.visible}}">
       <view class="group-head" bindtap="goDetail" data-type="{{item.key}}">
         <view class="head-left">
-          <view class="icon-token" style="background: {{item.color}}">{{item.shortName}}</view>
+          <icon-font name="{{item.icon}}" color="{{item.color}}"></icon-font>
           <view>
             <view class="group-title">{{item.name}}</view>
             <view class="muted">{{item.count}} 个条目</view>

@@ -159,19 +159,6 @@ button::after {
   line-height: 1;
 }
 
-.icon-token {
-  width: 56rpx;
-  height: 56rpx;
-  flex: 0 0 56rpx;
-  border-radius: 16rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #ffffff;
-  font-size: 24rpx;
-  font-weight: 700;
-}
-
 .btn-primary {
   height: 88rpx;
   border-radius: 16rpx;

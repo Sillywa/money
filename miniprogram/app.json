@@ -26,19 +26,27 @@
     "list": [
       {
         "pagePath": "pages/dashboard/index",
-        "text": "资产总览"
+        "text": "资产总览",
+        "iconPath": "assets/tabbar/dashboard.png",
+        "selectedIconPath": "assets/tabbar/dashboard-active.png"
       },
       {
         "pagePath": "pages/assets/index",
-        "text": "资产明细"
+        "text": "资产明细",
+        "iconPath": "assets/tabbar/assets.png",
+        "selectedIconPath": "assets/tabbar/assets-active.png"
       },
       {
         "pagePath": "pages/analytics/index",
-        "text": "资产目标"
+        "text": "资产目标",
+        "iconPath": "assets/tabbar/analytics.png",
+        "selectedIconPath": "assets/tabbar/analytics-active.png"
       },
       {
         "pagePath": "pages/profile/index",
-        "text": "我的"
+        "text": "我的",
+        "iconPath": "assets/tabbar/profile.png",
+        "selectedIconPath": "assets/tabbar/profile-active.png"
       }
     ]
   },

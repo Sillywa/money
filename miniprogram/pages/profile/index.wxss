@@ -79,10 +79,6 @@
   gap: 20rpx;
 }
 
-.privacy-icon {
-  background: #1769ff;
-}
-
 .privacy-main {
   flex: 1;
 }
@@ -120,19 +116,6 @@
   gap: 18rpx;
   font-size: 30rpx;
   font-weight: 600;
-}
-
-.setting-icon {
-  width: 50rpx;
-  height: 50rpx;
-  flex: 0 0 50rpx;
-  border-radius: 15rpx;
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 22rpx;
-  font-weight: 700;
 }
 
 .setting-desc {

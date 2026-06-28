@@ -83,7 +83,7 @@
       <view wx:if="{{group.expanded}}">
         <block wx:for="{{group.rows}}" wx:key="id">
           <view class="item-row" bindtap="editItem" data-index="{{item.index}}" data-record-date="{{group.recordDate}}">
-            <view class="icon-token" style="background: {{category.color}}">{{category.shortName}}</view>
+            <icon-font name="{{category.icon}}" color="{{category.color}}"></icon-font>
             <view class="item-main">
               <view class="item-title">{{item.title}}</view>
               <view class="item-sub">{{item.subtitle}}</view>

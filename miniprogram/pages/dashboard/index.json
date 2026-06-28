@@ -2,6 +2,7 @@
   "navigationBarTitleText": "资产看板",
   "usingComponents": {
     "donut-chart": "/components/donut-chart/index",
+    "icon-font": "/components/icon-font/index",
     "line-chart": "/components/line-chart/index",
     "record-strip": "/components/record-strip/index",
     "skeleton-screen": "/components/skeleton-screen/index"

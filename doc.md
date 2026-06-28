@@ -356,7 +356,8 @@ flowchart LR
 
 | 组件 | 路径 | 用途 |
 |---|---|---|
-| `record-strip` | `components/record-strip` | 最新记录 / 对比记录固定顶部组件 |
+| `record-strip` | `components/record-strip` | 最新记录 / 对比记录顶部组件 |
+| `icon-font` | `components/icon-font` | 分类和设置入口图标组件 |
 | `donut-chart` | `components/donut-chart` | 资产构成环形图 |
 | `line-chart` | `components/line-chart` | 净资产趋势、分类趋势、收益测算曲线 |
 | `skeleton-screen` | `components/skeleton-screen` | 首次加载骨架屏 |

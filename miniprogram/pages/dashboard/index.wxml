@@ -77,7 +77,7 @@
     <block wx:if="{{compositionView === 'list'}}">
       <block wx:for="{{compositionItems}}" wx:key="key">
         <view class="asset-row" bindtap="goDetail" data-type="{{item.key}}">
-          <view class="icon-token" style="background: {{item.color}}">{{item.shortName}}</view>
+          <icon-font name="{{item.icon}}" color="{{item.color}}"></icon-font>
           <view class="asset-main">
             <view class="asset-name">{{item.name}}</view>
             <view class="bar-track">

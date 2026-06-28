@@ -59,7 +59,7 @@
     </view>
 
     <view class="section preview-card">
-    <view class="icon-token" style="background: {{category.color}}">{{category.shortName}}</view>
+    <icon-font name="{{category.icon}}" color="{{category.color}}"></icon-font>
     <view class="preview-main">
       <view class="preview-title">保存后计入{{category.name}}{{category.liability ? '负债' : '资产'}}</view>
       <view class="muted">记录日期 {{recordDate}} · 人民币</view>

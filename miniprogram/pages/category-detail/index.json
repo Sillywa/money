@@ -1,6 +1,7 @@
 {
   "navigationBarTitleText": "资产详情",
   "usingComponents": {
+    "icon-font": "/components/icon-font/index",
     "line-chart": "/components/line-chart/index",
     "record-strip": "/components/record-strip/index",
     "skeleton-screen": "/components/skeleton-screen/index"

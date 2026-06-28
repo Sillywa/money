@@ -1,6 +1,7 @@
 {
   "navigationBarTitleText": "我的",
   "usingComponents": {
+    "icon-font": "/components/icon-font/index",
     "skeleton-screen": "/components/skeleton-screen/index"
   },
   "enablePullDownRefresh": true
