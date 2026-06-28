@@ -2,7 +2,10 @@
   <view wx:if="{{viewing.isViewingFamily}}" class="family-view-banner">正在查看 {{viewing.viewingOwner.nickName}} 的资产数据</view>
 
   <view class="section section-pad">
-    <view class="section-title">邀请亲友</view>
+    <view class="section-title title-with-icon">
+      <icon-font name="share" color="#1769FF" size="{{44}}" radius="{{14}}"></icon-font>
+      <text>邀请亲友</text>
+    </view>
     <view class="section-subtitle">分享给微信好友，对方打开后确认接受，即可互相浏览和维护资产记录。</view>
     <button class="btn-primary share-btn" open-type="share" disabled="{{!inviteToken}}">
       {{inviteToken ? '邀请亲友' : '准备邀请链接...'}}
@@ -17,7 +20,7 @@
     <block wx:for="{{familyMembers}}" wx:key="openid">
       <view class="member-row" bindtap="viewMember" data-openid="{{item.openid}}">
         <image wx:if="{{item.avatarUrl}}" class="member-avatar" src="{{item.avatarUrl}}" mode="aspectFill"></image>
-        <view wx:else class="member-avatar empty">亲</view>
+        <icon-font wx:else name="users" color="#1769FF" size="{{64}}" radius="{{32}}"></icon-font>
         <view class="member-main">
           <view class="member-name">{{item.nickName}}</view>
           <view class="muted">点击查看并维护资产</view>

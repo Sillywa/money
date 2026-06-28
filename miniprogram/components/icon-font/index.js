@@ -15,6 +15,10 @@ Component({
     radius: {
       type: Number,
       value: 16
+    },
+    plain: {
+      type: Boolean,
+      value: false
     }
   }
 });

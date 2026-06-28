@@ -17,7 +17,6 @@
       <view class="label-line">
         <text>净资产</text>
         <text class="help-icon" catchtap="showMetricHelp" data-type="netWorth">?</text>
-        <text class="eye">◉</text>
       </view>
       <view class="hero-amount">{{bundle.totalNetText}}<text> 元</text></view>
       <view class="hero-delta">

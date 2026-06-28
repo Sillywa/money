@@ -59,6 +59,12 @@ button::after {
   color: #101827;
 }
 
+.title-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+}
+
 .section-subtitle {
   margin-top: 6rpx;
   font-size: 23rpx;
@@ -169,6 +175,7 @@ button::after {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 10rpx;
 }
 
 .btn-secondary {

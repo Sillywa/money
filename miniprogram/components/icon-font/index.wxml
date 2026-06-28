@@ -1,5 +1,5 @@
 <view
-  class="icon-font icon-{{name}}"
+  class="icon-font icon-{{name}} {{plain ? 'plain' : ''}}"
   style="width: {{size}}rpx; height: {{size}}rpx; flex-basis: {{size}}rpx; border-radius: {{radius}}rpx; background: {{color}};"
 >
   <view class="icon-glyph"></view>

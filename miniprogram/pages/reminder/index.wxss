@@ -10,7 +10,12 @@
   background: #f7f9fc;
   display: flex;
   align-items: center;
+  gap: 18rpx;
   justify-content: space-between;
+}
+
+.picker-main {
+  flex: 1;
 }
 
 .picker-title {

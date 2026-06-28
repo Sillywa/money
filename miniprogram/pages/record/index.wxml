@@ -71,7 +71,10 @@
 
     <view class="bottom-actions">
     <button class="btn-secondary" bindtap="goBack">取消</button>
-    <button class="btn-primary" loading="{{saving}}" disabled="{{saving}}" bindtap="save">{{saving ? '保存中' : '保存'}}</button>
+    <button class="btn-primary" loading="{{saving}}" disabled="{{saving}}" bindtap="save">
+      <icon-font wx:if="{{!saving}}" name="check" color="transparent" size="{{30}}" radius="{{0}}" plain="{{true}}"></icon-font>
+      <text>{{saving ? '保存中' : '保存'}}</text>
+    </button>
     </view>
   </block>
 </view>

@@ -1,6 +1,7 @@
 {
   "navigationBarTitleText": "资产目标",
   "usingComponents": {
+    "icon-font": "/components/icon-font/index",
     "line-chart": "/components/line-chart/index",
     "skeleton-screen": "/components/skeleton-screen/index"
   },

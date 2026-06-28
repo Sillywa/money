@@ -2,12 +2,16 @@
   <view wx:if="{{viewing.isViewingFamily}}" class="family-view-banner">正在查看 {{viewing.viewingOwner.nickName}} 的资产数据</view>
 
   <view class="section section-pad">
-    <view class="section-title">每月提醒</view>
+    <view class="section-title title-with-icon">
+      <icon-font name="bell" color="#0EA5E9" size="{{44}}" radius="{{14}}"></icon-font>
+      <text>每月提醒</text>
+    </view>
     <view class="section-subtitle">提醒时间固定为所选日期早上 10:00</view>
 
     <picker mode="selector" range="{{days}}" value="{{dayIndex}}" bindchange="onDayChange">
       <view class="picker-row">
-        <view>
+        <icon-font name="calendar" color="#1769FF" size="{{50}}" radius="{{15}}"></icon-font>
+        <view class="picker-main">
           <view class="picker-title">提醒日期</view>
           <view class="muted">每月 {{dayIndex + 1}} 日 10:00</view>
         </view>

@@ -30,6 +30,12 @@ Component({
     }
   },
 
+  data: {
+    canvasWidth: 335,
+    canvasHeight: 165,
+    selectedIndex: -1
+  },
+
   methods: {
     draw() {
       wx.createSelectorQuery()
@@ -40,6 +46,10 @@ Component({
           const rect = (res && res[0]) || {};
           const width = Math.round(rect.width || 335);
           const height = Math.round(rect.height || 165);
+          this.setData({
+            canvasWidth: width,
+            canvasHeight: height
+          });
           if (rect.node) {
             this.drawCanvas2d(rect.node, width, height);
             return;
@@ -61,7 +71,8 @@ Component({
         privacyMode: this.data.privacyMode,
         width,
         height,
-        modern: true
+        modern: true,
+        selectedIndex: this.data.selectedIndex
       });
     },
 
@@ -75,9 +86,20 @@ Component({
         privacyMode: this.data.privacyMode,
         width,
         height,
-        modern: false
+        modern: false,
+        selectedIndex: this.data.selectedIndex
       });
       ctx.draw();
+    },
+
+    onChartTouch(event) {
+      const points = this.data.points || [];
+      if (!points.length) return;
+      const touch = event.touches && event.touches[0];
+      if (!touch) return;
+      const selectedIndex = findNearestPointIndex(touch.x, points.length, this.data.canvasWidth);
+      this.setData({ selectedIndex });
+      this.draw();
     }
   }
 });
@@ -129,6 +151,15 @@ function drawLineChart(ctx, options) {
   });
 
   if (mapped.length) {
+    const selectedIndex = normalizeSelectedIndex(options.selectedIndex, mapped.length);
+    const selected = mapped[selectedIndex];
+    canvasCall(ctx, options.modern, "beginPath");
+    canvasCall(ctx, options.modern, "moveTo", selected.x, top);
+    canvasCall(ctx, options.modern, "lineTo", selected.x, graphH + top);
+    setCanvasStrokeStyle(ctx, options.modern, "rgba(102, 112, 133, 0.32)");
+    setCanvasLineWidth(ctx, options.modern, 1);
+    canvasCall(ctx, options.modern, "stroke");
+
     const last = mapped[mapped.length - 1];
     canvasCall(ctx, options.modern, "beginPath");
     canvasCall(ctx, options.modern, "moveTo", mapped[0].x, graphH + top);
@@ -148,14 +179,14 @@ function drawLineChart(ctx, options) {
     canvasCall(ctx, options.modern, "stroke");
 
     canvasCall(ctx, options.modern, "beginPath");
-    canvasCall(ctx, options.modern, "arc", last.x, last.y, 4, 0, Math.PI * 2);
+    canvasCall(ctx, options.modern, "arc", selected.x, selected.y, 4.5, 0, Math.PI * 2);
     setCanvasFillStyle(ctx, options.modern, options.color);
     canvasCall(ctx, options.modern, "fill");
 
-    const tipText = `${last.label} ${options.privacyMode ? "****" : shortMoney(last.value)}`;
+    const tipText = `${selected.label} ${options.privacyMode ? "****" : shortMoney(selected.value)}`;
     const tipW = Math.max(76, tipText.length * 6);
-    const tipX = Math.min(Math.max(last.x - tipW + 10, left), width - tipW - right);
-    const tipY = Math.max(last.y - 28, 2);
+    const tipX = Math.min(Math.max(selected.x - tipW + 10, left), width - tipW - right);
+    const tipY = Math.max(selected.y - 28, 2);
     setCanvasFillStyle(ctx, options.modern, options.color);
     roundRect(ctx, options.modern, tipX, tipY, tipW, 22, 5);
     canvasCall(ctx, options.modern, "fill");
@@ -172,6 +203,24 @@ function drawLineChart(ctx, options) {
       canvasCall(ctx, options.modern, "fillText", point.label, x - 15, height - 10);
     }
   });
+}
+
+function normalizeSelectedIndex(selectedIndex, length) {
+  const index = Number(selectedIndex);
+  if (!Number.isFinite(index) || index < 0 || index >= length) {
+    return length - 1;
+  }
+  return Math.round(index);
+}
+
+function findNearestPointIndex(touchX, pointCount, width) {
+  if (pointCount <= 1) return 0;
+  const left = 36;
+  const right = 10;
+  const graphW = Math.max(1, (width || 335) - left - right);
+  const clampedX = Math.min(Math.max(Number(touchX || 0), left), (width || 335) - right);
+  const ratio = (clampedX - left) / graphW;
+  return Math.min(pointCount - 1, Math.max(0, Math.round(ratio * (pointCount - 1))));
 }
 
 function canvasCall(ctx, modern, method, ...args) {

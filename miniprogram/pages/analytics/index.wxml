@@ -8,6 +8,7 @@
       <view class="section-head">
         <view>
           <view class="section-title label-with-help">
+            <icon-font name="target" color="#1769FF" size="{{44}}" radius="{{14}}"></icon-font>
             <text>目标净资产</text>
             <text class="help-icon" catchtap="showMetricHelp" data-type="netWorth">?</text>
           </view>
@@ -53,7 +54,10 @@
     <view class="section section-pad calculator-section">
       <view class="section-head">
         <view>
-          <view class="section-title">理财收益测算</view>
+          <view class="section-title title-with-icon">
+            <icon-font name="calculator" color="#13A37B" size="{{44}}" radius="{{14}}"></icon-font>
+            <text>理财收益测算</text>
+          </view>
           <view class="section-subtitle">复利模式，以本金为起点</view>
         </view>
         <view class="year-tabs">

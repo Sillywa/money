@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "记录提醒"
+  "navigationBarTitleText": "记录提醒",
+  "usingComponents": {
+    "icon-font": "/components/icon-font/index"
+  }
 }

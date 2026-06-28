@@ -25,11 +25,6 @@
   font-weight: 600;
 }
 
-.eye {
-  color: #475467;
-  font-size: 22rpx;
-}
-
 .hero-amount {
   margin-top: 20rpx;
   font-size: 60rpx;

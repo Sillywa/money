@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "亲友资产"
+  "navigationBarTitleText": "亲友资产",
+  "usingComponents": {
+    "icon-font": "/components/icon-font/index"
+  }
 }
