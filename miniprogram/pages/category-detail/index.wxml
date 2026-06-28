@@ -1,4 +1,4 @@
-<view class="page detail-page">
+<view class="page detail-page {{themeClass}}">
   <skeleton-screen wx:if="{{loading}}" type="detail"></skeleton-screen>
 
   <block wx:if="{{!loading && category}}">
@@ -46,7 +46,7 @@
         <view class="section-subtitle">按录入日期统计</view>
       </view>
     </view>
-    <line-chart points="{{trendPoints}}" color="{{category.accent}}" privacy-mode="{{privacyMode}}"></line-chart>
+    <line-chart points="{{trendPoints}}" color="{{category.accent}}" privacy-mode="{{privacyMode}}" dark-mode="{{themeClass === 'dark-mode'}}"></line-chart>
     </view>
 
     <view class="action-row section">

@@ -1,18 +1,25 @@
 const { reminderTemplateId } = require("../../utils/config");
-const { fetchWorkspace, getViewingInfo, saveReminder } = require("../../utils/store");
+const { fetchWorkspace, getThemeClass, getViewingInfo, saveReminder } = require("../../utils/store");
 
 Page({
   data: {
     days: Array.from({ length: 28 }).map((_, index) => `${index + 1}日`),
     dayIndex: 0,
     viewing: null,
+    themeClass: "",
     saving: false
   },
 
   onLoad() {
     fetchWorkspace().then((result) => {
       const day = result.reminder && result.reminder.dayOfMonth ? result.reminder.dayOfMonth : 1;
-      this.setData({ dayIndex: day - 1, viewing: getViewingInfo() });
+      this.setData({
+        dayIndex: day - 1,
+        viewing: getViewingInfo(),
+        themeClass: getThemeClass()
+      });
+    }).catch(() => {
+      this.setData({ themeClass: getThemeClass() });
     });
   },
 

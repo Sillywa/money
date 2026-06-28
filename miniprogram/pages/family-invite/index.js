@@ -1,8 +1,9 @@
-const { acceptFamilyInvite, fetchWorkspace } = require("../../utils/store");
+const { acceptFamilyInvite, fetchWorkspace, getThemeClass } = require("../../utils/store");
 
 Page({
   data: {
     token: "",
+    themeClass: "",
     loading: true,
     accepted: false
   },
@@ -12,9 +13,15 @@ Page({
       token: query.token || ""
     });
     fetchWorkspace().then(() => {
-      this.setData({ loading: false });
+      this.setData({
+        themeClass: getThemeClass(),
+        loading: false
+      });
     }).catch(() => {
-      this.setData({ loading: false });
+      this.setData({
+        themeClass: getThemeClass(),
+        loading: false
+      });
     });
   },
 

@@ -1,4 +1,4 @@
-<view class="page dashboard-page">
+<view class="page dashboard-page {{themeClass}}">
   <skeleton-screen wx:if="{{loading}}" type="dashboard"></skeleton-screen>
 
   <block wx:if="{{!loading}}">
@@ -119,7 +119,7 @@
         <view class="section-subtitle">按录入日期统计</view>
       </view>
     </view>
-    <line-chart points="{{trendPoints}}" color="#174EA6" privacy-mode="{{privacyMode}}"></line-chart>
+    <line-chart points="{{trendPoints}}" color="#174EA6" privacy-mode="{{privacyMode}}" dark-mode="{{themeClass === 'dark-mode'}}"></line-chart>
     </view>
   </block>
 </view>

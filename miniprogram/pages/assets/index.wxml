@@ -1,4 +1,4 @@
-<view class="page assets-page">
+<view class="page assets-page {{themeClass}}">
   <skeleton-screen wx:if="{{loading}}" type="assets"></skeleton-screen>
 
   <block wx:if="{{!loading}}">

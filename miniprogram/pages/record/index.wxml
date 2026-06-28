@@ -1,4 +1,4 @@
-<view class="page record-page">
+<view class="page record-page {{themeClass}}">
   <skeleton-screen wx:if="{{loading}}" type="record"></skeleton-screen>
 
   <block wx:if="{{!loading && category}}">
@@ -10,6 +10,21 @@
       <view class="section-title">{{category.name}}信息</view>
       <view class="section-subtitle">{{recordHint}}</view>
     </view>
+    </view>
+
+    <view wx:if="{{!isEdit}}" class="section date-picker-section">
+      <picker mode="date" value="{{recordDate}}" bindchange="onRecordDateChange">
+        <view class="date-picker-row">
+          <view>
+            <view class="date-picker-title">记录日期</view>
+            <view class="muted">选择这笔资产归属的日期</view>
+          </view>
+          <view class="date-picker-value">
+            <text>{{recordDate}}</text>
+            <text class="date-picker-arrow">›</text>
+          </view>
+        </view>
+      </picker>
     </view>
 
     <view wx:if="{{showAccountPicker}}" class="section account-picker-section">

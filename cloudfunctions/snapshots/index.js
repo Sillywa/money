@@ -13,8 +13,9 @@ const invites = db.collection("asset_family_invites");
 const reminders = db.collection("asset_reminders");
 const MAX_LIMIT = 100;
 const MAX_PAGES = 10;
+const REMINDER_SEND_BATCH_SIZE = 20;
 const SCHEMA_VERSION = 1;
-const REMINDER_TEMPLATE_ID = "";
+const REMINDER_TEMPLATE_ID = "98bBTWPLWqXjG3Vkaxn7UlteZISy2sHdYDKiB1FcyMw";
 
 exports.main = async (event) => {
   if (event && event.Type === "Timer") {
@@ -206,6 +207,7 @@ async function ensureProfile(openid) {
       nickName: "资产记录者",
       avatarUrl: "",
       privacyEnabled: false,
+      darkMode: false,
       activeOwnerOpenid: "",
       goalNetWorth: 1000000,
       calcPrincipal: 100000,
@@ -223,7 +225,7 @@ async function ensureProfile(openid) {
 async function updateProfile(openid, profile) {
   const current = await ensureProfile(openid);
   const data = {};
-  ["nickName", "avatarUrl", "privacyEnabled", "goalNetWorth", "calcPrincipal", "calcAnnualRate", "calcYears"].forEach((key) => {
+  ["nickName", "avatarUrl", "privacyEnabled", "darkMode", "goalNetWorth", "calcPrincipal", "calcAnnualRate", "calcYears"].forEach((key) => {
     if (profile[key] !== undefined) data[key] = profile[key];
   });
   data.updatedAt = db.serverDate();
@@ -348,25 +350,49 @@ async function sendDueReminders(templateId) {
   const now = new Date();
   const dayOfMonth = now.getDate();
   const hour = now.getHours();
-  const result = await reminders.where({ enabled: true, dayOfMonth, hour }).limit(100).get();
   const sent = [];
+  const failed = [];
+  let total = 0;
 
-  for (const reminder of result.data) {
-    try {
-      await cloud.openapi.subscribeMessage.send({
-        touser: reminder.openid,
-        templateId,
-        page: "pages/dashboard/index",
-        data: {
-          thing1: { value: "请记录本月资产" },
-          time2: { value: `${dayOfMonth}日 10:00` }
-        }
+  for (let page = 0; ; page += 1) {
+    const result = await reminders
+      .where({ enabled: true, dayOfMonth, hour })
+      .skip(page * MAX_LIMIT)
+      .limit(MAX_LIMIT)
+      .get();
+    const dueReminders = result.data || [];
+    total += dueReminders.length;
+
+    for (let index = 0; index < dueReminders.length; index += REMINDER_SEND_BATCH_SIZE) {
+      const batch = dueReminders.slice(index, index + REMINDER_SEND_BATCH_SIZE);
+      const results = await Promise.all(batch.map((reminder) => sendReminderMessage(reminder, templateId, dayOfMonth)));
+      results.forEach((item) => {
+        if (item.ok) sent.push(item.openid);
+        else failed.push(item.openid);
       });
-      sent.push(reminder.openid);
-    } catch (error) {}
+    }
+
+    if (dueReminders.length < MAX_LIMIT) break;
   }
 
-  return { ok: true, count: sent.length };
+  return { ok: true, total, count: sent.length, failed: failed.length };
+}
+
+async function sendReminderMessage(reminder, templateId, dayOfMonth) {
+  try {
+    await cloud.openapi.subscribeMessage.send({
+      touser: reminder.openid,
+      templateId,
+      page: "pages/dashboard/index",
+      data: {
+        time1: { value: `${dayOfMonth}日 10:00` },
+        thing2: { value: "请记录本月资产" }
+      }
+    });
+    return { ok: true, openid: reminder.openid };
+  } catch (error) {
+    return { ok: false, openid: reminder.openid };
+  }
 }
 
 function normalizeAssets(assets) {
@@ -387,6 +413,7 @@ function stripProfile(profile) {
     nickName: profile.nickName || "资产记录者",
     avatarUrl: profile.avatarUrl || "",
     privacyEnabled: !!profile.privacyEnabled,
+    darkMode: !!profile.darkMode,
     activeOwnerOpenid: profile.activeOwnerOpenid || "",
     goalNetWorth: numberOrDefault(profile.goalNetWorth, 1000000),
     calcPrincipal: numberOrDefault(profile.calcPrincipal, 100000),

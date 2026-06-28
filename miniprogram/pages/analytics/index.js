@@ -1,5 +1,5 @@
 const { buildBundle, formatMoney, maskBundle } = require("../../utils/asset");
-const { fetchSnapshots, getProfile, getViewingInfo, updateProfile } = require("../../utils/store");
+const { fetchSnapshots, getProfile, getThemeClass, getViewingInfo, updateProfile } = require("../../utils/store");
 const { showMetricHelp } = require("../../utils/metric-help");
 
 const DEFAULT_TARGET_NET_WORTH = 1000000;
@@ -12,6 +12,7 @@ Page({
     bundle: null,
     privacyMode: false,
     viewing: null,
+    themeClass: "",
     loading: true,
     hasLoaded: false,
     targetNetWorth: DEFAULT_TARGET_NET_WORTH,
@@ -41,7 +42,7 @@ Page({
       this.setData({ loading: true });
     }
 
-    return fetchSnapshots().then((records) => {
+    return fetchSnapshots({ force: !!opts.force }).then((records) => {
       const rawBundle = buildBundle(records);
       const profile = getProfile() || {};
       const privacyMode = !!profile.privacyEnabled;
@@ -53,16 +54,21 @@ Page({
         ...goalState,
         privacyMode,
         viewing: getViewingInfo(),
+        themeClass: getThemeClass(),
         loading: false,
         hasLoaded: true
       });
     }).catch(() => {
-      this.setData({ loading: false, hasLoaded: true });
+      this.setData({
+        themeClass: getThemeClass(),
+        loading: false,
+        hasLoaded: true
+      });
     });
   },
 
   onPullDownRefresh() {
-    this.load({ silent: true }).then(() => wx.stopPullDownRefresh(), () => wx.stopPullDownRefresh());
+    this.load({ silent: true, force: true }).then(() => wx.stopPullDownRefresh(), () => wx.stopPullDownRefresh());
   },
 
   showMetricHelp,

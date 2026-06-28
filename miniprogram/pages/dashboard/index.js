@@ -1,5 +1,5 @@
 const { buildBundle, getNetTrend, maskBundle } = require("../../utils/asset");
-const { fetchSnapshots, getProfile, getViewingInfo } = require("../../utils/store");
+const { fetchSnapshots, getProfile, getThemeClass, getViewingInfo } = require("../../utils/store");
 const { showMetricHelp } = require("../../utils/metric-help");
 
 Page({
@@ -16,6 +16,7 @@ Page({
     compareIndex: 0,
     privacyMode: false,
     viewing: null,
+    themeClass: "",
     loading: true,
     hasLoaded: false
   },
@@ -30,7 +31,7 @@ Page({
       this.setData({ loading: true });
     }
 
-    return fetchSnapshots().then((records) => {
+    return fetchSnapshots({ force: !!opts.force }).then((records) => {
       const rawBundle = buildBundle(records, opts.compareDate !== undefined ? opts.compareDate : this.data.compareDate);
       getApp().globalData.latestBundle = rawBundle;
       const profile = getProfile() || {};
@@ -69,16 +70,21 @@ Page({
         trendPoints: getNetTrend(rawBundle.records),
         privacyMode,
         viewing,
+        themeClass: getThemeClass(),
         loading: false,
         hasLoaded: true
       });
     }).catch(() => {
-      this.setData({ loading: false, hasLoaded: true });
+      this.setData({
+        themeClass: getThemeClass(),
+        loading: false,
+        hasLoaded: true
+      });
     });
   },
 
   onPullDownRefresh() {
-    this.load({ silent: true }).then(() => wx.stopPullDownRefresh(), () => wx.stopPullDownRefresh());
+    this.load({ silent: true, force: true }).then(() => wx.stopPullDownRefresh(), () => wx.stopPullDownRefresh());
   },
 
   onCompareChange(event) {

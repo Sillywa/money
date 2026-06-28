@@ -1,4 +1,4 @@
-const { createFamilyInvite, fetchWorkspace, getProfile, getViewingInfo, setActiveOwner } = require("../../utils/store");
+const { createFamilyInvite, fetchWorkspace, getProfile, getThemeClass, getViewingInfo, setActiveOwner } = require("../../utils/store");
 
 Page({
   data: {
@@ -6,6 +6,7 @@ Page({
     familyMembers: [],
     profile: null,
     viewing: null,
+    themeClass: "",
     loading: true
   },
 
@@ -19,11 +20,15 @@ Page({
         familyMembers: result.familyMembers || [],
         profile: getProfile(),
         viewing: getViewingInfo(),
+        themeClass: getThemeClass(),
         loading: false
       });
       return this.ensureInviteToken();
     }).catch(() => {
-      this.setData({ loading: false });
+      this.setData({
+        themeClass: getThemeClass(),
+        loading: false
+      });
     });
   },
 

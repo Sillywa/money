@@ -1,6 +1,6 @@
 const { CATEGORY_MAP } = require("../../utils/categories");
 const { buildBundle, createTodaySnapshot, formatMoney } = require("../../utils/asset");
-const { fetchSnapshots, getEditorInfo, getViewingInfo, saveSnapshot } = require("../../utils/store");
+const { fetchSnapshots, getEditorInfo, getThemeClass, getViewingInfo, saveSnapshot } = require("../../utils/store");
 
 const ACCOUNT_PICKER_NEW_INDEX = 0;
 const SKIP_TEMPLATE_KEYS = ["amount", "remark"];
@@ -64,6 +64,7 @@ Page({
     amountPreview: "0.00",
     bundle: null,
     viewing: null,
+    themeClass: "",
     saving: false,
     loading: true,
     hasLoaded: false
@@ -92,7 +93,7 @@ Page({
       this.setData({ loading: true });
     }
 
-    return fetchSnapshots().then((records) => {
+    return fetchSnapshots({ force: !!opts.force }).then((records) => {
       const bundle = buildBundle(records);
       const category = CATEGORY_MAP[this.data.type] || CATEGORY_MAP.wealth;
       const now = new Date();
@@ -104,6 +105,7 @@ Page({
       const form = this.buildDefaultForm(category.key, existing || {});
       const accountOptions = this.buildAccountOptions(bundle.records, category.key);
       const accountPickerOptions = [`新增${category.name}`].concat(accountOptions.map((item) => item.label));
+      const recordHint = this.buildRecordHint(this.data.isEdit, recordDate);
 
       this.setData({
         bundle,
@@ -116,14 +118,19 @@ Page({
         selectedAccountLabel: accountPickerOptions[ACCOUNT_PICKER_NEW_INDEX],
         showAccountPicker: !this.data.isEdit && accountPickerOptions.length > 1,
         recordDate,
-        recordHint: this.data.isEdit ? `编辑 ${recordDate} 的资产记录` : "默认今日记录，全部按人民币计算",
+        recordHint,
         amountPreview: formatMoney(form.amount || 0),
         viewing: getViewingInfo(),
+        themeClass: getThemeClass(),
         loading: false,
         hasLoaded: true
       });
     }).catch(() => {
-      this.setData({ loading: false, hasLoaded: true });
+      this.setData({
+        themeClass: getThemeClass(),
+        loading: false,
+        hasLoaded: true
+      });
     });
   },
 
@@ -141,6 +148,11 @@ Page({
       ...existing,
       amount: existing.amount !== undefined ? String(existing.amount) : defaults[type].amount
     };
+  },
+
+  buildRecordHint(isEdit, recordDate) {
+    if (isEdit) return `编辑 ${recordDate} 的资产记录`;
+    return `新增记录将保存到 ${recordDate}，可修改日期`;
   },
 
   hydrateFields(type, form) {
@@ -225,6 +237,15 @@ Page({
     });
   },
 
+  onRecordDateChange(event) {
+    const recordDate = event.detail.value || this.data.recordDate;
+    this.setData({
+      recordDate,
+      targetRecordDate: recordDate,
+      recordHint: this.buildRecordHint(false, recordDate)
+    });
+  },
+
   onInput(event) {
     const field = event.currentTarget.dataset.field;
     const index = Number(event.currentTarget.dataset.index);
@@ -295,6 +316,6 @@ Page({
   },
 
   onPullDownRefresh() {
-    this.init({ silent: true }).then(() => wx.stopPullDownRefresh(), () => wx.stopPullDownRefresh());
+    this.init({ silent: true, force: true }).then(() => wx.stopPullDownRefresh(), () => wx.stopPullDownRefresh());
   }
 });

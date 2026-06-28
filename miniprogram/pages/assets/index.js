@@ -1,6 +1,6 @@
 const { buildBundle, getCategoryRows, maskBundle, maskRows } = require("../../utils/asset");
 const { CATEGORY_LIST } = require("../../utils/categories");
-const { fetchSnapshots, getProfile, getViewingInfo } = require("../../utils/store");
+const { fetchSnapshots, getProfile, getThemeClass, getViewingInfo } = require("../../utils/store");
 const { showMetricHelp } = require("../../utils/metric-help");
 
 Page({
@@ -23,6 +23,7 @@ Page({
     rawBundle: null,
     privacyMode: false,
     viewing: null,
+    themeClass: "",
     loading: true,
     hasLoaded: false
   },
@@ -37,7 +38,7 @@ Page({
       this.setData({ loading: true });
     }
 
-    return fetchSnapshots().then((records) => {
+    return fetchSnapshots({ force: !!opts.force }).then((records) => {
       const rawBundle = buildBundle(records, opts.compareDate !== undefined ? opts.compareDate : this.data.compareDate);
       const privacyMode = !!((getProfile() || {}).privacyEnabled);
       const bundle = privacyMode ? maskBundle(rawBundle) : rawBundle;
@@ -57,11 +58,16 @@ Page({
         compareIndex: Math.max(0, compareOptions.indexOf(bundle.previous.recordDate)),
         privacyMode,
         viewing: getViewingInfo(),
+        themeClass: getThemeClass(),
         loading: false,
         hasLoaded: true
       });
     }).catch(() => {
-      this.setData({ loading: false, hasLoaded: true });
+      this.setData({
+        themeClass: getThemeClass(),
+        loading: false,
+        hasLoaded: true
+      });
     });
   },
 
@@ -99,7 +105,7 @@ Page({
   },
 
   onPullDownRefresh() {
-    this.load({ silent: true }).then(() => wx.stopPullDownRefresh(), () => wx.stopPullDownRefresh());
+    this.load({ silent: true, force: true }).then(() => wx.stopPullDownRefresh(), () => wx.stopPullDownRefresh());
   },
 
   showMetricHelp,

@@ -1,8 +1,10 @@
 const {
   fetchWorkspace,
   getProfile,
+  getThemeClass,
   getViewingInfo,
   returnToSelf,
+  setDarkMode,
   setPrivacyEnabled,
   updateProfile
 } = require("../../utils/store");
@@ -10,9 +12,11 @@ const {
 Page({
   data: {
     profile: null,
+    savedNickName: "资产记录者",
     recordCount: 0,
     reminderText: "每月 1 日 10:00",
     viewing: null,
+    themeClass: "",
     loading: true,
     hasLoaded: false
   },
@@ -27,20 +31,26 @@ Page({
       this.setData({ loading: true });
     }
 
-    return fetchWorkspace().then((result) => {
+    return fetchWorkspace({ force: !!opts.force }).then((result) => {
       const reminder = result.reminder || {};
+      const profile = getProfile();
       this.setData({
-        profile: getProfile(),
+        profile,
+        savedNickName: profile.nickName || "资产记录者",
         recordCount: (result.snapshots || []).length,
         reminderText: reminder.enabled ? `每月 ${reminder.dayOfMonth} 日 10:00` : "未设置",
         viewing: getViewingInfo(),
+        themeClass: getThemeClass(),
         loading: false,
         hasLoaded: true
       });
     }).catch(() => {
+      const profile = getProfile();
       this.setData({
-        profile: getProfile(),
+        profile,
+        savedNickName: profile.nickName || "资产记录者",
         viewing: getViewingInfo(),
+        themeClass: getThemeClass(),
         loading: false,
         hasLoaded: true
       });
@@ -81,8 +91,19 @@ Page({
   },
 
   saveNickname() {
-    const nickName = (this.data.profile && this.data.profile.nickName) || "资产记录者";
+    const nickName = normalizeNickName(this.data.profile && this.data.profile.nickName);
+    if (nickName === this.data.savedNickName) {
+      this.setData({
+        "profile.nickName": nickName
+      });
+      return;
+    }
+
     updateProfile({ nickName }).then(() => {
+      this.setData({
+        savedNickName: nickName,
+        "profile.nickName": nickName
+      });
       wx.showToast({
         title: "昵称已更新",
         icon: "success"
@@ -94,6 +115,25 @@ Page({
     setPrivacyEnabled(event.detail.value).then(() => {
       this.setData({
         "profile.privacyEnabled": event.detail.value
+      });
+    });
+  },
+
+  onDarkModeChange(event) {
+    const darkMode = !!event.detail.value;
+    setDarkMode(darkMode).then(() => {
+      this.setData({
+        "profile.darkMode": darkMode,
+        themeClass: getThemeClass()
+      });
+    }).catch(() => {
+      this.setData({
+        "profile.darkMode": !darkMode,
+        themeClass: getThemeClass()
+      });
+      wx.showToast({
+        title: "切换失败",
+        icon: "none"
       });
     });
   },
@@ -119,6 +159,11 @@ Page({
   },
 
   onPullDownRefresh() {
-    this.load({ silent: true }).then(() => wx.stopPullDownRefresh(), () => wx.stopPullDownRefresh());
+    this.load({ silent: true, force: true }).then(() => wx.stopPullDownRefresh(), () => wx.stopPullDownRefresh());
   }
 });
+
+function normalizeNickName(value) {
+  const nickName = String(value || "").trim();
+  return nickName || "资产记录者";
+}

@@ -25,7 +25,12 @@
   padding: 0 24rpx;
 }
 
-.account-picker-row {
+.date-picker-section {
+  padding: 0 24rpx;
+}
+
+.account-picker-row,
+.date-picker-row {
   min-height: 112rpx;
   display: flex;
   align-items: center;
@@ -33,14 +38,16 @@
   gap: 20rpx;
 }
 
-.account-picker-title {
+.account-picker-title,
+.date-picker-title {
   margin-bottom: 8rpx;
   color: #344054;
   font-size: 29rpx;
   font-weight: 650;
 }
 
-.account-picker-value {
+.account-picker-value,
+.date-picker-value {
   max-width: 360rpx;
   display: flex;
   align-items: center;
@@ -65,6 +72,12 @@
   border-right: 3rpx solid #1769ff;
   border-bottom: 3rpx solid #1769ff;
   transform: rotate(45deg);
+}
+
+.date-picker-arrow {
+  color: #9aa3b2;
+  font-size: 34rpx;
+  line-height: 1;
 }
 
 .form-row {

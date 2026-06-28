@@ -15,11 +15,15 @@ Component({
     privacyMode: {
       type: Boolean,
       value: false
+    },
+    darkMode: {
+      type: Boolean,
+      value: false
     }
   },
 
   observers: {
-    "points,color,privacyMode": function () {
+    "points,color,privacyMode,darkMode": function () {
       this.draw();
     }
   },
@@ -69,6 +73,7 @@ Component({
         color: this.data.color,
         fillColor: this.data.fillColor,
         privacyMode: this.data.privacyMode,
+        darkMode: this.data.darkMode,
         width,
         height,
         modern: true,
@@ -84,6 +89,7 @@ Component({
         color: this.data.color,
         fillColor: this.data.fillColor,
         privacyMode: this.data.privacyMode,
+        darkMode: this.data.darkMode,
         width,
         height,
         modern: false,
@@ -126,12 +132,15 @@ function drawLineChart(ctx, options) {
   const max = bounds.max;
   const min = bounds.min;
   const range = max - min;
+  const axisColor = options.darkMode ? "#94A3B8" : "#7A8494";
+  const gridColor = options.darkMode ? "#334155" : "#E6EBF3";
+  const markerColor = options.darkMode ? "rgba(148, 163, 184, 0.34)" : "rgba(102, 112, 133, 0.32)";
 
   canvasCall(ctx, options.modern, "clearRect", 0, 0, width, height);
   setCanvasFontSize(ctx, options.modern, 10);
   setCanvasTextBaseline(ctx, options.modern, "middle");
-  setCanvasFillStyle(ctx, options.modern, "#7A8494");
-  setCanvasStrokeStyle(ctx, options.modern, "#E6EBF3");
+  setCanvasFillStyle(ctx, options.modern, axisColor);
+  setCanvasStrokeStyle(ctx, options.modern, gridColor);
   setCanvasLineWidth(ctx, options.modern, 0.5);
 
   for (let i = 0; i < 4; i += 1) {
@@ -156,7 +165,7 @@ function drawLineChart(ctx, options) {
     canvasCall(ctx, options.modern, "beginPath");
     canvasCall(ctx, options.modern, "moveTo", selected.x, top);
     canvasCall(ctx, options.modern, "lineTo", selected.x, graphH + top);
-    setCanvasStrokeStyle(ctx, options.modern, "rgba(102, 112, 133, 0.32)");
+    setCanvasStrokeStyle(ctx, options.modern, markerColor);
     setCanvasLineWidth(ctx, options.modern, 1);
     canvasCall(ctx, options.modern, "stroke");
 
@@ -195,7 +204,7 @@ function drawLineChart(ctx, options) {
     canvasCall(ctx, options.modern, "fillText", tipText, tipX + 7, tipY + 11);
   }
 
-  setCanvasFillStyle(ctx, options.modern, "#7A8494");
+  setCanvasFillStyle(ctx, options.modern, axisColor);
   setCanvasFontSize(ctx, options.modern, 10);
   points.forEach((point, index) => {
     if (index % Math.ceil(points.length / 4) === 0 || index === points.length - 1) {

@@ -1,4 +1,4 @@
-<view class="page family-page">
+<view class="page family-page {{themeClass}}">
   <view wx:if="{{viewing.isViewingFamily}}" class="family-view-banner">正在查看 {{viewing.viewingOwner.nickName}} 的资产数据</view>
 
   <view class="section section-pad">

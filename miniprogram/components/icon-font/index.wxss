@@ -53,6 +53,10 @@
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M5 16s4-8 11-8 11 8 11 8-4 8-11 8S5 16 5 16z' fill='none' stroke='white' stroke-width='2.5' stroke-linejoin='round'/%3E%3Cpath d='M8 27L25 5' fill='none' stroke='white' stroke-width='2.8' stroke-linecap='round'/%3E%3C/svg%3E");
 }
 
+.icon-moon .icon-glyph {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M22 25c-6.8 0-12.2-5.4-12.2-12.2 0-2.9 1-5.6 2.7-7.7-4.7 1.4-8.1 5.8-8.1 11 0 6.4 5.2 11.6 11.6 11.6 3.8 0 7.1-1.8 9.2-4.6-1 .3-2.1.5-3.2.5z' fill='none' stroke='white' stroke-width='2.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
 .icon-currency-cny .icon-glyph {
   width: 58%;
   height: 58%;

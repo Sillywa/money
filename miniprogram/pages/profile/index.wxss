@@ -53,12 +53,29 @@
   min-width: 0;
 }
 
-.profile-name-input {
-  height: 56rpx;
+.profile-name-row {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
   margin-bottom: 10rpx;
+}
+
+.profile-name-input {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 420rpx;
+  height: 56rpx;
   font-size: 38rpx;
   font-weight: 800;
   color: #111827;
+}
+
+.profile-name-arrow {
+  flex: 0 0 auto;
+  color: #9aa3b2;
+  font-size: 40rpx;
+  line-height: 1;
 }
 
 .return-mine {

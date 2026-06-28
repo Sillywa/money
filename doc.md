@@ -157,6 +157,7 @@ sequenceDiagram
 
 新增资产记录逻辑：
 
+- 新增某类资产时，记录日期默认当天，用户可以在新增页手动修改保存日期。
 - 新增某类资产时，页面会从历史资产快照中提取同类账户作为下拉选项。
 - 选择历史账户后，自动填充该账户除金额和备注以外的基础信息。
 - 选择“新增”或没有历史账户选项时，继续使用空白 / 默认表单手动录入。
@@ -184,11 +185,12 @@ flowchart TD
 
 ## 9. 云端数据流
 
-所有页面读取数据时都会走云函数：
+页面首次读取完整工作区数据时会走云函数，后续优先复用 `app.globalData` 中的运行时缓存；下拉刷新和写操作成功后会重新同步云端返回的最新工作区数据。
 
 ```mermaid
 flowchart LR
   Page["页面 onShow / 下拉刷新"] --> Store["utils/store.js"]
+  Store --> Cache["app.globalData workspace 缓存"]
   Store --> Cloud["wx.cloud.callFunction snapshots"]
   Cloud --> Workspace["buildWorkspace"]
   Workspace --> DB1["asset_snapshots"]
@@ -215,7 +217,7 @@ flowchart LR
 | 集合 | 用途 | 关键字段 |
 |---|---|---|
 | `asset_snapshots` | 按日期保存资产快照 | `ownerOpenid`, `recordDate`, `assets`, `lastEditor` |
-| `asset_user_profiles` | 用户资料和偏好 | `openid`, `nickName`, `avatarUrl`, `privacyEnabled`, `activeOwnerOpenid` |
+| `asset_user_profiles` | 用户资料和偏好 | `openid`, `nickName`, `avatarUrl`, `privacyEnabled`, `darkMode`, `activeOwnerOpenid` |
 | `asset_family_bindings` | 亲友资产授权关系 | `viewerOpenid`, `ownerOpenid`, `status` |
 | `asset_family_invites` | 分享邀请 token | `ownerOpenid`, `code`, `status` |
 | `asset_reminders` | 每月记录提醒 | `openid`, `enabled`, `dayOfMonth`, `hour`, `minute` |
@@ -240,7 +242,7 @@ cloudfunctions/snapshots/index.js
 |---|---|
 | `login` | 初始化或获取当前用户资料 |
 | `workspace` | 获取完整工作区数据 |
-| `profileUpdate` | 更新头像、昵称、隐私和目标参数 |
+| `profileUpdate` | 更新头像、昵称、隐私、暗黑模式和目标参数 |
 | `list` | 读取当前或指定授权用户的快照列表 |
 | `get` | 读取指定日期快照 |
 | `upsert` | 新增或更新指定日期快照 |
@@ -300,6 +302,8 @@ sequenceDiagram
 - `maskRows`
 - `maskHistoryGroups`
 
+暗黑模式能力保留在 `asset_user_profiles.darkMode` 和前端主题适配中，但当前“我的”页面暂时隐藏入口。该偏好只影响界面主题，不影响资产计算和云端资产数据。
+
 ## 14. 资产目标
 
 资产目标页包含两个模块。
@@ -348,6 +352,7 @@ flowchart LR
 注意：
 
 - 日期限制在 1 到 28 号，避免不同月份天数导致异常。
+- 到期提醒由 `sendDueReminders` 按页读取符合条件的提醒用户并分批发送，避免只覆盖前 100 个用户。
 - 模板 ID 需要分别配置在：
   - `miniprogram/utils/config.js`
   - `cloudfunctions/snapshots/index.js` 的 `REMINDER_TEMPLATE_ID`

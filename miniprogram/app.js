@@ -2,11 +2,15 @@ App({
   globalData: {
     openid: "",
     latestBundle: null,
+    ownerOpenid: "",
     profile: null,
     viewingOwner: null,
     isViewingFamily: false,
     familyMembers: [],
-    reminder: null
+    reminder: null,
+    snapshots: null,
+    workspaceLoaded: false,
+    workspaceUpdatedAt: 0
   },
 
   onLaunch() {

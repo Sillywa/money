@@ -1,4 +1,4 @@
-<view class="page analytics-page">
+<view class="page analytics-page {{themeClass}}">
   <skeleton-screen wx:if="{{loading}}" type="analytics"></skeleton-screen>
 
   <block wx:if="{{!loading}}">
@@ -92,7 +92,7 @@
         </view>
       </view>
 
-      <line-chart points="{{projectionPoints}}" color="#13A37B" fill-color="rgba(19, 163, 123, 0.10)" privacy-mode="{{privacyMode}}"></line-chart>
+      <line-chart points="{{projectionPoints}}" color="#13A37B" fill-color="rgba(19, 163, 123, 0.10)" privacy-mode="{{privacyMode}}" dark-mode="{{themeClass === 'dark-mode'}}"></line-chart>
     </view>
 
   </block>

@@ -186,3 +186,171 @@ button::after {
   align-items: center;
   justify-content: center;
 }
+
+.page.dark-mode {
+  background: #0f172a;
+  color: #e5e7eb;
+}
+
+.dark-mode .section {
+  background: #111827;
+  border-color: #1f2937;
+}
+
+.dark-mode .section-title,
+.dark-mode .asset-name,
+.dark-mode .asset-title,
+.dark-mode .asset-amount,
+.dark-mode .asset-total,
+.dark-mode .category-title,
+.dark-mode .detail-amount,
+.dark-mode .history-total,
+.dark-mode .history-name,
+.dark-mode .form-input,
+.dark-mode .form-textarea,
+.dark-mode .profile-name-input,
+.dark-mode .privacy-title,
+.dark-mode .setting-row.static,
+.dark-mode .setting-left,
+.dark-mode .invite-title,
+.dark-mode .goal-value,
+.dark-mode .target-value,
+.dark-mode .calc-result-value,
+.dark-mode .reminder-value,
+.dark-mode .metric-value,
+.dark-mode .hero-amount {
+  color: #f8fafc;
+}
+
+.dark-mode .section-subtitle,
+.dark-mode .muted,
+.dark-mode .asset-sub,
+.dark-mode .asset-desc,
+.dark-mode .asset-meta,
+.dark-mode .history-meta,
+.dark-mode .history-editor,
+.dark-mode .form-label,
+.dark-mode .account-picker-title,
+.dark-mode .date-picker-title,
+.dark-mode .setting-desc,
+.dark-mode .setting-value,
+.dark-mode .invite-desc,
+.dark-mode .goal-label,
+.dark-mode .target-label,
+.dark-mode .calc-label,
+.dark-mode .metric-label,
+.dark-mode .hero-delta,
+.dark-mode .label-line {
+  color: #94a3b8;
+}
+
+.dark-mode .divider,
+.dark-mode .row,
+.dark-mode .setting-row,
+.dark-mode .asset-row,
+.dark-mode .history-head,
+.dark-mode .history-body,
+.dark-mode .form-row,
+.dark-mode .category-head,
+.dark-mode .composition-legend-row {
+  border-color: #1f2937;
+}
+
+.dark-mode .hero,
+.dark-mode .hero-metric,
+.dark-mode .composition-tabs,
+.dark-mode .goal-progress-card,
+.dark-mode .target-input-wrap,
+.dark-mode .calc-field,
+.dark-mode .form-textarea,
+.dark-mode .preview-card,
+.dark-mode .account-picker-section,
+.dark-mode .date-picker-section,
+.dark-mode .reminder-picker,
+.dark-mode .invite-icon,
+.dark-mode .avatar-empty,
+.dark-mode .member-avatar {
+  background: #0b1220;
+  border-color: #1f2937;
+}
+
+.dark-mode input,
+.dark-mode textarea {
+  color: #f8fafc;
+}
+
+.dark-mode .help-icon,
+.dark-mode .pill,
+.dark-mode .composition-tab {
+  color: #cbd5e1;
+  background: #1f2937;
+  border-color: #334155;
+}
+
+.dark-mode .pill.active,
+.dark-mode .composition-tab.active {
+  color: #ffffff;
+  background: #1769ff;
+}
+
+.dark-mode .record-strip {
+  color: #cbd5e1;
+  background: #172554;
+  box-shadow: 0 10rpx 24rpx rgba(2, 6, 23, 0.28);
+}
+
+.dark-mode .record-date,
+.dark-mode .record-compare {
+  color: #93c5fd;
+}
+
+.dark-mode .record-compare-arrow,
+.dark-mode .history-arrow,
+.dark-mode .account-picker-arrow {
+  border-color: #93c5fd;
+}
+
+.dark-mode .family-view-banner {
+  color: #bfdbfe;
+  background: rgba(30, 41, 59, 0.96);
+  border-color: #334155;
+  box-shadow: 0 12rpx 30rpx rgba(2, 6, 23, 0.3);
+}
+
+.dark-mode .bar-track,
+.dark-mode .progress-track {
+  background: #1f2937;
+}
+
+.dark-mode .donut-center {
+  background: #111827;
+}
+
+.dark-mode .donut-center-label,
+.dark-mode .legend-name,
+.dark-mode .composition-legend-name {
+  color: #cbd5e1;
+}
+
+.dark-mode .donut-center-value,
+.dark-mode .composition-legend-value {
+  color: #f8fafc;
+}
+
+.dark-mode .bottom-actions {
+  background: rgba(17, 24, 39, 0.96);
+  border-color: #1f2937;
+}
+
+.dark-mode .btn-secondary {
+  color: #93c5fd;
+}
+
+.dark-mode .skeleton-card {
+  background: #111827;
+  border-color: #1f2937;
+}
+
+.dark-mode .skeleton-line {
+  background: #1f2937;
+}
