@@ -1,6 +1,6 @@
 const { buildBundle, getCategoryRows, maskBundle, maskRows } = require("../../utils/asset");
 const { CATEGORY_LIST } = require("../../utils/categories");
-const { fetchSnapshots, getProfile, getThemeClass, getViewingInfo } = require("../../utils/store");
+const { fetchSnapshots, getThemeClass, getViewingInfo, getViewingProfile, returnToSelf } = require("../../utils/store");
 const { showMetricHelp } = require("../../utils/metric-help");
 
 Page({
@@ -43,7 +43,7 @@ Page({
       const selectedDate = opts.selectedDate || this.data.selectedDate || dateOptions[0] || baseBundle.current.recordDate;
       const selectedRecord = baseBundle.records.find((record) => record.recordDate === selectedDate) || baseBundle.current;
       const rawBundle = buildBundle([selectedRecord]);
-      const privacyMode = !!((getProfile() || {}).privacyEnabled);
+      const privacyMode = !!((getViewingProfile() || {}).privacyEnabled);
       const bundle = privacyMode ? maskBundle(rawBundle) : rawBundle;
       const groups = this.buildGroups(rawBundle, this.data.activeFilter, privacyMode);
       this.setData({
@@ -107,6 +107,14 @@ Page({
   },
 
   showMetricHelp,
+
+  returnMine() {
+    returnToSelf().then(() => {
+      wx.switchTab({
+        url: "/pages/dashboard/index"
+      });
+    });
+  },
 
   goDetail(event) {
     wx.navigateTo({

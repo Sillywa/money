@@ -26,6 +26,7 @@ function updateGlobal(result) {
     app.globalData.workspaceUpdatedAt = Date.now();
   }
   applyTheme(app.globalData.profile.darkMode);
+  syncTabBarForViewing();
   return {
     ...result,
     profile: app.globalData.profile,
@@ -99,8 +100,11 @@ function setDarkMode(enabled) {
   });
 }
 
-function createFamilyInvite() {
-  return callCloud({ action: "familyInviteCreate" }).then(updateGlobal);
+function createFamilyInvite(options) {
+  return callCloud({
+    action: "familyInviteCreate",
+    force: !!(options && options.force)
+  }).then(updateGlobal);
 }
 
 function acceptFamilyInvite(code) {
@@ -134,11 +138,35 @@ function saveReminder(dayOfMonth) {
 
 function getViewingInfo() {
   const app = getApp();
+  syncTabBarForViewing();
   return {
     isViewingFamily: !!app.globalData.isViewingFamily,
     viewingOwner: app.globalData.viewingOwner || null,
     darkMode: !!((app.globalData.profile || {}).darkMode)
   };
+}
+
+function syncTabBarForViewing() {
+  if (typeof getCurrentPages !== "function" || !wx.showTabBar || !wx.setTabBarItem) return;
+  const pages = getCurrentPages();
+  const current = pages[pages.length - 1];
+  const route = current && current.route;
+  const tabRoutes = ["pages/dashboard/index", "pages/assets/index", "pages/analytics/index", "pages/profile/index"];
+  if (tabRoutes.indexOf(route) < 0) return;
+
+  const app = getApp();
+  const isViewingFamily = !!app.globalData.isViewingFamily;
+  wx.showTabBar({
+    animation: false,
+    fail() {}
+  });
+  wx.setTabBarItem({
+    index: 3,
+    text: isViewingFamily ? "返回我的" : "我的",
+    iconPath: isViewingFamily ? "assets/tabbar/return-mine.png" : "assets/tabbar/profile.png",
+    selectedIconPath: isViewingFamily ? "assets/tabbar/return-mine-active.png" : "assets/tabbar/profile-active.png",
+    fail() {}
+  });
 }
 
 function getCachedWorkspace() {
@@ -159,6 +187,11 @@ function getCachedWorkspace() {
 
 function getProfile() {
   return normalizeProfile(getApp().globalData.profile);
+}
+
+function getViewingProfile() {
+  const app = getApp();
+  return normalizeProfile(app.globalData.viewingOwner || app.globalData.profile);
 }
 
 function getThemeClass() {
@@ -233,6 +266,7 @@ module.exports = {
   getProfile,
   getThemeClass,
   getViewingInfo,
+  getViewingProfile,
   moveRecordDate,
   returnToSelf,
   saveReminder,
@@ -240,5 +274,6 @@ module.exports = {
   setActiveOwner,
   setDarkMode,
   setPrivacyEnabled,
+  syncTabBarForViewing,
   updateProfile
 };

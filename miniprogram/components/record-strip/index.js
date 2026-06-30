@@ -23,6 +23,10 @@ Component({
     compareIndex: {
       type: Number,
       value: 0
+    },
+    familyMode: {
+      type: Boolean,
+      value: false
     }
   },
 

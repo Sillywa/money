@@ -1,5 +1,5 @@
 const { reminderTemplateId } = require("../../utils/config");
-const { fetchWorkspace, getThemeClass, getViewingInfo, saveReminder } = require("../../utils/store");
+const { fetchWorkspace, getThemeClass, getViewingInfo, returnToSelf, saveReminder } = require("../../utils/store");
 
 Page({
   data: {
@@ -47,5 +47,13 @@ Page({
       .then(() => {
         this.setData({ saving: false });
       });
+  },
+
+  returnMine() {
+    returnToSelf().then(() => {
+      wx.switchTab({
+        url: "/pages/dashboard/index"
+      });
+    });
   }
 });

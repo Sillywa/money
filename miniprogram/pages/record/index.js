@@ -1,6 +1,6 @@
 const { CATEGORY_MAP } = require("../../utils/categories");
 const { buildBundle, createTodaySnapshot, formatMoney } = require("../../utils/asset");
-const { fetchSnapshots, getEditorInfo, getThemeClass, getViewingInfo, moveRecordDate, saveSnapshot } = require("../../utils/store");
+const { fetchSnapshots, getEditorInfo, getThemeClass, getViewingInfo, moveRecordDate, returnToSelf, saveSnapshot } = require("../../utils/store");
 
 const ACCOUNT_PICKER_PLACEHOLDER = "选择历史账户";
 const SKIP_TEMPLATE_KEYS = ["amount"];
@@ -327,6 +327,14 @@ Page({
 
   goBack() {
     wx.navigateBack();
+  },
+
+  returnMine() {
+    returnToSelf().then(() => {
+      wx.switchTab({
+        url: "/pages/dashboard/index"
+      });
+    });
   },
 
   onPullDownRefresh() {

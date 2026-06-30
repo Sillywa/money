@@ -1,7 +1,12 @@
-<view class="page profile-page {{themeClass}}">
+<view class="page profile-page {{themeClass}} {{viewing.isViewingFamily ? 'family-mode' : ''}}">
   <skeleton-screen wx:if="{{loading}}" type="profile"></skeleton-screen>
 
   <block wx:if="{{!loading}}">
+    <view wx:if="{{viewing.isViewingFamily}}" class="family-view-banner">
+      <text class="family-view-text">正在查看 {{viewing.viewingOwner.nickName}} 的资产数据</text>
+      <button class="family-return-link" bindtap="returnMine">返回我的资产</button>
+    </view>
+
     <view class="profile-head">
       <button wx:if="{{!profile.avatarUrl}}" class="avatar avatar-empty" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
         <text class="avatar-plus">+</text>
@@ -26,8 +31,6 @@
         <view class="muted">已完成 {{recordCount}} 次资产记录</view>
       </view>
     </view>
-
-    <button wx:if="{{viewing.isViewingFamily}}" class="return-mine" bindtap="returnMine">返回我的资产</button>
 
     <view class="privacy-card section">
       <icon-font name="eye-off" color="#1769FF"></icon-font>

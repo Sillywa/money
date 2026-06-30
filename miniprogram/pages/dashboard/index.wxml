@@ -1,59 +1,52 @@
-<view class="page dashboard-page {{themeClass}}">
+<view class="page dashboard-page {{themeClass}} {{viewing.isViewingFamily ? 'family-mode' : ''}}">
   <skeleton-screen wx:if="{{loading}}" type="dashboard"></skeleton-screen>
 
   <block wx:if="{{!loading}}">
-    <view wx:if="{{viewing.isViewingFamily}}" class="family-view-banner">正在查看 {{viewing.viewingOwner.nickName}} 的资产数据</view>
+    <view wx:if="{{viewing.isViewingFamily}}" class="family-view-banner">
+      <text class="family-view-text">正在查看 {{viewing.viewingOwner.nickName}} 的资产数据</text>
+      <button class="family-return-link" bindtap="returnMine">返回我的资产</button>
+    </view>
 
     <record-strip
       latest-date="{{bundle.current.recordDate}}"
       compare-date="{{compareDate}}"
       compare-options="{{compareOptions}}"
       compare-index="{{compareIndex}}"
+      family-mode="{{viewing.isViewingFamily}}"
       bind:change="onCompareChange"
     ></record-strip>
 
     <view class="hero">
-    <view class="hero-left">
-      <view class="label-line">
-        <text>净资产（元）</text>
-        <text class="help-icon" catchtap="showMetricHelp" data-type="netWorth">?</text>
-      </view>
-      <view class="hero-amount">{{bundle.totalNetText}}</view>
-      <view class="hero-delta">
-        <text>较对比</text>
-        <text class="{{bundle.netDeltaClass}}">{{bundle.netDeltaText}}</text>
-        <text class="{{bundle.netDeltaClass}}">{{bundle.netRateText}}</text>
-      </view>
-      <view class="hero-metrics">
-        <view class="hero-metric">
-          <view class="metric-label label-with-help">
-            <text>资产账户</text>
-            <text class="help-icon" catchtap="showMetricHelp" data-type="accountCount">?</text>
-          </view>
-          <view class="metric-value"><text>{{accountCount}}</text> 个</view>
+      <view class="hero-left">
+        <view class="label-line">
+          <text>净资产（元）</text>
+          <text class="help-icon" catchtap="showMetricHelp" data-type="netWorth">?</text>
         </view>
-        <view class="hero-metric">
-          <view class="metric-label label-with-help">
-            <text>总负债</text>
-            <text class="help-icon" catchtap="showMetricHelp" data-type="totalLiabilities">?</text>
-          </view>
-          <view class="metric-value debt" wx:if="{{privacyMode}}">{{bundle.totalLiabilitiesText}}</view>
-          <view class="metric-value debt" wx:else>-{{bundle.totalLiabilitiesText}}</view>
+        <view class="hero-amount {{heroAmountAnimating ? 'amount-growing' : ''}}">{{heroAmountText}}</view>
+        <view class="hero-delta">
+          <text>较对比</text>
+          <text class="{{bundle.netDeltaClass}}">{{bundle.netDeltaText}}</text>
+          <text class="{{bundle.netDeltaClass}}">{{bundle.netRateText}}</text>
         </view>
       </view>
     </view>
 
-    <view class="donut-area">
-      <donut-chart items="{{donutItems}}" center-label="净资产构成" center-value="6类"></donut-chart>
-      <view class="donut-legend">
-        <block wx:for="{{legendItems}}" wx:key="key">
-          <view class="donut-legend-row">
-            <view class="legend-dot" style="background: {{item.color}}"></view>
-            <text class="legend-name">{{item.name}}</text>
-          </view>
-        </block>
+    <view class="hero-metrics">
+      <view class="hero-metric">
+        <view class="metric-label label-with-help">
+          <text>总账户</text>
+          <text class="help-icon" catchtap="showMetricHelp" data-type="accountCount">?</text>
+        </view>
+        <view class="metric-value"><text>{{accountCount}}</text> 个</view>
       </view>
-    </view>
+      <view class="hero-metric">
+        <view class="metric-label label-with-help">
+          <text>总负债</text>
+          <text class="help-icon" catchtap="showMetricHelp" data-type="totalLiabilities">?</text>
+        </view>
+        <view class="metric-value debt" wx:if="{{privacyMode}}">{{bundle.totalLiabilitiesText}}</view>
+        <view class="metric-value debt" wx:else>-{{bundle.totalLiabilitiesText}}</view>
+      </view>
     </view>
 
     <view class="section section-pad composition">

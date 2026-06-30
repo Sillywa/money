@@ -1,10 +1,11 @@
 const {
   buildBundle,
   buildCompletionReminder,
+  formatMoney,
   getNetTrend,
   maskBundle
 } = require("../../utils/asset");
-const { fetchSnapshots, getProfile, getThemeClass, getViewingInfo, updateProfile } = require("../../utils/store");
+const { fetchSnapshots, getProfile, getThemeClass, getViewingInfo, getViewingProfile, returnToSelf, updateProfile } = require("../../utils/store");
 const { showMetricHelp } = require("../../utils/metric-help");
 
 Page({
@@ -17,6 +18,8 @@ Page({
     trendPoints: [],
     completionReminder: null,
     accountCount: 0,
+    heroAmountText: "0.00",
+    heroAmountAnimating: false,
     compareDate: "",
     compareOptions: [],
     compareIndex: 0,
@@ -30,6 +33,21 @@ Page({
   },
 
   onShow() {
+    const app = getApp();
+    if (app.globalData.pendingReturnToSelf) {
+      app.globalData.pendingReturnToSelf = false;
+      this.setData({ loading: true });
+      returnToSelf().then(() => {
+        this.load({ force: true });
+      }).catch(() => {
+        this.setData({ loading: false });
+        wx.showToast({
+          title: "切换失败",
+          icon: "none"
+        });
+      });
+      return;
+    }
     this.load();
   },
 
@@ -43,7 +61,8 @@ Page({
       const rawBundle = buildBundle(records, opts.compareDate !== undefined ? opts.compareDate : this.data.compareDate);
       getApp().globalData.latestBundle = rawBundle;
       const profile = getProfile() || {};
-      const privacyMode = !!profile.privacyEnabled;
+      const viewingProfile = getViewingProfile() || profile;
+      const privacyMode = !!viewingProfile.privacyEnabled;
       const bundle = privacyMode ? maskBundle(rawBundle) : rawBundle;
       const accountCount = rawBundle.categories.reduce((sum, item) => sum + item.count, 0);
       const compareOptions = bundle.compareRecords.map((record) => record.recordDate);
@@ -62,7 +81,7 @@ Page({
       const showAssetGuide = !viewing.isViewingFamily && !profile.assetGuideSeen && accountCount === 0;
       const rawCompletionReminder = buildCompletionReminder(rawBundle.records);
       const ownerOpenid = (viewing.viewingOwner && viewing.viewingOwner.openid) || profile.openid || "";
-      const dismissedCompletionReminderDate = (profile.dismissedCompletionReminderDates || {})[ownerOpenid] || "";
+      const dismissedCompletionReminderDate = (viewingProfile.dismissedCompletionReminderDates || {})[ownerOpenid] || "";
       const shouldHideCompletionReminder = rawCompletionReminder.currentDate &&
         rawCompletionReminder.currentDate === dismissedCompletionReminderDate;
       const visibleCompletionReminder = shouldHideCompletionReminder
@@ -91,16 +110,30 @@ Page({
         viewing,
         themeClass: getThemeClass(),
         showAssetGuide,
+        heroAmountText: privacyMode ? bundle.totalNetText : formatMoney(0),
+        heroAmountAnimating: false,
         loading: false,
         hasLoaded: true
+      }, () => {
+        this.animateHeroAmount(rawBundle.totalNet, bundle.totalNetText, privacyMode);
       });
     }).catch(() => {
+      this.clearHeroAmountTimer();
       this.setData({
         themeClass: getThemeClass(),
         loading: false,
+        heroAmountAnimating: false,
         hasLoaded: true
       });
     });
+  },
+
+  onHide() {
+    this.clearHeroAmountTimer();
+  },
+
+  onUnload() {
+    this.clearHeroAmountTimer();
   },
 
   onPullDownRefresh() {
@@ -114,6 +147,40 @@ Page({
   },
 
   showMetricHelp,
+
+  animateHeroAmount(targetValue, targetText, privacyMode) {
+    this.clearHeroAmountTimer();
+    const target = Number(targetValue);
+    if (privacyMode || !Number.isFinite(target)) {
+      this.setData({
+        heroAmountText: targetText,
+        heroAmountAnimating: false
+      });
+      return;
+    }
+
+    const duration = 720;
+    const startedAt = Date.now();
+    this.setData({ heroAmountAnimating: true });
+    this._heroAmountTimer = setInterval(() => {
+      const progress = Math.min(1, (Date.now() - startedAt) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = target * eased;
+      this.setData({
+        heroAmountText: progress >= 1 ? targetText : formatMoney(current),
+        heroAmountAnimating: progress < 1
+      });
+      if (progress >= 1) {
+        this.clearHeroAmountTimer();
+      }
+    }, 32);
+  },
+
+  clearHeroAmountTimer() {
+    if (!this._heroAmountTimer) return;
+    clearInterval(this._heroAmountTimer);
+    this._heroAmountTimer = null;
+  },
 
   maskCompletionReminder(reminder) {
     return {
@@ -147,7 +214,7 @@ Page({
   closeCompletionReminder() {
     const currentDate = this.data.completionReminder && this.data.completionReminder.currentDate;
     if (!currentDate) return;
-    const profile = getProfile() || {};
+    const profile = getViewingProfile() || getProfile() || {};
     const viewing = this.data.viewing || getViewingInfo();
     const ownerOpenid = (viewing.viewingOwner && viewing.viewingOwner.openid) || profile.openid || "";
     if (!ownerOpenid) return;
@@ -186,6 +253,17 @@ Page({
 
   noop() {
     return false;
+  },
+
+  returnMine() {
+    returnToSelf().then(() => {
+      this.load({ force: true });
+    }).catch(() => {
+      wx.showToast({
+        title: "切换失败",
+        icon: "none"
+      });
+    });
   },
 
   markAssetGuideSeen() {

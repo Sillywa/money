@@ -84,8 +84,12 @@
   border-radius: 16rpx;
   background: #174ea6;
   color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 28rpx;
   font-weight: 700;
+  line-height: 76rpx;
 }
 
 .privacy-card {

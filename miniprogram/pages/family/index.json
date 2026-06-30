@@ -1,6 +1,7 @@
 {
   "navigationBarTitleText": "亲友资产",
   "usingComponents": {
-    "icon-font": "/components/icon-font/index"
+    "icon-font": "/components/icon-font/index",
+    "skeleton-screen": "/components/skeleton-screen/index"
   }
 }

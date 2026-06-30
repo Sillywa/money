@@ -1,5 +1,5 @@
-<view class="record-strip-space"></view>
-<view class="record-strip">
+<view class="record-strip-space {{familyMode ? 'family-mode' : ''}}"></view>
+<view class="record-strip {{familyMode ? 'family-mode' : ''}}">
   <view>
     <text class="record-label">{{latestLabel}}</text>
     <text class="record-date">{{latestDate}}</text>

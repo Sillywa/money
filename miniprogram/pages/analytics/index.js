@@ -1,5 +1,5 @@
 const { buildBundle, formatMoney, maskBundle } = require("../../utils/asset");
-const { fetchSnapshots, getProfile, getThemeClass, getViewingInfo, updateProfile } = require("../../utils/store");
+const { fetchSnapshots, getThemeClass, getViewingInfo, getViewingProfile, returnToSelf, updateProfile } = require("../../utils/store");
 const { showMetricHelp } = require("../../utils/metric-help");
 
 const DEFAULT_TARGET_NET_WORTH = 1000000;
@@ -44,7 +44,7 @@ Page({
 
     return fetchSnapshots({ force: !!opts.force }).then((records) => {
       const rawBundle = buildBundle(records);
-      const profile = getProfile() || {};
+      const profile = getViewingProfile() || {};
       const privacyMode = !!profile.privacyEnabled;
       const bundle = privacyMode ? maskBundle(rawBundle) : rawBundle;
       const goalState = this.createGoalState(rawBundle, profile, privacyMode);
@@ -125,6 +125,14 @@ Page({
     }).then(() => {
       this.refreshGoalFromInputs();
       if (!opts.silent) wx.showToast({ title: "已更新", icon: "success" });
+    });
+  },
+
+  returnMine() {
+    returnToSelf().then(() => {
+      wx.switchTab({
+        url: "/pages/dashboard/index"
+      });
     });
   },
 

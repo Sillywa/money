@@ -1,8 +1,11 @@
-<view class="page record-page {{themeClass}}">
+<view class="page record-page {{themeClass}} {{viewing.isViewingFamily ? 'family-mode' : ''}}">
   <skeleton-screen wx:if="{{loading}}" type="record"></skeleton-screen>
 
   <block wx:if="{{!loading && category}}">
-    <view wx:if="{{viewing.isViewingFamily}}" class="family-view-banner">正在查看 {{viewing.viewingOwner.nickName}} 的资产数据</view>
+    <view wx:if="{{viewing.isViewingFamily}}" class="family-view-banner">
+      <text class="family-view-text">正在查看 {{viewing.viewingOwner.nickName}} 的资产数据</text>
+      <button class="family-return-link" bindtap="returnMine">返回我的资产</button>
+    </view>
 
     <view class="form-title">
     <view class="form-accent"></view>

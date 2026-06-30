@@ -6,7 +6,7 @@ const {
   maskBundle,
   maskHistoryGroups,
 } = require("../../utils/asset");
-const { deleteRecordItem, fetchSnapshots, getProfile, getThemeClass, getViewingInfo } = require("../../utils/store");
+const { deleteRecordItem, fetchSnapshots, getThemeClass, getViewingInfo, getViewingProfile, returnToSelf } = require("../../utils/store");
 const { showMetricHelp } = require("../../utils/metric-help");
 
 const HISTORY_PAGE_SIZE = 12;
@@ -57,7 +57,7 @@ Page({
 
     return fetchSnapshots({ force: !!opts.force }).then((records) => {
       const rawBundle = buildBundle(records, opts.compareDate !== undefined ? opts.compareDate : this.data.compareDate);
-      const privacyMode = !!((getProfile() || {}).privacyEnabled);
+      const privacyMode = !!((getViewingProfile() || {}).privacyEnabled);
       const bundle = privacyMode ? maskBundle(rawBundle) : rawBundle;
       const category = CATEGORY_MAP[this.data.type] || CATEGORY_MAP.wealth;
       const summary = bundle.categories.find((item) => item.key === category.key);
@@ -115,6 +115,14 @@ Page({
   },
 
   showMetricHelp,
+
+  returnMine() {
+    returnToSelf().then(() => {
+      wx.switchTab({
+        url: "/pages/dashboard/index"
+      });
+    });
+  },
 
   buildHistoryGroups(bundle, categoryKey) {
     const openedMap = this.data.historyGroups.reduce((map, group) => {

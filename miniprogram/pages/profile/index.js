@@ -1,8 +1,8 @@
 const {
   fetchWorkspace,
-  getProfile,
   getThemeClass,
   getViewingInfo,
+  getViewingProfile,
   returnToSelf,
   setDarkMode,
   setPrivacyEnabled,
@@ -28,6 +28,14 @@ Page({
   },
 
   onShow() {
+    const viewing = getViewingInfo();
+    if (viewing.isViewingFamily) {
+      getApp().globalData.pendingReturnToSelf = true;
+      wx.switchTab({
+        url: "/pages/dashboard/index"
+      });
+      return;
+    }
     this.load();
   },
 
@@ -39,7 +47,8 @@ Page({
 
     return fetchWorkspace({ force: !!opts.force }).then((result) => {
       const reminder = result.reminder || {};
-      const profile = getProfile();
+      const profile = getViewingProfile();
+      const viewing = getViewingInfo();
       const snapshots = result.snapshots || [];
       const privacyMode = !!profile.privacyEnabled;
       const rawMonthlyReport = buildMonthlyReport(snapshots);
@@ -51,13 +60,13 @@ Page({
         savedNickName: profile.nickName || "资产记录者",
         recordCount: snapshots.length,
         reminderText: reminder.enabled ? `每月 ${reminder.dayOfMonth} 日 10:00` : "未设置",
-        viewing: getViewingInfo(),
+        viewing,
         themeClass: getThemeClass(),
         loading: false,
         hasLoaded: true
       });
     }).catch(() => {
-      const profile = getProfile();
+      const profile = getViewingProfile();
       const privacyMode = !!profile.privacyEnabled;
       const rawMonthlyReport = buildMonthlyReport([]);
       const rawHealth = buildAssetHealth([], profile.goalNetWorth);
@@ -77,7 +86,7 @@ Page({
   onChooseAvatar(event) {
     const avatarUrl = event.detail.avatarUrl;
     if (!avatarUrl) return;
-    const openid = getApp().globalData.openid || "default";
+    const openid = (this.data.profile && this.data.profile.openid) || getApp().globalData.openid || "default";
     const ext = avatarUrl.includes(".png") ? "png" : "jpg";
 
     wx.cloud.uploadFile({
@@ -85,8 +94,9 @@ Page({
       filePath: avatarUrl
     }).then((res) => updateProfile({ avatarUrl: res.fileID }))
       .then(() => {
+        const profile = getViewingProfile();
         this.setData({
-          "profile.avatarUrl": getApp().globalData.profile.avatarUrl
+          "profile.avatarUrl": profile.avatarUrl
         });
         wx.showToast({
           title: "头像已更新",

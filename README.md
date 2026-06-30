@@ -27,7 +27,7 @@
 - `pages/family/index`：亲友资产绑定与浏览
 - `pages/family-invite/index`：亲友资产邀请接受页
 - `pages/analytics/index`：资产目标
-- `pages/profile/index`：我的/设置
+- `pages/profile/index`：我的/设置；亲友模式下底部“我的”入口显示为“返回我的”，点击后切回登录用户自己的资产数据
 
 ## 六类资产字段
 
@@ -92,18 +92,18 @@ asset_reminders
 
 云函数支持：
 
-- `login` / `workspace`：获取登录用户资料、当前浏览对象、亲友列表、提醒配置和资产快照
-- `profileUpdate`：更新头像、昵称、隐私开关、暗黑模式、新功能引导状态、账户补录提醒关闭日期、目标净资产和理财测算参数
+- `login` / `workspace`：获取登录用户资料、当前浏览对象、亲友列表、当前浏览对象提醒配置和资产快照
+- `profileUpdate`：更新当前浏览对象的头像、昵称、隐私开关、暗黑模式、新功能引导状态、账户补录提醒关闭日期、目标净资产和理财测算参数
 - `list` / `get`：读取当前浏览对象或指定授权用户的资产快照
 - `replaceAll`：替换当前用户的全部资产快照，主要用于迁移/调试
 - `upsert`：按记录日期新增或更新单次快照
 - `moveRecordDate`：编辑历史记录时原子移动单条资产到新记录日期
 - `deleteRecordItem`：删除某日期下某类资产的一条历史记录
 - `delete`：按记录日期删除单次快照
-- `familyInviteCreate` / `familyInviteAccept`：生成分享码，并通过输入分享码接受亲友绑定
+- `familyInviteCreate` / `familyInviteAccept`：复用或生成分享码，并通过输入分享码接受亲友绑定
 - `setActiveOwner`：切换当前浏览的资产所属用户
 - `familyAggregate`：按已授权亲友的最新快照生成家庭合计资产总览
-- `reminderSave` / `sendDueReminders`：保存提醒日期和发送到期订阅通知
+- `reminderSave` / `sendDueReminders`：保存当前浏览对象提醒日期和发送到期订阅通知
 
 开发、本地调试和生产环境都只通过云函数与云数据库读写数据，不使用本地存储作为数据源。新用户没有云端记录时展示空的今日快照。
 

@@ -1,99 +1,88 @@
-<view class="page family-page {{themeClass}}">
-  <view wx:if="{{viewing.isViewingFamily}}" class="family-view-banner">正在查看 {{viewing.viewingOwner.nickName}} 的资产数据</view>
+<view class="page family-page {{themeClass}} {{viewing.isViewingFamily ? 'family-mode' : ''}}">
+  <skeleton-screen wx:if="{{loading}}" type="family"></skeleton-screen>
 
-  <view class="section section-pad family-summary">
-    <view class="section-head">
-      <view>
-        <view class="section-title title-with-icon">
-          <icon-font name="home" color="#F59E0B" size="{{44}}" radius="{{14}}"></icon-font>
-          <text>家庭合计资产</text>
+  <block wx:if="{{!loading}}">
+    <view wx:if="{{viewing.isViewingFamily}}" class="family-view-banner">
+      <text class="family-view-text">正在查看 {{viewing.viewingOwner.nickName}} 的资产数据</text>
+      <button class="family-return-link" bindtap="returnMine">返回我的资产</button>
+    </view>
+
+    <view class="section section-pad family-summary">
+      <view class="section-head">
+        <view>
+          <view class="section-title title-with-icon">
+            <icon-font name="home" color="#F59E0B" size="{{44}}" radius="{{14}}"></icon-font>
+            <text>家庭合计资产</text>
+          </view>
+          <view class="section-subtitle">我的资产 + 已授权亲友的最新记录</view>
         </view>
-        <view class="section-subtitle">我的资产 + 已授权亲友的最新记录</view>
       </view>
-    </view>
-    <view class="family-total">{{familyAggregate.totalNetText}}</view>
-    <view class="family-summary-grid">
-      <view>
-        <text>总资产</text>
-        <text>{{familyAggregate.totalAssetsText}}</text>
-      </view>
-      <view>
-        <text>总负债</text>
-        <text>{{familyAggregate.totalLiabilitiesText}}</text>
-      </view>
-      <view>
-        <text>账户数</text>
-        <text>{{familyAggregate.accountCount}} 个</text>
-      </view>
-      <view>
-        <text>成员数</text>
-        <text>{{familyAggregate.memberCount}} 位</text>
-      </view>
-    </view>
-    <block wx:for="{{familyAggregate.members}}" wx:key="ownerOpenid">
-      <view class="family-summary-row">
-        <image wx:if="{{item.owner.avatarUrl}}" class="summary-avatar" src="{{item.owner.avatarUrl}}" mode="aspectFill"></image>
-        <icon-font wx:else name="users" color="#1769FF" size="{{52}}" radius="{{26}}"></icon-font>
-        <view class="summary-main">
-          <view class="summary-name">{{item.owner.nickName}}</view>
-          <view class="muted">{{item.latestRecordDate || '暂无记录'}}</view>
+      <view class="family-total">{{familyAggregate.totalNetText}}</view>
+      <view class="family-summary-grid">
+        <view>
+          <text>总资产</text>
+          <text>{{familyAggregate.totalAssetsText}}</text>
         </view>
-        <view class="summary-number">{{item.totalNetText}}</view>
-      </view>
-    </block>
-  </view>
-
-  <view class="section section-pad">
-    <view class="section-title title-with-icon">
-      <icon-font name="users" color="#1769FF" size="{{44}}" radius="{{14}}"></icon-font>
-      <text>我的分享码</text>
-    </view>
-    <view class="section-subtitle">把分享码发给亲友，对方在下方输入后即可绑定。</view>
-    <view class="invite-code-box">
-      <text>{{inviteToken || '生成中'}}</text>
-    </view>
-    <view class="invite-actions">
-      <button class="btn-secondary invite-action" bindtap="refreshInviteCode">重新生成</button>
-      <button class="btn-primary invite-action" bindtap="copyInviteCode" disabled="{{!inviteToken}}">复制分享码</button>
-    </view>
-  </view>
-
-  <view class="section section-pad">
-    <view class="section-title title-with-icon">
-      <icon-font name="plus" color="#10B981" size="{{44}}" radius="{{14}}"></icon-font>
-      <text>绑定亲友</text>
-    </view>
-    <view class="section-subtitle">输入亲友提供的分享码，绑定后双方可以互相查看和维护资产记录。</view>
-    <view class="invite-input-row">
-      <input
-        class="invite-input"
-        value="{{inviteCodeInput}}"
-        placeholder="请输入分享码"
-        maxlength="12"
-        bindinput="onInviteCodeInput"
-      />
-    </view>
-    <button class="btn-primary bind-btn" loading="{{binding}}" disabled="{{binding}}" bindtap="bindByInviteCode">
-      {{binding ? '绑定中' : '绑定亲友'}}
-    </button>
-  </view>
-
-  <view class="section member-section">
-    <view class="member-head">
-      <view class="section-title">已绑定亲友</view>
-      <view class="muted">{{familyMembers.length}} 位</view>
-    </view>
-    <block wx:for="{{familyMembers}}" wx:key="openid">
-      <view class="member-row" bindtap="viewMember" data-openid="{{item.openid}}">
-        <image wx:if="{{item.avatarUrl}}" class="member-avatar" src="{{item.avatarUrl}}" mode="aspectFill"></image>
-        <icon-font wx:else name="users" color="#1769FF" size="{{64}}" radius="{{32}}"></icon-font>
-        <view class="member-main">
-          <view class="member-name">{{item.nickName}}</view>
-          <view class="muted">点击查看并维护资产</view>
+        <view>
+          <text>总负债</text>
+          <text>{{familyAggregate.totalLiabilitiesText}}</text>
         </view>
-        <view class="chevron">›</view>
+        <view>
+          <text>账户数</text>
+          <text>{{familyAggregate.accountCount}} 个</text>
+        </view>
+        <view>
+          <text>成员数</text>
+          <text>{{familyAggregate.memberCount}} 位</text>
+        </view>
       </view>
-    </block>
-    <view wx:if="{{!familyMembers.length}}" class="empty-line">还没有绑定亲友</view>
-  </view>
+      <block wx:for="{{familyAggregate.members}}" wx:key="ownerOpenid">
+        <view class="family-summary-row" bindtap="viewMember" data-openid="{{item.ownerOpenid}}">
+          <image wx:if="{{item.owner.avatarUrl}}" class="summary-avatar" src="{{item.owner.avatarUrl}}" mode="aspectFill"></image>
+          <icon-font wx:else name="users" color="#1769FF" size="{{52}}" radius="{{26}}"></icon-font>
+          <view class="summary-main">
+            <view class="summary-name">{{item.owner.nickName}}</view>
+            <view class="muted">{{item.latestRecordDate || '暂无记录'}} · 点击查看</view>
+          </view>
+          <view class="summary-number">{{item.totalNetText}}</view>
+          <view class="summary-chevron">›</view>
+        </view>
+      </block>
+    </view>
+
+    <view class="section section-pad">
+      <view class="section-title title-with-icon">
+        <icon-font name="users" color="#1769FF" size="{{44}}" radius="{{14}}"></icon-font>
+        <text>我的分享码</text>
+      </view>
+      <view class="section-subtitle">把分享码发给亲友，对方在下方输入后即可绑定。</view>
+      <view class="invite-code-box">
+        <text>{{inviteToken || '生成中'}}</text>
+      </view>
+      <view class="invite-actions">
+        <button class="btn-secondary invite-action" bindtap="refreshInviteCode">重新生成</button>
+        <button class="btn-primary invite-action" bindtap="copyInviteCode" disabled="{{!inviteToken}}">复制分享码</button>
+      </view>
+    </view>
+
+    <view class="section section-pad">
+      <view class="section-title title-with-icon">
+        <icon-font name="plus" color="#10B981" size="{{44}}" radius="{{14}}"></icon-font>
+        <text>绑定亲友</text>
+      </view>
+      <view class="section-subtitle">输入亲友提供的分享码，绑定后双方可以互相查看和维护资产记录。</view>
+      <view class="invite-input-row">
+        <input
+          class="invite-input"
+          value="{{inviteCodeInput}}"
+          placeholder="请输入分享码"
+          maxlength="12"
+          bindinput="onInviteCodeInput"
+        />
+      </view>
+      <button class="btn-primary bind-btn" loading="{{binding}}" disabled="{{binding}}" bindtap="bindByInviteCode">
+        {{binding ? '绑定中' : '绑定亲友'}}
+      </button>
+    </view>
+  </block>
 </view>

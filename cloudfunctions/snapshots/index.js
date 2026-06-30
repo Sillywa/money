@@ -36,7 +36,8 @@ exports.main = async (event) => {
   }
 
   if (action === "profileUpdate") {
-    await updateProfile(openid, event.profile || {});
+    const ownerOpenid = await resolveOwnerOpenid(openid, event.ownerOpenid);
+    await updateProfile(ownerOpenid, event.profile || {});
     return buildWorkspace(openid);
   }
 
@@ -134,6 +135,16 @@ exports.main = async (event) => {
 
   if (action === "familyInviteCreate") {
     const profile = await ensureProfile(openid);
+    const force = !!event.force;
+    if (!force) {
+      const activeInvite = await getActiveFamilyInvite(openid);
+      if (activeInvite) {
+        return {
+          ...(await buildWorkspace(openid)),
+          inviteCode: activeInvite.code
+        };
+      }
+    }
     const code = createInviteCode();
     await invites.add({
       data: {
@@ -194,7 +205,8 @@ exports.main = async (event) => {
 
   if (action === "reminderSave") {
     const dayOfMonth = clampDay(event.dayOfMonth);
-    await upsertReminder(openid, dayOfMonth);
+    const ownerOpenid = await resolveOwnerOpenid(openid, event.ownerOpenid);
+    await upsertReminder(ownerOpenid, dayOfMonth);
     return buildWorkspace(openid);
   }
 
@@ -217,7 +229,7 @@ async function buildWorkspace(openid) {
     listSnapshots(ownerOpenid),
     ensureProfile(ownerOpenid),
     listFamilyMembers(openid),
-    getReminder(openid)
+    getReminder(ownerOpenid)
   ]);
 
   return {
@@ -501,6 +513,15 @@ async function ensureFamilyBinding(viewerOpenid, ownerOpenid) {
       updatedAt: db.serverDate()
     }
   });
+}
+
+async function getActiveFamilyInvite(ownerOpenid) {
+  const result = await invites
+    .where({ ownerOpenid, status: "active" })
+    .orderBy("createdAt", "desc")
+    .limit(1)
+    .get();
+  return result.data[0] || null;
 }
 
 async function listFamilyMembers(openid) {

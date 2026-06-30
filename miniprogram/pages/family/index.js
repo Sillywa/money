@@ -6,6 +6,8 @@ const {
   getProfile,
   getThemeClass,
   getViewingInfo,
+  getViewingProfile,
+  returnToSelf,
   setActiveOwner
 } = require("../../utils/store");
 const { formatMoney } = require("../../utils/asset");
@@ -40,7 +42,7 @@ Page({
       fetchFamilyAggregate()
     ]).then(([result, aggregate]) => {
       const profile = getProfile();
-      const privacyMode = !!profile.privacyEnabled;
+      const privacyMode = !!((getViewingProfile() || profile).privacyEnabled);
       this.setData({
         familyMembers: result.familyMembers || [],
         familyAggregate: this.formatFamilyAggregate(aggregate, privacyMode),
@@ -68,7 +70,7 @@ Page({
   },
 
   refreshInviteCode() {
-    createFamilyInvite().then((result) => {
+    createFamilyInvite({ force: true }).then((result) => {
       this.setData({ inviteToken: result.inviteCode || "" });
       wx.showToast({ title: "已生成", icon: "success" });
     }).catch(() => {
@@ -99,6 +101,7 @@ Page({
     this.setData({ binding: true });
     acceptFamilyInvite(code).then((result) => {
       const profile = getProfile();
+      const viewingProfile = getViewingProfile() || profile;
       this.setData({
         inviteCodeInput: "",
         familyMembers: result.familyMembers || [],
@@ -110,7 +113,7 @@ Page({
       wx.showToast({ title: "已绑定", icon: "success" });
       return fetchFamilyAggregate().then((aggregate) => {
         this.setData({
-          familyAggregate: this.formatFamilyAggregate(aggregate, !!profile.privacyEnabled)
+          familyAggregate: this.formatFamilyAggregate(aggregate, !!viewingProfile.privacyEnabled)
         });
       });
     }).catch(() => {
@@ -140,6 +143,14 @@ Page({
   viewMember(event) {
     const ownerOpenid = event.currentTarget.dataset.openid;
     setActiveOwner(ownerOpenid).then(() => {
+      wx.switchTab({
+        url: "/pages/dashboard/index"
+      });
+    });
+  },
+
+  returnMine() {
+    returnToSelf().then(() => {
       wx.switchTab({
         url: "/pages/dashboard/index"
       });

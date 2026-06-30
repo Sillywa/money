@@ -1,8 +1,11 @@
-<view class="page assets-page {{themeClass}}">
+<view class="page assets-page {{themeClass}} {{viewing.isViewingFamily ? 'family-mode' : ''}}">
   <skeleton-screen wx:if="{{loading}}" type="assets"></skeleton-screen>
 
   <block wx:if="{{!loading}}">
-    <view wx:if="{{viewing.isViewingFamily}}" class="family-view-banner">正在查看 {{viewing.viewingOwner.nickName}} 的资产数据</view>
+    <view wx:if="{{viewing.isViewingFamily}}" class="family-view-banner">
+      <text class="family-view-text">正在查看 {{viewing.viewingOwner.nickName}} 的资产数据</text>
+      <button class="family-return-link" bindtap="returnMine">返回我的资产</button>
+    </view>
 
     <view class="section date-card">
       <picker mode="selector" range="{{dateOptions}}" value="{{dateIndex}}" bindchange="onDateChange">
@@ -18,6 +21,7 @@
         </view>
       </picker>
     </view>
+    <view class="date-card-space"></view>
 
     <view class="section summary-card">
     <view class="summary-grid">

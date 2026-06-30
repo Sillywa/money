@@ -34,6 +34,10 @@ button::after {
   padding: 0 28rpx 32rpx;
 }
 
+.page.family-mode {
+  padding-top: 84rpx;
+}
+
 .section {
   margin-top: 24rpx;
   background: #ffffff;
@@ -97,19 +101,47 @@ button::after {
 }
 
 .family-view-banner {
-  margin: 18rpx 0 4rpx;
+  position: fixed;
+  top: 8rpx;
+  left: 28rpx;
+  right: 28rpx;
+  z-index: 1200;
   min-height: 68rpx;
   padding: 0 24rpx;
   border-radius: 18rpx;
   display: flex;
   align-items: center;
-  justify-content: center;
-  color: #174ea6;
-  background: rgba(237, 244, 255, 0.96);
-  border: 1rpx solid #b9d2ff;
+  justify-content: space-between;
+  gap: 16rpx;
+  color: #ffffff;
+  background: #1769ff;
+  border: 1rpx solid #0b57d0;
   font-size: 24rpx;
-  font-weight: 650;
-  box-shadow: 0 12rpx 30rpx rgba(23, 78, 166, 0.12);
+  font-weight: 750;
+  box-shadow: 0 14rpx 34rpx rgba(23, 105, 255, 0.28);
+}
+
+.family-view-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.family-return-link {
+  height: 48rpx;
+  flex: 0 0 auto;
+  padding: 0 18rpx;
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1769ff;
+  background: #ffffff;
+  font-size: 22rpx;
+  font-weight: 750;
+  line-height: 48rpx;
 }
 
 .green {
@@ -371,10 +403,15 @@ button::after {
 }
 
 .dark-mode .family-view-banner {
-  color: #bfdbfe;
-  background: rgba(30, 41, 59, 0.96);
-  border-color: #334155;
-  box-shadow: 0 12rpx 30rpx rgba(2, 6, 23, 0.3);
+  color: #ffffff;
+  background: #2563eb;
+  border-color: #60a5fa;
+  box-shadow: 0 14rpx 34rpx rgba(37, 99, 235, 0.32);
+}
+
+.dark-mode .family-return-link {
+  color: #dbeafe;
+  background: #1e3a8a;
 }
 
 .dark-mode .bar-track,
