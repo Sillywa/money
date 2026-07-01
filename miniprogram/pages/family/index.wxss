@@ -14,6 +14,41 @@
   font-weight: 850;
 }
 
+.family-goal-inline {
+  margin-top: 18rpx;
+}
+
+.family-goal-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18rpx;
+  color: #667085;
+  font-size: 24rpx;
+  font-weight: 650;
+}
+
+.progress-track {
+  margin-top: 14rpx;
+  height: 18rpx;
+  border-radius: 999rpx;
+  background: #edf1f7;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 18rpx;
+  border-radius: 999rpx;
+  background: linear-gradient(90deg, #1769ff, #13a37b);
+  transition: width 120ms ease-out;
+}
+
+.family-goal-remain {
+  margin-top: 12rpx;
+  color: #667085;
+  font-size: 24rpx;
+}
+
 .family-summary-grid {
   margin-top: 24rpx;
   display: grid;
@@ -43,9 +78,14 @@
   font-weight: 800;
 }
 
-.family-summary-row {
-  min-height: 92rpx;
+.family-member-list {
   margin-top: 18rpx;
+}
+
+.family-summary-row {
+  min-height: 104rpx;
+  padding: 18rpx 0;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   gap: 16rpx;
@@ -73,12 +113,25 @@
   font-weight: 750;
 }
 
+.summary-side {
+  max-width: 230rpx;
+  text-align: right;
+}
+
 .summary-number {
-  max-width: 220rpx;
   color: #101827;
   font-size: 28rpx;
   font-weight: 800;
-  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.summary-contribution {
+  margin-top: 6rpx;
+  color: #667085;
+  font-size: 22rpx;
+  font-weight: 650;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

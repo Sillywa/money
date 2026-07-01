@@ -92,6 +92,7 @@
   height: 18rpx;
   border-radius: 999rpx;
   background: linear-gradient(90deg, #1769ff, #13a37b);
+  transition: width 120ms ease-out;
 }
 
 .goal-progress-bottom {

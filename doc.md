@@ -37,8 +37,9 @@ flowchart TD
   E --> E4["亲友资产"]
   E --> E5["资产月报 / 健康分"]
   F["亲友资产"] --> F1["生成分享码 / 输入分享码"]
-  F --> F2["家庭合计资产"]
-  F --> F3["切换浏览对象"]
+  F --> F2["家庭合计净资产"]
+  F --> F3["家庭合计目标进度"]
+  F --> F4["切换浏览对象"]
   G["云函数 snapshots"] --> G1["资产快照"]
   G --> G2["用户资料"]
   G --> G3["亲友关系"]
@@ -56,7 +57,7 @@ flowchart TD
 | 资产目标 | `pages/analytics/index` | 设置目标净资产，展示目标进度；进行 10 年 / 30 年复利测算 |
 | 我的 | `pages/profile/index` | 展示并编辑本人头像昵称、隐私状态、记录提醒入口、亲友资产入口、资产月报、资产健康分；亲友模式下底部该入口显示为“返回我的”，点击后切回本人资产 |
 | 记录提醒 | `pages/reminder/index` | 设置每月几号提醒，默认当天 10:00 发送订阅通知 |
-| 亲友资产 | `pages/family/index` | 生成分享码、输入分享码绑定亲友、展示家庭合计资产，并在家庭合计成员行切换亲友资产浏览模式 |
+| 亲友资产 | `pages/family/index` | 生成分享码、输入分享码绑定亲友、展示家庭合计净资产、家庭合计净资产目标和进度，并在家庭合计成员行切换亲友资产浏览模式 |
 | 亲友邀请 | `pages/family-invite/index` | 兼容旧邀请链接，确认后建立双向亲友关系 |
 
 ## 4. 页面跳转图
@@ -129,7 +130,7 @@ flowchart TD
 | 资产月报 | 最新记录所在自然月内，最新快照相对该月第一条快照的净资产变化 |
 | 资产健康分 | 基于负债率、现金类资产占比、记录次数、最近净资产变化和目标进度的前端提示分 |
 | 账户补录提醒 | 最新记录相对上一条记录缺少的历史账户，仅用于提醒核对，不写入云端 |
-| 家庭合计资产 | 当前用户本人和已授权亲友的最新快照合计，净资产 = 合计总资产 - 合计总负债 |
+| 家庭合计净资产 | 当前用户本人和已授权亲友的最新快照合计，净资产 = 合计总资产 - 合计总负债 |
 
 注意：
 
@@ -138,7 +139,7 @@ flowchart TD
 - 首页“净资产构成”中的列表和图表使用同一批分类数据，避免比例口径不一致。
 - 资产健康分和补录提醒只作为轻量提示，不改变净资产、总资产、总负债和负债率口径。
 - 首页账户补录提醒支持点击单项进入对应资产详情；标题右侧关闭按钮会把当前浏览资产所属人的当前记录日期写入用户资料，后续进入首页不再展示该日期提醒，产生新的记录日期后仍会重新触发提醒。
-- 家庭合计资产只读取当前用户已授权可访问成员的最新快照，隐私模式下金额和百分比继续隐藏为 `****`。
+- 家庭合计净资产只读取当前用户已授权可访问成员的最新快照，隐私模式下金额和百分比继续隐藏为 `****`。
 
 ### 6.1 资产健康分计算方法
 
@@ -273,7 +274,7 @@ flowchart LR
 | 集合 | 用途 | 关键字段 |
 |---|---|---|
 | `asset_snapshots` | 按日期保存资产快照 | `ownerOpenid`, `recordDate`, `assets`, `lastEditor` |
-| `asset_user_profiles` | 用户资料和偏好 | `openid`, `nickName`, `avatarUrl`, `privacyEnabled`, `darkMode`, `assetGuideSeen`, `activeOwnerOpenid`, `dismissedCompletionReminderDates` |
+| `asset_user_profiles` | 用户资料和偏好 | `openid`, `nickName`, `avatarUrl`, `privacyEnabled`, `darkMode`, `assetGuideSeen`, `activeOwnerOpenid`, `dismissedCompletionReminderDates`, `goalNetWorth`, `calcPrincipal`, `calcAnnualRate`, `calcYears` |
 | `asset_family_bindings` | 亲友资产授权关系 | `viewerOpenid`, `ownerOpenid`, `status` |
 | `asset_family_invites` | 分享邀请 token | `ownerOpenid`, `code`, `status` |
 | `asset_reminders` | 每月记录提醒 | `openid`, `enabled`, `dayOfMonth`, `hour`, `minute` |
@@ -309,7 +310,7 @@ cloudfunctions/snapshots/index.js
 | `familyInviteCreate` | 创建亲友分享码 |
 | `familyInviteAccept` | 输入分享码并建立双向关系 |
 | `setActiveOwner` | 切换当前浏览的资产所属人 |
-| `familyAggregate` | 读取本人和已授权亲友的最新快照并返回家庭合计资产 |
+| `familyAggregate` | 读取本人和已授权亲友的最新快照并返回家庭合计净资产 |
 | `reminderSave` | 保存当前浏览对象的每月提醒日期 |
 | `sendDueReminders` | 定时发送订阅提醒 |
 
@@ -347,7 +348,9 @@ sequenceDiagram
 - 亲友浏览模式下也允许新增、编辑、删除资产，并允许编辑当前亲友的隐私、提醒和目标参数。
 - 亲友浏览模式下底部仍展示 `资产总览`、`资产明细`、`资产目标` 三个原生 tabBar 入口，并将 `我的` 入口显示为 `返回我的`；点击后效果等同于顶部“返回我的资产”，会切回本人资产并回到资产总览。
 - 保存资产时记录实际编辑人：`editorOpenid`, `editorName`, `editorAvatarUrl` 和快照上的 `lastEditor`。
-- 亲友资产页的家庭合计资产使用当前用户本人和已授权亲友的最新快照合计，不会读取未绑定用户数据。
+- 亲友资产页的家庭合计净资产使用当前用户本人和已授权亲友的最新快照合计，不会读取未绑定用户数据。
+- 亲友资产页展示家庭合计净资产目标和进度：家庭净资产取 `familyAggregate.totalNet`，目标值读取登录用户资料中的 `goalNetWorth`；隐私模式下目标、进度、距目标金额展示为 `****`。
+- 家庭合计成员行展示贡献比例，按成员最新净资产 / 家庭合计净资产计算；家庭合计净资产不大于 0 时展示 0.0%，隐私模式下展示为 `****`。
 - “我的”入口在亲友浏览模式下从底部显示为“返回我的”；点击该入口或各页面顶部提示中的“返回我的资产”后切回登录用户自己的资产数据并恢复“我的”入口。
 
 ## 13. 隐私模式
@@ -377,7 +380,7 @@ sequenceDiagram
 
 ## 15. 资产目标
 
-资产目标页包含两个模块。
+资产目标页包含两个模块；亲友资产页也复用 `goalNetWorth` 展示家庭合计净资产目标和进度。
 
 ```mermaid
 flowchart TD
@@ -400,6 +403,8 @@ flowchart TD
 - `calcPrincipal`
 - `calcAnnualRate`
 - `calcYears`
+
+其中 `goalNetWorth` 在资产目标页表示当前浏览对象的目标净资产；在亲友资产页用于展示登录用户自己的家庭合计净资产目标，进度按家庭合计净资产计算，不改变家庭合计净资产统计口径。
 
 复利测算公式：
 

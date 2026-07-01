@@ -37,7 +37,7 @@
         <view class="goal-progress-top">
           <view>
             <view class="muted">最新净资产（元）</view>
-            <view class="goal-value">{{latestNetText}}</view>
+            <view class="goal-value">{{animatedLatestNetText}}</view>
           </view>
           <view class="goal-right">
             <view class="muted">目标</view>
@@ -45,7 +45,7 @@
           </view>
         </view>
         <view class="progress-track">
-          <view class="progress-fill" style="width: {{goalProgress}}%;"></view>
+          <view class="progress-fill" style="width: {{animatedGoalProgress}}%;"></view>
         </view>
         <view class="goal-progress-bottom">
           <text>完成 {{goalProgressText}}</text>

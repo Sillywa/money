@@ -12,12 +12,22 @@
         <view>
           <view class="section-title title-with-icon">
             <icon-font name="home" color="#F59E0B" size="{{44}}" radius="{{14}}"></icon-font>
-            <text>家庭合计资产</text>
+            <text>家庭合计净资产</text>
           </view>
           <view class="section-subtitle">我的资产 + 已授权亲友的最新记录</view>
         </view>
       </view>
-      <view class="family-total">{{familyAggregate.totalNetText}}</view>
+      <view class="family-total">{{familyTotalText}}</view>
+      <view class="family-goal-inline">
+        <view class="family-goal-meta">
+          <text>目标 {{familyTargetText}}</text>
+          <text>完成 {{familyGoalProgressText}}</text>
+        </view>
+        <view class="progress-track">
+          <view class="progress-fill" style="width: {{animatedFamilyGoalProgress}}%;"></view>
+        </view>
+        <view class="family-goal-remain">距目标 {{familyGoalRemainText}}</view>
+      </view>
       <view class="family-summary-grid">
         <view>
           <text>总资产</text>
@@ -36,18 +46,23 @@
           <text>{{familyAggregate.memberCount}} 位</text>
         </view>
       </view>
-      <block wx:for="{{familyAggregate.members}}" wx:key="ownerOpenid">
-        <view class="family-summary-row" bindtap="viewMember" data-openid="{{item.ownerOpenid}}">
-          <image wx:if="{{item.owner.avatarUrl}}" class="summary-avatar" src="{{item.owner.avatarUrl}}" mode="aspectFill"></image>
-          <icon-font wx:else name="users" color="#1769FF" size="{{52}}" radius="{{26}}"></icon-font>
-          <view class="summary-main">
-            <view class="summary-name">{{item.owner.nickName}}</view>
-            <view class="muted">{{item.latestRecordDate || '暂无记录'}} · 点击查看</view>
+      <view class="family-member-list">
+        <block wx:for="{{familyAggregate.members}}" wx:key="ownerOpenid">
+          <view class="family-summary-row" bindtap="viewMember" data-openid="{{item.ownerOpenid}}">
+            <image wx:if="{{item.owner.avatarUrl}}" class="summary-avatar" src="{{item.owner.avatarUrl}}" mode="aspectFill"></image>
+            <icon-font wx:else name="users" color="#1769FF" size="{{52}}" radius="{{26}}"></icon-font>
+            <view class="summary-main">
+              <view class="summary-name">{{item.owner.nickName}}</view>
+              <view class="muted">{{item.latestRecordDate || '暂无记录'}} · 点击查看</view>
+            </view>
+            <view class="summary-side">
+              <view class="summary-number">{{item.totalNetText}}</view>
+              <view class="summary-contribution">贡献 {{item.contributionText}}</view>
+            </view>
+            <view class="summary-chevron">›</view>
           </view>
-          <view class="summary-number">{{item.totalNetText}}</view>
-          <view class="summary-chevron">›</view>
-        </view>
-      </block>
+        </block>
+      </view>
     </view>
 
     <view class="section section-pad">

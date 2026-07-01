@@ -10,7 +10,9 @@ const {
   returnToSelf,
   setActiveOwner
 } = require("../../utils/store");
-const { formatMoney } = require("../../utils/asset");
+const { formatMoney, formatPercent } = require("../../utils/asset");
+
+const DEFAULT_TARGET_NET_WORTH = 1000000;
 
 Page({
   data: {
@@ -26,6 +28,13 @@ Page({
       totalNetText: "0.00",
       members: []
     },
+    familyTotalText: "0.00",
+    familyTargetNetWorth: DEFAULT_TARGET_NET_WORTH,
+    familyTargetText: formatMoney(DEFAULT_TARGET_NET_WORTH),
+    familyGoalProgress: 0,
+    animatedFamilyGoalProgress: 0,
+    familyGoalProgressText: "0.0%",
+    familyGoalRemainText: "0.00",
     profile: null,
     viewing: null,
     themeClass: "",
@@ -43,16 +52,23 @@ Page({
     ]).then(([result, aggregate]) => {
       const profile = getProfile();
       const privacyMode = !!((getViewingProfile() || profile).privacyEnabled);
+      const formattedAggregate = this.formatFamilyAggregate(aggregate, privacyMode);
+      const goalState = this.createFamilyGoalState(formattedAggregate, profile, privacyMode);
       this.setData({
         familyMembers: result.familyMembers || [],
-        familyAggregate: this.formatFamilyAggregate(aggregate, privacyMode),
+        familyAggregate: formattedAggregate,
+        familyTotalText: privacyMode ? formattedAggregate.totalNetText : formatMoney(0),
+        animatedFamilyGoalProgress: 0,
+        ...goalState,
         profile,
         viewing: getViewingInfo(),
         themeClass: getThemeClass(),
         loading: false
       });
+      this.animateFamilySummary(formattedAggregate, goalState.familyGoalProgress, privacyMode);
       return this.ensureInviteToken();
     }).catch(() => {
+      this.clearFamilyAnimationTimers();
       this.setData({
         themeClass: getThemeClass(),
         loading: false
@@ -112,9 +128,16 @@ Page({
       });
       wx.showToast({ title: "已绑定", icon: "success" });
       return fetchFamilyAggregate().then((aggregate) => {
+        const privacyMode = !!viewingProfile.privacyEnabled;
+        const formattedAggregate = this.formatFamilyAggregate(aggregate, privacyMode);
+        const goalState = this.createFamilyGoalState(formattedAggregate, profile, privacyMode);
         this.setData({
-          familyAggregate: this.formatFamilyAggregate(aggregate, !!viewingProfile.privacyEnabled)
+          familyAggregate: formattedAggregate,
+          familyTotalText: privacyMode ? formattedAggregate.totalNetText : formatMoney(0),
+          animatedFamilyGoalProgress: 0,
+          ...goalState
         });
+        this.animateFamilySummary(formattedAggregate, goalState.familyGoalProgress, privacyMode);
       });
     }).catch(() => {
       this.setData({ binding: false });
@@ -122,22 +145,82 @@ Page({
     });
   },
 
+  onHide() {
+    this.clearFamilyAnimationTimers();
+  },
+
+  onUnload() {
+    this.clearFamilyAnimationTimers();
+  },
+
   formatFamilyAggregate(aggregate, privacyMode) {
     const data = aggregate || {};
     const mask = privacyMode ? "****" : "";
+    const totalNet = Number(data.totalNet || 0);
     return {
       memberCount: (data.members || []).length,
       accountCount: data.accountCount || 0,
+      totalNet,
       totalAssetsText: mask || formatMoney(data.totalAssets),
       totalLiabilitiesText: mask || formatMoney(data.totalLiabilities),
       totalNetText: mask || formatMoney(data.totalNet),
-      members: (data.members || []).map((item) => ({
-        ...item,
-        ownerOpenid: item.owner && item.owner.openid,
-        totalNetText: mask || formatMoney(item.totalNet),
-        totalLiabilitiesText: mask || formatMoney(item.totalLiabilities)
-      }))
+      members: (data.members || []).map((item) => {
+        const contribution = totalNet > 0 ? Number(item.totalNet || 0) / totalNet * 100 : 0;
+        return {
+          ...item,
+          ownerOpenid: item.owner && item.owner.openid,
+          totalNetText: mask || formatMoney(item.totalNet),
+          totalLiabilitiesText: mask || formatMoney(item.totalLiabilities),
+          contributionText: mask || formatPercent(contribution)
+        };
+      })
     };
+  },
+
+  createFamilyGoalState(aggregate, profile, privacyMode) {
+    const target = positiveNumber(profile && profile.goalNetWorth, DEFAULT_TARGET_NET_WORTH);
+    const totalNet = Number((aggregate && aggregate.totalNet) || 0);
+    const progress = target > 0 ? clamp(totalNet / target * 100, 0, 100) : 0;
+    const remain = Math.max(target - totalNet, 0);
+    return {
+      familyTargetNetWorth: target,
+      familyTargetText: privacyMode ? "****" : formatMoney(target),
+      familyGoalProgress: privacyMode ? 0 : progress.toFixed(1),
+      familyGoalProgressText: privacyMode ? "****" : `${progress.toFixed(1)}%`,
+      familyGoalRemainText: privacyMode ? "****" : formatMoney(remain)
+    };
+  },
+
+  animateFamilySummary(aggregate, targetProgress, privacyMode) {
+    this.clearFamilyAnimationTimers();
+    if (privacyMode) {
+      this.setData({
+        familyTotalText: aggregate.totalNetText,
+        animatedFamilyGoalProgress: 0
+      });
+      return;
+    }
+
+    const targetTotal = Number(aggregate.totalNet || 0);
+    const progressTarget = Number(targetProgress || 0);
+    const duration = 720;
+    const startedAt = Date.now();
+
+    this._familySummaryTimer = setInterval(() => {
+      const progress = Math.min(1, (Date.now() - startedAt) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      this.setData({
+        familyTotalText: progress >= 1 ? aggregate.totalNetText : formatMoney(targetTotal * eased),
+        animatedFamilyGoalProgress: progress >= 1 ? progressTarget.toFixed(1) : (progressTarget * eased).toFixed(1)
+      });
+      if (progress >= 1) this.clearFamilyAnimationTimers();
+    }, 32);
+  },
+
+  clearFamilyAnimationTimers() {
+    if (!this._familySummaryTimer) return;
+    clearInterval(this._familySummaryTimer);
+    this._familySummaryTimer = null;
   },
 
   viewMember(event) {
@@ -157,3 +240,12 @@ Page({
     });
   }
 });
+
+function positiveNumber(value, fallback) {
+  const number = Number(value);
+  return Number.isFinite(number) && number > 0 ? number : fallback;
+}
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}

@@ -19,7 +19,9 @@ Page({
     targetNetWorthInput: String(DEFAULT_TARGET_NET_WORTH),
     targetNetWorthText: formatMoney(DEFAULT_TARGET_NET_WORTH),
     latestNetText: "0.00",
+    animatedLatestNetText: "0.00",
     goalProgress: 0,
+    animatedGoalProgress: 0,
     goalProgressText: "0.0%",
     goalRemainText: "0.00",
     principal: DEFAULT_PRINCIPAL,
@@ -34,6 +36,14 @@ Page({
 
   onShow() {
     this.load();
+  },
+
+  onHide() {
+    this.clearGoalAnimationTimer();
+  },
+
+  onUnload() {
+    this.clearGoalAnimationTimer();
   },
 
   load(options) {
@@ -52,13 +62,17 @@ Page({
       this.setData({
         bundle,
         ...goalState,
+        animatedLatestNetText: privacyMode ? goalState.latestNetText : formatMoney(0),
+        animatedGoalProgress: 0,
         privacyMode,
         viewing: getViewingInfo(),
         themeClass: getThemeClass(),
         loading: false,
         hasLoaded: true
       });
+      this.animateGoalProgress(goalState, privacyMode);
     }).catch(() => {
+      this.clearGoalAnimationTimer();
       this.setData({
         themeClass: getThemeClass(),
         loading: false,
@@ -84,7 +98,7 @@ Page({
       return;
     }
     updateProfile({ goalNetWorth: value }).then(() => {
-      this.refreshGoalFromInputs();
+      this.refreshGoalFromInputs({ animateGoal: true });
       wx.showToast({ title: "已保存", icon: "success" });
     });
   },
@@ -136,7 +150,8 @@ Page({
     });
   },
 
-  refreshGoalFromInputs() {
+  refreshGoalFromInputs(options) {
+    const opts = options || {};
     const rawBundle = this.data.bundle || buildBundle([]);
     const profile = {
       goalNetWorth: parseAmount(this.data.targetNetWorthInput) || this.data.targetNetWorth,
@@ -144,7 +159,15 @@ Page({
       calcAnnualRate: parseRate(this.data.annualRateInput) || 0,
       calcYears: this.data.projectionYears
     };
-    this.setData(this.createGoalState(rawBundle, profile, this.data.privacyMode));
+    const goalState = this.createGoalState(rawBundle, profile, this.data.privacyMode);
+    this.setData(goalState);
+    if (opts.animateGoal) {
+      this.setData({
+        animatedLatestNetText: this.data.privacyMode ? goalState.latestNetText : formatMoney(0),
+        animatedGoalProgress: 0
+      });
+      this.animateGoalProgress(goalState, this.data.privacyMode);
+    }
   },
 
   createGoalState(rawBundle, profile, privacyMode) {
@@ -163,6 +186,7 @@ Page({
       targetNetWorth,
       targetNetWorthInput: formatInputNumber(targetNetWorth),
       targetNetWorthText: privacyMode ? "****" : formatMoney(targetNetWorth),
+      latestNetValue: latestNet,
       latestNetText: privacyMode ? "****" : rawBundle.totalNetText,
       goalProgress: privacyMode ? 0 : progress.toFixed(1),
       goalProgressText: privacyMode ? "****" : `${progress.toFixed(1)}%`,
@@ -176,6 +200,38 @@ Page({
       projectionFinalText: privacyMode ? "****" : formatMoney(finalValue),
       projectionGrowthText: privacyMode ? "****" : formatMoney(growth)
     };
+  },
+
+  animateGoalProgress(goalState, privacyMode) {
+    this.clearGoalAnimationTimer();
+    if (privacyMode) {
+      this.setData({
+        animatedLatestNetText: goalState.latestNetText,
+        animatedGoalProgress: 0
+      });
+      return;
+    }
+
+    const targetNet = Number(goalState.latestNetValue || 0);
+    const targetProgress = Number(goalState.goalProgress || 0);
+    const duration = 720;
+    const startedAt = Date.now();
+
+    this._goalAnimationTimer = setInterval(() => {
+      const progress = Math.min(1, (Date.now() - startedAt) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      this.setData({
+        animatedLatestNetText: progress >= 1 ? goalState.latestNetText : formatMoney(targetNet * eased),
+        animatedGoalProgress: progress >= 1 ? targetProgress.toFixed(1) : (targetProgress * eased).toFixed(1)
+      });
+      if (progress >= 1) this.clearGoalAnimationTimer();
+    }, 32);
+  },
+
+  clearGoalAnimationTimer() {
+    if (!this._goalAnimationTimer) return;
+    clearInterval(this._goalAnimationTimer);
+    this._goalAnimationTimer = null;
   }
 });
 

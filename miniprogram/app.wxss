@@ -295,7 +295,8 @@ button::after {
 .dark-mode .health-summary,
 .dark-mode .completion-row,
 .dark-mode .completion-category,
-.dark-mode .completion-close {
+.dark-mode .completion-close,
+.dark-mode .summary-contribution {
   color: #94a3b8;
 }
 
